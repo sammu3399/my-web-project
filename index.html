@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,12 +11,13 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Custon CSS -->
     <link rel="stylesheet" href="style.css">
-    
+
     <!-- Dependencies -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
+
 <body>
     <!-- App Container -->
     <div class="app-container">
@@ -34,7 +36,7 @@
 
         <!-- Main Content -->
         <main class="main-content">
-            
+
             <!-- User Profile (Discord Style) -->
             <section class="profile-section" id="profile">
                 <div class="profile-banner">
@@ -42,17 +44,19 @@
                 </div>
                 <div class="profile-info-container">
                     <div class="profile-avatar-wrapper">
-                        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Guddu" alt="User Avatar" id="user-avatar" class="profile-avatar">
+                        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Guddu" alt="User Avatar"
+                            id="user-avatar" class="profile-avatar">
                         <div class="status-indicator online"></div>
                     </div>
                     <div class="profile-details">
                         <h1 id="username-display" class="username">Guest User</h1>
                         <p id="user-status" class="status-text">Grinding everyday 🚀</p>
-                        <div id="sync-status" class="sync-status"><span class="status-dot"></span> <span id="sync-text">Local</span></div>
+                        <div id="sync-status" class="sync-status"><span class="status-dot"></span> <span
+                                id="sync-text">Local</span></div>
                     </div>
                     <button id="edit-profile-btn" class="settings-btn"><i class="fa-solid fa-gear"></i></button>
                 </div>
-                
+
                 <!-- Profile Settings Modal (Hidden by default) -->
                 <div id="profile-modal" class="modal hidden">
                     <div class="modal-content glass-panel">
@@ -80,7 +84,7 @@
                             <span id="date-display" class="date-badge">Today</span>
                         </div>
                         <p id="motivational-text" class="motivation">Keep pushing! You got this!</p>
-                        
+
                         <div class="progress-container">
                             <div class="progress-bar-bg">
                                 <div id="daily-progress" class="progress-bar-fill" style="width: 0%;"></div>
@@ -91,12 +95,13 @@
                         <ul id="task-list" class="task-list">
                             <!-- Tasks generated dynamically -->
                         </ul>
-                        
+
                         <div class="add-task-wrapper">
                             <input type="text" id="new-task-input" placeholder="Add a new task...">
                             <button id="add-task-btn"><i class="fa-solid fa-plus"></i></button>
                         </div>
-                        <button id="complete-day-btn" class="glow-btn complete-day-btn" disabled>Complete Day <i class="fa-solid fa-check-double"></i></button>
+                        <button id="complete-day-btn" class="glow-btn complete-day-btn" disabled>Complete Day <i
+                                class="fa-solid fa-check-double"></i></button>
                     </div>
 
                     <!-- Statistics & Streak Module -->
@@ -105,7 +110,8 @@
                             <div class="streak-header">
                                 <h3><i class="fa-solid fa-fire text-orange"></i> Streak</h3>
                                 <div class="shield-status hidden" id="streak-shield">
-                                    <i class="fa-solid fa-shield text-blue hint-tooltip" title="Streak Shield Active! Protects your streak for 1 missed day (Earned via 7 perfect days)."></i>
+                                    <i class="fa-solid fa-shield text-blue hint-tooltip"
+                                        title="Streak Shield Active! Protects your streak for 1 missed day (Earned via 7 perfect days)."></i>
                                 </div>
                             </div>
                             <div class="streak-counter">
@@ -131,7 +137,7 @@
                     <div class="panel-header">
                         <h2><i class="fa-solid fa-heart-pulse text-red"></i> Health & Biometrics</h2>
                     </div>
-                    
+
                     <div class="health-grid">
                         <div class="biometrics-card glass-card">
                             <h3>Your Vitals</h3>
@@ -146,7 +152,7 @@
                                 </div>
                             </div>
                             <button id="calc-intensity-btn" class="secondary-btn">Calculate Workout Intensity</button>
-                            
+
                             <div id="intensity-result" class="result-box hidden">
                                 <h4>Recommended Intensity:</h4>
                                 <p id="intensity-level" class="badge">Moderate</p>
@@ -163,7 +169,7 @@
                                 </label>
                             </div>
                             <p class="condition-desc">Enable PCOD/PCOS Mode</p>
-                            
+
                             <div id="pcos-recommendations" class="recommendations hidden">
                                 <div class="rec-block diet">
                                     <h4><i class="fa-solid fa-leaf text-green"></i> Anti-Inflammatory Diet</h4>
@@ -186,6 +192,19 @@
                     </div>
                 </div>
             </section>
+            <div class="exercise-card glass-card">
+                <h3><i class="fa-solid fa-person-hiking"></i> PCOS Friendly Move</h3>
+                <div class="exercise-container">
+                    <div class="yoga-pose">
+                        <div class="circle-aura"></div>
+                        <i class="fa-solid fa-spa pose-icon"></i>
+                    </div>
+                    <div class="exercise-info">
+                        <h4>Child's Pose (Balasana)</h4>
+                        <p>Hold for 2 minutes. Focus on deep belly breathing to lower stress.</p>
+                    </div>
+                </div>
+            </div>
 
             <!-- Leaderboard Section -->
             <section class="leaderboard-section section-block" id="leaderboard">
@@ -194,7 +213,7 @@
                         <h2><i class="fa-solid fa-trophy text-gold"></i> Friends Leaderboard</h2>
                         <p>Compete based on longest active streaks!</p>
                     </div>
-                    
+
                     <ul class="leaderboard-list" id="leaderboard-list">
                         <!-- Populated by JS -->
                     </ul>
@@ -213,4 +232,5 @@
 
     <script src="app.js"></script>
 </body>
+
 </html>
