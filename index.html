@@ -139,6 +139,7 @@
                     </div>
 
                     <div class="health-grid">
+
                         <div class="biometrics-card glass-card">
                             <h3>Your Vitals</h3>
                             <div class="form-row">
@@ -152,7 +153,6 @@
                                 </div>
                             </div>
                             <button id="calc-intensity-btn" class="secondary-btn">Calculate Workout Intensity</button>
-
                             <div id="intensity-result" class="result-box hidden">
                                 <h4>Recommended Intensity:</h4>
                                 <p id="intensity-level" class="badge">Moderate</p>
@@ -170,6 +170,7 @@
                             </div>
                             <p class="condition-desc">Enable PCOD/PCOS Mode</p>
                         </div>
+
                         <div class="mood-card glass-card">
                             <div class="card-header">
                                 <h3><i class="fa-solid fa-face-smile text-pink"></i> Daily Mood</h3>
@@ -185,6 +186,7 @@
 
                         <div id="pcos-recommendations" class="recommendations hidden">
                             <div class="rec-grid">
+
                                 <div class="rec-block diet glass-card">
                                     <h4><i class="fa-solid fa-leaf text-green"></i> Anti-Inflammatory Diet</h4>
                                     <ul>
@@ -209,20 +211,38 @@
                                 </div>
                             </div>
                         </div>
+                    </div>
+            </section> ```
+            ---
+            ---
 
-                        <!-- Leaderboard Section -->
-                        <section class="leaderboard-section section-block" id="leaderboard">
-                            <div class="panel">
-                                <div class="panel-header">
-                                    <h2><i class="fa-solid fa-trophy text-gold"></i> Friends Leaderboard</h2>
-                                    <p>Compete based on longest active streaks!</p>
-                                </div>
+            ### **Why this order is important:**
+            By putting the **Vitals**, **Toggle**, and **Mood** inside the `<div class="health-grid">`, your CSS will
+                automatically put them in a nice row or grid.
 
-                                <ul class="leaderboard-list" id="leaderboard-list">
-                                    <!-- Populated by JS -->
-                                </ul>
-                            </div>
-                        </section>
+                Because the `pcos-recommendations` is **outside** that grid, it will appear as a separate row at the
+                bottom, giving your Yoga and Diet cards the full width of the screen to breathe.
+
+                ### **Deploy it:**
+                1. `git add .`
+                2. `git commit -m "Organized health grid and separated recommendations"`
+                3. `git push`
+
+                **After you push, check the site—is the Mood card finally standing on its own, and does the Yoga card
+                look spacious?**
+                <!-- Leaderboard Section -->
+                <section class="leaderboard-section section-block" id="leaderboard">
+                    <div class="panel">
+                        <div class="panel-header">
+                            <h2><i class="fa-solid fa-trophy text-gold"></i> Friends Leaderboard</h2>
+                            <p>Compete based on longest active streaks!</p>
+                        </div>
+
+                        <ul class="leaderboard-list" id="leaderboard-list">
+                            <!-- Populated by JS -->
+                        </ul>
+                    </div>
+                </section>
         </main>
     </div>
 
