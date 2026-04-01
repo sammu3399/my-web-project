@@ -134,85 +134,123 @@
             <!-- Health Section -->
             <section class="health-section section-block" id="health">
                 <div class="panel">
+
                     <div class="panel-header">
-                        <h2><i class="fa-solid fa-heart-pulse text-red"></i> Health & Biometrics</h2>
+                        <h2>
+                            <i class="fa-solid fa-heart-pulse text-red"></i>
+                            Health & Biometrics
+                        </h2>
                     </div>
 
+                    <!-- Health Grid -->
                     <div class="health-grid">
 
+                        <!-- Biometrics Card -->
                         <div class="biometrics-card glass-card">
                             <h3>Your Vitals</h3>
+
                             <div class="form-row">
                                 <div class="form-group">
                                     <label for="height-input">Height (cm)</label>
-                                    <input type="number" id="height-input" placeholder="e.g. 175">
+                                    <input type="number" id="height-input" placeholder="e.g. 175" min="0">
                                 </div>
+
                                 <div class="form-group">
                                     <label for="weight-input">Weight (kg)</label>
-                                    <input type="number" id="weight-input" placeholder="e.g. 70">
+                                    <input type="number" id="weight-input" placeholder="e.g. 70" min="0">
                                 </div>
                             </div>
-                            <button id="calc-intensity-btn" class="secondary-btn">Calculate Workout Intensity</button>
+
+                            <div class="form-actions">
+                                <button id="calc-intensity-btn" class="secondary-btn">
+                                    Calculate Workout Intensity
+                                </button>
+                            </div>
+
                             <div id="intensity-result" class="result-box hidden">
                                 <h4>Recommended Intensity:</h4>
                                 <p id="intensity-level" class="badge">Moderate</p>
-                                <p id="intensity-desc" class="desc">A mix of cardio and strength training.</p>
+                                <p id="intensity-desc" class="desc">
+                                    A mix of cardio and strength training.
+                                </p>
                             </div>
                         </div>
 
+                        <!-- Special Conditions -->
                         <div class="condition-card glass-card">
                             <div class="toggle-header">
                                 <h3>Special Conditions</h3>
                                 <label class="switch">
-                                    <input type="checkbox" id="pcos-toggle">
+                                    <input type="checkbox" id="pcos-toggle" aria-label="Enable PCOS mode">
                                     <span class="slider round"></span>
                                 </label>
                             </div>
                             <p class="condition-desc">Enable PCOD/PCOS Mode</p>
                         </div>
 
+                        <!-- Mood Tracker -->
                         <div class="mood-card glass-card">
                             <div class="card-header">
-                                <h3><i class="fa-solid fa-face-smile text-pink"></i> Daily Mood</h3>
+                                <h3>
+                                    <i class="fa-solid fa-face-smile text-pink"></i>
+                                    Daily Mood
+                                </h3>
                             </div>
+
                             <div class="mood-options">
                                 <button class="mood-btn" data-mood="Fantastic">🤩</button>
                                 <button class="mood-btn" data-mood="Good">😊</button>
                                 <button class="mood-btn" data-mood="Okay">😐</button>
                                 <button class="mood-btn" data-mood="Low">😔</button>
                             </div>
-                            <p id="mood-status" class="mood-status-text">How are you feeling today?</p>
+
+                            <p id="mood-status" class="mood-status-text">
+                                How are you feeling today?
+                            </p>
                         </div>
 
-                        <div id="pcos-recommendations" class="recommendations hidden">
-                            <div class="rec-grid">
+                    </div>
 
-                                <div class="rec-block diet glass-card">
-                                    <h4><i class="fa-solid fa-leaf text-green"></i> Anti-Inflammatory Diet</h4>
-                                    <ul>
-                                        <li>Berries, nuts, and leafy greens</li>
-                                        <li>Fatty fish (Salmon, Sardines)</li>
-                                        <li>Avoid refined carbs and sugar</li>
-                                    </ul>
-                                </div>
+                    <!-- PCOS Recommendations -->
+                    <div id="pcos-recommendations" class="recommendations hidden" role="region">
+                        <div class="rec-grid">
 
-                                <div class="exercise-card glass-card">
-                                    <h3><i class="fa-solid fa-person-hiking"></i> PCOS Friendly Move</h3>
-                                    <div class="exercise-container">
-                                        <div class="yoga-pose">
-                                            <div class="circle-aura"></div>
-                                            <i class="fa-solid fa-spa pose-icon"></i>
-                                        </div>
-                                        <div class="exercise-info">
-                                            <h4>Child's Pose (Balasana)</h4>
-                                            <p>Hold for 2 minutes. Focus on deep belly breathing.</p>
-                                        </div>
+                            <div class="rec-block diet glass-card">
+                                <h4>
+                                    <i class="fa-solid fa-leaf text-green"></i>
+                                    Anti-Inflammatory Diet
+                                </h4>
+                                <ul>
+                                    <li>Berries, nuts, and leafy greens</li>
+                                    <li>Fatty fish (Salmon, Sardines)</li>
+                                    <li>Avoid refined carbs and sugar</li>
+                                </ul>
+                            </div>
+
+                            <div class="exercise-card glass-card">
+                                <h3>
+                                    <i class="fa-solid fa-person-hiking"></i>
+                                    PCOS Friendly Move
+                                </h3>
+
+                                <div class="exercise-container">
+                                    <div class="yoga-pose">
+                                        <div class="circle-aura"></div>
+                                        <i class="fa-solid fa-spa pose-icon"></i>
+                                    </div>
+
+                                    <div class="exercise-info">
+                                        <h4>Child's Pose (Balasana)</h4>
+                                        <p>Hold for 2 minutes. Focus on deep belly breathing.</p>
                                     </div>
                                 </div>
                             </div>
+
                         </div>
                     </div>
-            </section> ```
+
+                </div>
+            </section>
             ---
             ---
 
