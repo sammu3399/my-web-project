@@ -1046,3 +1046,50 @@ input:checked+.slider {
         grid-template-columns: 1fr;
     }
 }
+
+/* --- Yoga Breathing Animation --- */
+.yoga-pose {
+    position: relative;
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.circle-aura {
+    position: absolute;
+    width: 60px;
+    height: 60px;
+    background: rgba(255, 126, 185, 0.3);
+    /* Pink glow */
+    border-radius: 50%;
+    animation: breathe 3s infinite ease-in-out;
+    /* The magic part */
+}
+
+.pose-icon {
+    font-size: 2rem;
+    color: #ff7eb9;
+    z-index: 2;
+    /* Sits on top of the aura */
+}
+
+/* This makes the circle grow and shrink like a breath */
+@keyframes breathe {
+    0% {
+        transform: scale(1);
+        opacity: 0.3;
+    }
+
+    50% {
+        transform: scale(1.5);
+        opacity: 0.6;
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 0.3;
+    }
+}
