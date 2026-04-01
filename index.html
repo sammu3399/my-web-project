@@ -169,69 +169,60 @@
                                 </label>
                             </div>
                             <p class="condition-desc">Enable PCOD/PCOS Mode</p>
+                        </div>
+                        <div class="mood-card glass-card">
+                            <div class="card-header">
+                                <h3><i class="fa-solid fa-face-smile text-pink"></i> Daily Mood</h3>
+                            </div>
+                            <div class="mood-options">
+                                <button class="mood-btn" data-mood="Fantastic">🤩</button>
+                                <button class="mood-btn" data-mood="Good">😊</button>
+                                <button class="mood-btn" data-mood="Okay">😐</button>
+                                <button class="mood-btn" data-mood="Low">😔</button>
+                            </div>
+                            <p id="mood-status" class="mood-status-text">How are you feeling today?</p>
+                        </div>
 
-                            <div id="pcos-recommendations" class="recommendations hidden">
-
-                                <div class="rec-block diet">
+                        <div id="pcos-recommendations" class="recommendations hidden">
+                            <div class="rec-grid">
+                                <div class="rec-block diet glass-card">
                                     <h4><i class="fa-solid fa-leaf text-green"></i> Anti-Inflammatory Diet</h4>
                                     <ul>
                                         <li>Berries, nuts, and leafy greens</li>
                                         <li>Fatty fish (Salmon, Sardines)</li>
-                                        <li>Avoid refined carbs and excess sugar</li>
+                                        <li>Avoid refined carbs and sugar</li>
                                     </ul>
                                 </div>
-                                <div class="rec-block workout">
-                                    <h4><i class="fa-solid fa-person-walking text-blue"></i> Low-Impact Workouts</h4>
-                                    <ul>
-                                        <li>Yoga and Pilates (reduces cortisol)</li>
-                                        <li>Brisk walking</li>
-                                        <li>Light strength training during flare-ups</li>
-                                    </ul>
-                                </div>
-                            </div>
-                            <div class="mood-card glass-card">
 
-                                <div class="card-header">
-                                    <h3><i class="fa-solid fa-face-smile text-pink"></i> Daily Mood</h3>
-                                </div>
-                                <div class="mood-options">
-                                    <button class="mood-btn" data-mood="Fantastic">🤩</button>
-                                    <button class="mood-btn" data-mood="Good">😊</button>
-                                    <button class="mood-btn" data-mood="Okay">😐</button>
-                                    <button class="mood-btn" data-mood="Low">😔</button>
-                                </div>
-                                <p id="mood-status" class="mood-status-text">How are you feeling today?</p>
-
-                            </div> ```
-                            <div class="exercise-card glass-card">
-                                <h3><i class="fa-solid fa-person-hiking"></i> PCOS Friendly Move</h3>
-                                <div class="exercise-container">
-                                    <div class="yoga-pose">
-                                        <div class="circle-aura"></div>
-                                        <i class="fa-solid fa-spa pose-icon"></i>
-                                    </div>
-                                    <div class="exercise-info">
-                                        <h4>Child's Pose (Balasana)</h4>
-                                        <p>Hold for 2 minutes. Focus on deep belly breathing to lower stress.</p>
+                                <div class="exercise-card glass-card">
+                                    <h3><i class="fa-solid fa-person-hiking"></i> PCOS Friendly Move</h3>
+                                    <div class="exercise-container">
+                                        <div class="yoga-pose">
+                                            <div class="circle-aura"></div>
+                                            <i class="fa-solid fa-spa pose-icon"></i>
+                                        </div>
+                                        <div class="exercise-info">
+                                            <h4>Child's Pose (Balasana)</h4>
+                                            <p>Hold for 2 minutes. Focus on deep belly breathing.</p>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div> ```
 
-                    <!-- Leaderboard Section -->
-                    <section class="leaderboard-section section-block" id="leaderboard">
-                        <div class="panel">
-                            <div class="panel-header">
-                                <h2><i class="fa-solid fa-trophy text-gold"></i> Friends Leaderboard</h2>
-                                <p>Compete based on longest active streaks!</p>
+                        <!-- Leaderboard Section -->
+                        <section class="leaderboard-section section-block" id="leaderboard">
+                            <div class="panel">
+                                <div class="panel-header">
+                                    <h2><i class="fa-solid fa-trophy text-gold"></i> Friends Leaderboard</h2>
+                                    <p>Compete based on longest active streaks!</p>
+                                </div>
+
+                                <ul class="leaderboard-list" id="leaderboard-list">
+                                    <!-- Populated by JS -->
+                                </ul>
                             </div>
-
-                            <ul class="leaderboard-list" id="leaderboard-list">
-                                <!-- Populated by JS -->
-                            </ul>
-                        </div>
-                    </section>
+                        </section>
         </main>
     </div>
 

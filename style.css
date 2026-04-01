@@ -1030,3 +1030,19 @@ input:checked+.slider {
     transform: scale(1.2);
     /* Makes them pop when you hover! */
 }
+
+.rec-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    /* This creates two side-by-side columns */
+    gap: 20px;
+    /* Space between the cards */
+    margin-top: 20px;
+}
+
+/* On small phone screens, make them stack vertically */
+@media (max-width: 600px) {
+    .rec-grid {
+        grid-template-columns: 1fr;
+    }
+}
