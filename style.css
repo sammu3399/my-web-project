@@ -1010,3 +1010,23 @@ input:checked+.slider {
 .hidden {
     display: none !important;
 }
+
+.mood-options {
+    display: flex;
+    justify-content: space-around;
+    /* Spreads emojis out evenly */
+    padding: 15px 0;
+}
+
+.mood-btn {
+    border: none;
+    background: none;
+    font-size: 2rem;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.mood-btn:hover {
+    transform: scale(1.2);
+    /* Makes them pop when you hover! */
+}
