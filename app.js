@@ -237,7 +237,7 @@ function updateSyncStatus(status, text) {
     elements.syncText.innerText = text;
 }
 
-// Event Listeners Setup
+// Listeners SetupEvent 
 function setupEventListeners() {
     // Profile Modal
     elements.editBannerBtn.addEventListener('click', () => {
@@ -264,37 +264,51 @@ function setupEventListeners() {
             updateMotivationalText();
             renderLeaderboard();
         }
-    });
+    }); // ... (existing code for saveProfileBtn)
+    renderLeaderboard();
+}
+}); // <--- Paste RIGHT AFTER this line
 
-    // Task Management
-    elements.addTaskBtn.addEventListener('click', handleAddTask);
-    elements.newTaskInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') handleAddTask();
+// PCOS Toggle Action
+if (elements.pcosToggle) {
+    elements.pcosToggle.addEventListener('change', function () {
+        if (this.checked) {
+            elements.pcosRecommendations.classList.remove('hidden');
+        } else {
+            elements.pcosRecommendations.classList.add('hidden');
+        }
     });
+}
 
-    // Complete Day
-    elements.completeDayBtn.addEventListener('click', handleCompleteDay);
+// Task Management
+elements.addTaskBtn.addEventListener('click', handleAddTask);
+elements.newTaskInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') handleAddTask();
+});
 
-    // Health Integration
-    elements.calcIntensityBtn.addEventListener('click', calculateIntensity);
-    elements.pcosToggle.addEventListener('change', (e) => {
-        appState.health.pcosMode = e.target.checked;
-        saveState();
-        renderHealthSection();
+// Complete Day
+elements.completeDayBtn.addEventListener('click', handleCompleteDay);
+
+// Health Integration
+elements.calcIntensityBtn.addEventListener('click', calculateIntensity);
+elements.pcosToggle.addEventListener('change', (e) => {
+    appState.health.pcosMode = e.target.checked;
+    saveState();
+    renderHealthSection();
+});
+
+// Navigation (Mock)
+document.querySelectorAll('.nav-links a').forEach(link => {
+    link.addEventListener('click', (e) => {
+        document.querySelectorAll('.nav-links li').forEach(li => li.classList.remove('active'));
+        e.target.closest('li').classList.add('active');
     });
+});
 
-    // Navigation (Mock)
-    document.querySelectorAll('.nav-links a').forEach(link => {
-        link.addEventListener('click', (e) => {
-            document.querySelectorAll('.nav-links li').forEach(li => li.classList.remove('active'));
-            e.target.closest('li').classList.add('active');
-        });
-    });
-
-    // Celebration Overlay close on click
-    elements.gudduCelebration.addEventListener('click', () => {
-        elements.gudduCelebration.classList.add('hidden');
-    });
+// Celebration Overlay close on click
+elements.gudduCelebration.addEventListener('click', () => {
+    elements.gudduCelebration.classList.add('hidden');
+});
 }
 
 // Rendering Logic
