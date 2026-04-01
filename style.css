@@ -61,14 +61,29 @@
 }
 
 body {
-    background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+    background: linear-gradient(-45deg, #0f0c29, #302b63, #24243e, #6a11cb);
+    background-size: 400% 400%;
+    animation: pcosGradient 15s ease infinite;
     background-attachment: fixed;
-    /* This keeps the color from moving when you scroll */
     color: var(--text-primary);
     overflow-x: hidden;
     line-height: 1.5;
     min-height: 100vh;
-    /* Ensures the color covers the whole screen */
+}
+
+/* This is the part that makes it move */
+@keyframes pcosGradient {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
 }
 
 .app-container {
@@ -883,4 +898,49 @@ input:checked+.slider:before {
     50% {
         transform: translateY(-20px);
     }
+}
+
+/* Styling the specific PCOD/PCOS card */
+.condition-card.glass-card {
+    background: rgba(255, 105, 180, 0.05);
+    /* Very light pink tint */
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 182, 193, 0.3);
+    /* Soft pink border */
+    border-radius: 20px;
+    padding: 25px;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+    transition: all 0.4s ease;
+}
+
+/* Make it glow when you hover over it */
+.condition-card.glass-card:hover {
+    border: 1px solid rgba(255, 105, 180, 0.6);
+    box-shadow: 0 0 20px rgba(255, 105, 180, 0.2);
+    transform: translateY(-3px);
+}
+
+/* Styling the recommendations inside */
+.rec-block.diet {
+    background: rgba(0, 0, 0, 0.2);
+    padding: 15px;
+    border-radius: 12px;
+    margin-top: 15px;
+    border-left: 4px solid #ff69b4;
+    /* Pink accent line */
+}
+
+/* Styling the switch/toggle for PCOS mode */
+.slider.round {
+    background-color: #444;
+}
+
+input:checked+.slider {
+    background-color: #ff69b4;
+    /* This makes it turn Pink when active */
+}
+
+/* Optional: Adds a soft glow to the switch when turned on */
+input:checked+.slider {
+    box-shadow: 0 0 10px rgba(255, 105, 180, 0.5);
 }
