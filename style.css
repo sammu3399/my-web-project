@@ -1,21 +1,10 @@
-/* --- 1. THE BASICS & VARIABLES --- */
+/* --- 1. GLOBAL SETTINGS & VIBRANT BASE --- */
 :root {
-    --bg-main: #0a0a0c;
-    --bg-secondary: #121316;
-    --bg-glass: rgba(30, 31, 35, 0.7);
-    --border-light: rgba(255, 255, 255, 0.08);
-    --text-primary: #ededed;
-    --text-secondary: #a1a1aa;
-    --text-dim: #71717a;
-
-    --primary-gradient: linear-gradient(135deg, #6366f1, #a855f7);
-    --success: #22c55e;
-    --danger: #ef4444;
-    --warning: #f59e0b;
-    --info: #3b82f6;
+    --bg-dark: #09090b;
+    --glass: rgba(255, 255, 255, 0.03);
     --pcos-pink: #ff69b4;
-
-    --shadow-glow: rgba(99, 102, 241, 0.2);
+    --glow-purple: #a855f7;
+    --glow-orange: #f97316;
 }
 
 * {
@@ -26,67 +15,26 @@
 }
 
 body {
-    background: linear-gradient(-45deg, #0f0c29, #302b63, #24243e, #6a11cb);
-    background-size: 400% 400%;
-    animation: pcosGradient 15s ease infinite;
+    background: radial-gradient(circle at top right, #1e1b4b, #09090b),
+        radial-gradient(circle at bottom left, #2e1065, #09090b);
     background-attachment: fixed;
-    color: var(--text-primary);
-    overflow-x: hidden;
-    line-height: 1.5;
+    color: #fafafa;
     min-height: 100vh;
+    overflow-x: hidden;
 }
 
-@keyframes pcosGradient {
-    0% {
-        background-position: 0% 50%;
-    }
-
-    50% {
-        background-position: 100% 50%;
-    }
-
-    100% {
-        background-position: 0% 50%;
-    }
-}
-
-/* --- 2. LAYOUT --- */
+/* --- 2. LAYOUT & SIDEBAR --- */
 .app-container {
     display: flex;
     min-height: 100vh;
 }
 
-/* Sidebar */
 .sidebar {
     width: 260px;
-    background-color: var(--bg-secondary);
-    border-right: 1px solid var(--border-light);
+    background-color: #121316;
+    border-right: 1px solid rgba(255, 255, 255, 0.08);
     padding: 2rem 1rem;
-    display: flex;
-    flex-direction: column;
     z-index: 10;
-}
-
-.brand {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    padding: 0 1rem 2rem;
-    border-bottom: 1px solid var(--border-light);
-    margin-bottom: 2rem;
-}
-
-.brand-icon {
-    font-size: 1.5rem;
-    color: #a855f7;
-}
-
-.brand h2 {
-    font-size: 1.25rem;
-    font-weight: 800;
-    background: var(--primary-gradient);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
 }
 
 .nav-links {
@@ -98,137 +46,93 @@ body {
 
 .nav-links li a {
     text-decoration: none;
-    color: var(--text-secondary);
+    color: #a1a1aa;
     display: flex;
     align-items: center;
     gap: 1rem;
     padding: 0.75rem 1rem;
     border-radius: 0.5rem;
-    transition: all 0.2s ease;
-    font-weight: 500;
+    transition: 0.3s;
 }
 
+/* THE PURPLE GLOWING ACTIVE TAB */
 .nav-links li.active a {
-    background: var(--primary-gradient);
-    color: white;
-    box-shadow: 0 4px 12px var(--shadow-glow);
+    background: linear-gradient(135deg, #6366f1, #a855f7) !important;
+    box-shadow: 0 0 20px rgba(168, 85, 247, 0.4);
+    color: white !important;
+    border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
-/* Main Content */
+/* --- 3. MAIN CONTENT PANELS --- */
 .main-content {
     flex: 1;
     padding: 2rem;
     max-width: 1200px;
     margin: 0 auto;
+}
+
+.panel,
+.glass-card {
+    background: var(--glass);
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 1.25rem;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+/* --- 4. THE YOGA BREATHING (Child/Zen Mode) --- */
+.yoga-container {
     display: flex;
     flex-direction: column;
-    gap: 2rem;
+    align-items: center;
+    padding: 20px;
 }
 
-/* --- 3. COMMON COMPONENTS --- */
-.panel {
-    background-color: var(--bg-secondary);
-    border: 1px solid var(--border-light);
-    border-radius: 1rem;
-    padding: 1.5rem;
-}
-
-.glass-card {
-    background: var(--bg-glass);
-    backdrop-filter: blur(10px);
-    border: 1px solid var(--border-light);
-    border-radius: 1rem;
-    padding: 1.5rem;
-    transition: transform 0.3s ease;
-}
-
-.glass-card:hover {
-    transform: translateY(-5px);
-}
-
-/* --- 4. DISCORD-STYLE PROFILE --- */
-.profile-section {
-    position: relative;
-    border-radius: 1rem;
-    overflow: hidden;
-    background-color: var(--bg-secondary);
-    border: 1px solid var(--border-light);
-}
-
-.profile-banner {
-    height: 140px;
-    background: var(--primary-gradient);
-}
-
-.profile-info-container {
-    padding: 0 2rem 2rem;
-    display: flex;
-    align-items: flex-end;
-    gap: 1.5rem;
-}
-
-.profile-avatar-wrapper {
-    position: relative;
-    margin-top: -40px;
-}
-
-.profile-avatar {
+.breathing-circle {
     width: 100px;
     height: 100px;
+    background: var(--pcos-pink);
     border-radius: 50%;
-    border: 6px solid var(--bg-secondary);
-    background-color: #2a2b30;
-}
-
-.status-indicator.online {
-    position: absolute;
-    bottom: 6px;
-    right: 6px;
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    background-color: var(--success);
-    border: 3px solid var(--bg-secondary);
-}
-
-/* --- 5. TASKS & PROGRESS --- */
-.progress-bar-bg {
-    height: 8px;
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 4px;
-    margin: 10px 0;
-}
-
-.progress-bar-fill {
-    height: 100%;
-    background: var(--primary-gradient);
-    border-radius: 4px;
-    width: 0%;
-    transition: width 0.5s ease;
-}
-
-.task-item {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    background: rgba(255, 255, 255, 0.03);
-    padding: 1rem;
-    border-radius: 0.75rem;
-    margin-bottom: 0.5rem;
+    justify-content: center;
+    box-shadow: 0 0 30px var(--pcos-pink);
+    animation: childBreathe 4s infinite ease-in-out;
 }
 
-/* --- 6. HEALTH & PCOS PINK MODE --- */
-.health-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 1.5rem;
+@keyframes childBreathe {
+
+    0%,
+    100% {
+        transform: scale(1);
+        opacity: 0.8;
+        box-shadow: 0 0 20px var(--pcos-pink);
+    }
+
+    50% {
+        transform: scale(1.3);
+        opacity: 1;
+        box-shadow: 0 0 50px var(--pcos-pink);
+    }
 }
 
-/* The Switch */
+/* --- 5. THE GLOWING STREAK (Orange Grading) --- */
+.streak-counter {
+    font-size: 3.5rem;
+    font-weight: 900;
+    background: linear-gradient(to bottom, #fbbf24, #f97316);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 0 15px rgba(249, 115, 22, 0.5));
+}
+
+/* --- 6. PCOS PINK MODE TOGGLE --- */
 .switch {
     position: relative;
     width: 44px;
     height: 24px;
+    display: inline-block;
 }
 
 .switch input {
@@ -261,161 +165,27 @@ body {
     border-radius: 50%;
 }
 
-input:checked+.slider {
-    background-color: var(--pcos-pink);
-    box-shadow: 0 0 10px rgba(255, 105, 180, 0.5);
+#pcos-toggle:checked+.slider {
+    background-color: var(--pcos-pink) !important;
+    box-shadow: 0 0 20px var(--pcos-pink);
 }
 
-input:checked+.slider:before {
+#pcos-toggle:checked+.slider:before {
     transform: translateX(20px);
 }
 
-/* Recommendations */
-.rec-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 20px;
-    margin-top: 20px;
-}
-
-.rec-block.diet {
-    border-left: 4px solid var(--pcos-pink);
-    background: rgba(255, 105, 180, 0.05);
-}
-
-/* --- 7. YOGA BREATHING ANIMATION --- */
-.yoga-pose {
-    position: relative;
-    width: 80px;
-    height: 80px;
-    margin: 0 auto;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.circle-aura {
-    position: absolute;
-    width: 50px;
-    height: 50px;
-    background: rgba(255, 105, 180, 0.3);
-    border-radius: 50%;
-    animation: auraBreathe 4s infinite ease-in-out;
-}
-
-.pose-icon {
-    font-size: 2rem;
-    color: var(--pcos-pink);
-    z-index: 2;
-}
-
-@keyframes auraBreathe {
-
-    0%,
-    100% {
-        transform: scale(1);
-        opacity: 0.3;
-    }
-
-    50% {
-        transform: scale(1.8);
-        opacity: 0.6;
-    }
-}
-
-/* --- 8. MOOD SECTION --- */
-.mood-options {
-    display: flex;
-    justify-content: space-around;
-    padding: 1rem 0;
-}
-
-.mood-btn {
-    font-size: 2rem;
-    background: none;
-    border: none;
-    cursor: pointer;
-    transition: transform 0.2s;
-}
-
-.mood-btn:hover {
-    transform: scale(1.3);
-}
-
-/* --- 9. UTILITIES & MODALS --- */
-.hidden {
-    display: none !important;
-}
-
-.fullscreen-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.9);
-    z-index: 9999;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-/* --- 10. RESPONSIVE --- */
+/* --- 7. RESPONSIVE DESIGN --- */
 @media (max-width: 900px) {
     .sidebar {
         width: 80px;
-        padding: 2rem 0.5rem;
     }
 
-    .sidebar .brand h2,
-    .nav-links li a span {
+    .sidebar span,
+    .sidebar h2 {
         display: none;
     }
 
     .main-content {
-        padding: 1rem;
         width: calc(100vw - 80px);
     }
-}
-
-/* --- THE FINAL CLEAN FIX --- */
-
-/* 1. Purple Sidebar & Progress Bar Glow */
-.nav-links li.active a,
-.progress-bar-fill {
-    background: linear-gradient(135deg, #6366f1, #a855f7) !important;
-    box-shadow: 0 4px 15px rgba(168, 85, 247, 0.5) !important;
-    color: white !important;
-}
-
-/* 2. Orange Streak Counter Glow */
-.streak-counter {
-    background: linear-gradient(to right, #f97316, #fcd34d) !important;
-    -webkit-background-clip: text !important;
-    -webkit-text-fill-color: transparent !important;
-    filter: drop-shadow(0 0 10px rgba(249, 115, 22, 0.6)) !important;
-    font-weight: 900 !important;
-}
-
-/* 3. PCOS Pink Mode Toggle Glow */
-#pcos-toggle:checked+.slider {
-    background-color: #ff69b4 !important;
-    box-shadow: 0 0 20px rgba(255, 105, 180, 0.8) !important;
-}
-
-/* 4. PCOS Recommendation Cards */
-#pcos-recommendations {
-    border: 1px solid rgba(255, 105, 180, 0.4) !important;
-    background: rgba(255, 105, 180, 0.1) !important;
-    border-radius: 1rem;
-    padding: 1.5rem;
-    margin-top: 1rem;
-}
-
-/* 5. Overall Panel Styling (Glass Effect) */
-.panel,
-.glass-card {
-    background: rgba(20, 20, 25, 0.8) !important;
-    border: 1px solid rgba(255, 255, 255, 0.1) !important;
-    backdrop-filter: blur(12px);
 }
