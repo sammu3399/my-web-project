@@ -655,3 +655,16 @@ function renderLeaderboard() {
 
 // Boot
 document.addEventListener('DOMContentLoaded', init);
+// --- PCOS/PCOD Toggle Logic ---
+const pcosToggle = document.getElementById('pcos-toggle');
+const pcosRecs = document.getElementById('pcos-recommendations');
+
+if (pcosToggle && pcosRecs) {
+    pcosToggle.addEventListener('change', function () {
+        if (this.checked) {
+            pcosRecs.classList.remove('hidden');
+        } else {
+            pcosRecs.classList.add('hidden');
+        }
+    });
+}
