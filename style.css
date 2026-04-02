@@ -47,20 +47,35 @@ body {
     margin: 0 auto;
 }
 
+/* --- THE LAYOUT FIX --- */
+.main-content {
+    flex: 1;
+    padding: 2rem;
+    max-width: 1100px;
+    /* This prevents everything from sticking to the left */
+    margin: 0 auto;
+    /* This centers the whole dashboard */
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
 .grid-layout {
     display: grid;
     grid-template-columns: 1.5fr 1fr;
+    /* This puts Quests and Wellness side-by-side */
     gap: 1.5rem;
-    margin-top: 1.5rem;
+    align-items: start;
 }
 
-/* COMPONENTS */
 .panel {
     background: var(--panel);
     border: 1px solid rgba(255, 255, 255, 0.1);
     padding: 1.5rem;
     border-radius: 1.2rem;
     backdrop-filter: blur(10px);
+    min-height: 250px;
+    /* This stops the cards from looking "squashed" */
 }
 
 .profile-avatar {
@@ -263,4 +278,117 @@ input:checked+.slider {
 
 input:checked+.slider:before {
     transform: translateX(26px);
+}
+
+/* --- RESPONSIVE MOBILE TRANSFORMATION --- */
+@media (max-width: 768px) {
+    body {
+        flex-direction: column;
+        /* Stacks the app vertically */
+    }
+
+    .sidebar {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 70px;
+        border-right: none;
+        border-top: 1px solid #333;
+        background: #12121a;
+        z-index: 100;
+        flex-direction: row;
+        /* Moves nav items side-by-side */
+        padding: 0;
+        display: flex;
+        align-items: center;
+        justify-content: space-around;
+    }
+
+    .nav-links {
+        display: flex;
+        width: 100%;
+        justify-content: space-around;
+        list-style: none;
+    }
+
+    /* Hides text and titles to keep the bottom bar clean */
+    .brand,
+    .nav-links span {
+        display: none;
+    }
+
+    .nav-links li {
+        font-size: 1.5rem;
+        /* Makes icons easier to tap */
+    }
+
+    .grid-layout {
+        grid-template-columns: 1fr;
+        /* Stacks cards into one column */
+    }
+
+    .main-content {
+        margin-bottom: 80px;
+        /* Prevents the bottom bar from covering content */
+        padding: 1rem;
+    }
+}
+
+/* --- THE FINAL MOBILE & LAYOUT FIX --- */
+
+/* 1. This centers your dashboard on big screens (fixes Screenshot 103) */
+.main-content {
+    flex: 1;
+    padding: 2rem;
+    max-width: 1100px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+/* 2. This puts Quests and Wellness side-by-side */
+.grid-layout {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr;
+    gap: 1.5rem;
+}
+
+/* 3. This fixes the "squashing" on mobile phones */
+@media (max-width: 768px) {
+    body {
+        flex-direction: column;
+    }
+
+    .sidebar {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 70px;
+        flex-direction: row;
+        z-index: 1000;
+        padding: 0;
+        justify-content: space-around;
+        border-right: none;
+        border-top: 1px solid #333;
+    }
+
+    .nav-links span,
+    .brand {
+        display: none;
+        /* Hides text to save space on mobile */
+    }
+
+    .grid-layout {
+        grid-template-columns: 1fr;
+        /* Stacks cards vertically on phone */
+    }
+
+    .main-content {
+        margin-bottom: 80px;
+        /* Space so the bottom bar doesn't cover tasks */
+        padding: 1rem;
+    }
 }
