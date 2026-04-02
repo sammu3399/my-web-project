@@ -1,19 +1,29 @@
-<div id="app">
-    <nav class="sidebar">
-        <div class="brand">My Win</div>
-        <ul class="nav-links">
-            <li onclick="showSection('dash')">🏠 <span>Dash</span></li>
-            <li onclick="showSection('health')">🧘 <span>Health</span></li>
-            <li onclick="showSection('stats')">📊 <span>Stats</span></li>
-            <li onclick="showSection('social')">👥 <span>Social</span></li>
-        </ul>
-    </nav>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Win - Dashboard</title>
+
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+    <!-- Your CSS -->
+    <link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
 
     <main class="main-content">
+
+        <!-- ================= HERO ================= -->
         <div class="panel hero-card">
             <div class="hero-content">
+
                 <div class="profile-info">
-                    <div class="avatar-holder">
+                    <div class="avatar-box">
                         <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" class="profile-avatar">
                     </div>
                     <div>
@@ -21,6 +31,8 @@
                         <p>Level: <span id="user-level">Disciplined 🔥</span></p>
                     </div>
                 </div>
+
+                <!-- Mood -->
                 <div class="mood-container">
                     <p>How is your mood?</p>
                     <div class="mood-options">
@@ -30,42 +42,59 @@
                         <button onclick="setMood('🧘')">🧘</button>
                     </div>
                 </div>
+
             </div>
         </div>
 
+        <!-- ================= GRID ================= -->
         <div class="grid-layout">
+
+            <!-- TASK SECTION -->
             <div class="panel quest-section">
                 <h3>Daily Quests</h3>
+
                 <div id="task-list"></div>
+
                 <div class="input-group">
                     <input type="text" id="task-input" placeholder="e.g. Drink Water">
                     <button id="add-task-btn">+</button>
                 </div>
-                <button id="complete-day" class="btn-glow">Complete Day</button>
             </div>
 
+            <!-- SIDE COLUMN -->
             <div class="side-column">
+
+                <!-- STREAK -->
                 <div class="panel stat-card">
-                    <span class="stat-label">🔥 Current Streak</span>
-                    <h1 class="streak-val" id="streak-counter">0</h1>
-                    <p>Days of Consistency</p>
+                    <h3>🔥 Streak</h3>
+                    <h1 class="streak-val">0</h1>
+                    <p>Days Consistent</p>
+
+                    <!-- XP BAR -->
+                    <div class="xp-bar">
+                        <div class="xp-fill"></div>
+                    </div>
                 </div>
 
+                <!-- WELLNESS -->
                 <div class="panel wellness-card">
-                    <h3>Wellness Hub</h3>
+                    <h3>Wellness</h3>
+
                     <div id="yoga-box" class="hidden">
                         <div class="yoga-circle"></div>
-                        <p>Focus on Breath</p>
                     </div>
-                    <div id="pcos-off-msg">
-                        <p>Wellness Mode is Off</p>
-                        <label class="switch">
-                            <input type="checkbox" id="pcos-mode">
-                            <span class="slider"></span>
-                        </label>
-                    </div>
+
+                    <p id="pcos-off-msg">Enable Wellness in Settings</p>
                 </div>
+
             </div>
         </div>
+
     </main>
-</div>
+
+    <!-- ================= JS ================= -->
+    <script src="script.js"></script>
+
+</body>
+
+</html>

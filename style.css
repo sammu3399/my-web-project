@@ -1,268 +1,416 @@
+/* ======================
+   ROOT THEME VARIABLES
+====================== */
 :root {
-    --bg: #09090b;
-    --panel: rgba(255, 255, 255, 0.05);
-    --purple: #a855f7;
-    --blue: #3b82f6;
-    --green: #22c55e;
-    --orange: #f59e0b;
-    --pink: #ff69b4;
-    --text: #fafafa;
+    --bg-main: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+    --card-glass: rgba(255, 255, 255, 0.06);
+    --border-glass: rgba(255, 255, 255, 0.1);
+    --text-main: #ffffff;
+    --text-muted: rgba(255, 255, 255, 0.7);
+
+    --accent: #7c5cff;
+    --accent-glow: #9b7bff;
+
+    --success: #00ffcc;
+    --warning: #ffb347;
 }
 
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-    font-family: 'Inter', sans-serif;
-}
-
+/* ======================
+   GLOBAL
+====================== */
 body {
-    background: var(--bg);
-    color: var(--text);
-    display: flex;
-    min-height: 100vh;
-    overflow-x: hidden;
+    background: var(--bg-main);
+    color: var(--text-main);
+    transition: 0.4s ease;
 }
 
-/* THE PREMIUM DASHBOARD LOOK */
-.main-content {
-    flex: 1;
-    padding: 2rem;
-    max-width: 1200px;
-    margin: 0 auto;
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
+/* ======================
+   DYNAMIC MOOD BACKGROUNDS
+====================== */
+body[data-mood="😊"] {
+    --bg-main: linear-gradient(135deg, #1d976c, #93f9b9);
 }
 
+body[data-mood="🔥"] {
+    --bg-main: linear-gradient(135deg, #ff416c, #ff4b2b);
+}
+
+body[data-mood="😴"] {
+    --bg-main: linear-gradient(135deg, #141e30, #243b55);
+}
+
+body[data-mood="🧘"] {
+    --bg-main: linear-gradient(135deg, #4facfe, #00f2fe);
+}
+
+/* ======================
+   GLASS PANEL PREMIUM
+====================== */
 .panel {
-    background: var(--panel);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    padding: 1.5rem;
-    border-radius: 1.5rem;
-    backdrop-filter: blur(10px);
-}
-
-.hero-card {
-    background: linear-gradient(135deg, var(--purple), #4c1d95);
-    transition: 0.5s;
-}
-
-.hero-content {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.profile-info {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-}
-
-.profile-avatar {
-    width: 65px;
-    height: 65px;
-    border-radius: 50%;
-    border: 3px solid white;
-}
-
-/* GRID SYSTEM */
-.grid-layout {
-    display: grid;
-    grid-template-columns: 1.5fr 1fr;
-    gap: 1.5rem;
-}
-
-/* TASK GLOW EFFECTS */
-.task-item {
-    padding: 1rem;
-    background: rgba(0, 0, 0, 0.3);
-    border-radius: 12px;
-    margin-bottom: 10px;
-    border-left: 4px solid var(--purple);
-    transition: 0.3s;
-}
-
-.task-item.water {
-    border-left-color: var(--blue);
-    box-shadow: 0 0 15px rgba(59, 130, 246, 0.3);
-}
-
-.task-item.steps {
-    border-left-color: var(--green);
-    box-shadow: 0 0 15px rgba(34, 197, 94, 0.3);
-}
-
-/* PINK MODE ACTIVATION */
-body.pcos-active {
-    --purple: var(--pink);
-    background: radial-gradient(circle at top, #2d0b1a, #09090b);
-}
-
-body.pcos-active .hero-card {
-    background: linear-gradient(135deg, var(--pink), #831843);
-}
-
-body.pcos-active .streak-val {
-    color: var(--pink);
-}
-
-.yoga-circle {
-    width: 50px;
-    height: 50px;
-    background: var(--pink);
-    border-radius: 50%;
-    margin: 10px auto;
-    animation: breathe 4s infinite;
-}
-
-@keyframes breathe {
-
-    0%,
-    100% {
-        transform: scale(1);
-        opacity: 0.6;
-    }
-
-    50% {
-        transform: scale(1.3);
-        opacity: 1;
-    }
-}
-
-/* MOBILE RESPONSIVE */
-@media (max-width: 768px) {
-    body {
-        flex-direction: column;
-    }
-
-    .sidebar {
-        position: fixed;
-        bottom: 0;
-        width: 100%;
-        height: 70px;
-        flex-direction: row;
-        z-index: 1000;
-        border-top: 1px solid #333;
-    }
-
-    .grid-layout {
-        grid-template-columns: 1fr;
-    }
-
-    .nav-links span,
-    .brand {
-        display: none;
-    }
-}
-
-/* --- THE PROFESSIONAL HEADER FIX --- */
-
-/* 1. Profile Avatar (Prevents the giant face issue) */
-.profile-avatar {
-    width: 65px !important;
-    height: 65px !important;
-    border-radius: 50%;
-    border: 3px solid rgba(255, 255, 255, 0.3);
-    object-fit: cover;
-    display: block;
-}
-
-/* 2. Hero Card (The Top Banner) */
-.hero-card {
-    background: linear-gradient(135deg, var(--purple), #4c1d95) !important;
-    padding: 1.5rem 2rem !important;
+    background: var(--card-glass);
+    backdrop-filter: blur(20px);
     border-radius: 20px;
-    margin-bottom: 2rem;
+    border: 1px solid var(--border-glass);
+    padding: 20px;
+    box-shadow:
+        0 8px 32px rgba(0, 0, 0, 0.4),
+        inset 0 0 10px rgba(255, 255, 255, 0.05);
+    transition: all 0.3s ease;
 }
 
-.hero-content {
-    display: flex;
-    justify-content: space-between;
-    /* Profile left, Mood right */
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 20px;
+.panel:hover {
+    transform: translateY(-6px) scale(1.01);
+    box-shadow:
+        0 15px 45px rgba(0, 0, 0, 0.6),
+        0 0 20px var(--accent-glow);
 }
 
-/* 3. Mood Buttons (Glow and Hover) */
+/* ======================
+   HERO CARD (GRADIENT GLOW)
+====================== */
+.hero-card {
+    background: linear-gradient(135deg, #6a11cb, #2575fc);
+    box-shadow: 0 0 25px rgba(124, 92, 255, 0.6);
+}
+
+/* ======================
+   AVATAR GLOW
+====================== */
+.avatar-box {
+    border-radius: 50%;
+    overflow: hidden;
+    position: relative;
+}
+
+.avatar-box::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    box-shadow: 0 0 20px var(--accent-glow);
+}
+
+/* ======================
+   MOOD BUTTONS PREMIUM
+====================== */
 .mood-options button {
     background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    font-size: 1.5rem;
+    border: none;
     padding: 10px;
     border-radius: 12px;
     cursor: pointer;
-    transition: 0.3s transform ease;
+    transition: 0.3s;
+    font-size: 16px;
 }
 
 .mood-options button:hover {
-    transform: translateY(-5px) scale(1.1);
-    box-shadow: 0 0 15px var(--purple);
+    transform: scale(1.2);
+    background: white;
+    color: black;
+    box-shadow: 0 0 15px white;
 }
 
-/* 4. Pink Mode Support */
-body.pcos-active .hero-card {
-    background: linear-gradient(135deg, var(--pink), #831843) !important;
+/* ======================
+   TASK INPUT PREMIUM
+====================== */
+.input-group input {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid transparent;
+    transition: 0.3s;
 }
 
-body.pcos-active .mood-options button:hover {
-    box-shadow: 0 0 15px var(--pink);
+.input-group input:focus {
+    border: 1px solid var(--accent);
+    box-shadow: 0 0 10px var(--accent-glow);
 }
 
-/* --- FINAL RECOVERY & LAYOUT FIX --- */
-
-/* 1. Force Avatar to stay small (Fixes Screenshot 105) */
-.profile-avatar {
-    width: 65px !important;
-    height: 65px !important;
-    min-width: 65px !important;
-    border-radius: 50% !important;
-    border: 3px solid rgba(255, 255, 255, 0.3) !important;
-    object-fit: cover !important;
+/* ======================
+   ADD BUTTON (NEON)
+====================== */
+.input-group button {
+    background: linear-gradient(135deg, #7c5cff, #00c6ff);
+    border: none;
+    color: white;
+    font-weight: bold;
+    box-shadow: 0 0 10px var(--accent-glow);
 }
 
-/* 2. Fix the Hero Banner Layout */
-.hero-card {
-    background: linear-gradient(135deg, var(--purple), #4c1d95) !important;
-    padding: 1.5rem 2rem !important;
-    border-radius: 20px !important;
-    margin-bottom: 2rem !important;
+.input-group button:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 20px var(--accent-glow);
 }
 
-.hero-content {
-    display: flex !important;
-    justify-content: space-between !important;
-    align-items: center !important;
-    flex-wrap: wrap !important;
-    gap: 20px !important;
+/* ======================
+   TASK ITEM PREMIUM
+====================== */
+.task-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px;
+    border-radius: 12px;
+    margin-top: 8px;
+    background: rgba(255, 255, 255, 0.04);
+    transition: 0.3s;
 }
 
-/* 3. Ensure the dashboard doesn't stretch forever */
-.main-content {
-    max-width: 1200px !important;
-    margin: 0 auto !important;
-    padding: 20px !important;
+.task-item:hover {
+    background: rgba(255, 255, 255, 0.08);
+    transform: translateX(5px);
 }
 
-/* FORCE AVATAR SIZE - DO NOT REMOVE */
-img.profile-avatar {
-    width: 65px !important;
-    height: 65px !important;
-    max-width: 65px !important;
-    max-height: 65px !important;
-    min-width: 65px !important;
-    min-height: 65px !important;
-    border-radius: 50% !important;
-    object-fit: cover !important;
-    display: inline-block !important;
+.task-item span.done {
+    text-decoration: line-through;
+    color: var(--text-muted);
 }
 
-/* Fix the container to prevent the image from pushing the layout */
-.profile-info {
-    display: flex !important;
-    align-items: center !important;
-    gap: 15px !important;
-    max-height: 80px !important;
+/* ======================
+   STREAK CARD (GLOW EFFECT)
+====================== */
+.stat-card {
+    text-align: center;
+    position: relative;
+}
+
+/* 🔥 PREMIUM STREAK FIRE */
+.streak-val {
+    font-size: 48px;
+    font-weight: bold;
+    color: #ffb347;
+    text-shadow: 0 0 10px #ffb347, 0 0 20px #ff6a00;
+    animation: firePulse 1.5s infinite;
+}
+
+@keyframes firePulse {
+    0% {
+        text-shadow: 0 0 10px #ffb347;
+    }
+
+    50% {
+        text-shadow: 0 0 25px #ff6a00;
+    }
+
+    100% {
+        text-shadow: 0 0 10px #ffb347;
+    }
+}
+
+/* ======================
+   XP PROGRESS BAR
+====================== */
+.xp-bar {
+    height: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    margin-top: 10px;
+    overflow: hidden;
+}
+
+.
+
+/* ======================
+   XP GLOW ANIMATION
+====================== */
+.xp-fill {
+    height: 100%;
+    width: 60%;
+    background: linear-gradient(90deg, #00f2fe, #4facfe);
+    box-shadow: 0 0 15px #00f2fe;
+    animation: xpGlow 2s infinite alternate;
+}
+
+@keyframes xpGlow {
+    from {
+        box-shadow: 0 0 10px #00f2fe;
+    }
+
+    to {
+        box-shadow: 0 0 25px #4facfe;
+    }
+}
+
+/* ======================
+   WELLNESS ANIMATION
+====================== */
+.yoga-circle {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #00f2fe, #4facfe);
+    animation: glowPulse 2s infinite;
+    margin: auto;
+}
+
+@keyframes glowPulse {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 0 10px #00f2fe;
+    }
+
+    50% {
+        transform: scale(1.15);
+        box-shadow: 0 0 30px #4facfe;
+    }
+
+    100% {
+        transform: scale(1);
+        box-shadow: 0 0 10px #00f2fe;
+    }
+}
+
+/* ======================
+   TEXT
+====================== */
+h2,
+h3 {
+    font-weight: 600;
+}
+
+p {
+    color: var(--text-muted);
+}
+
+/* ======================
+   SMOOTH TRANSITIONS
+====================== */
+* {
+    transition: all 0.2s ease-in-out;
+}
+
+.toast {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: #7c5cff;
+    color: white;
+    padding: 12px 18px;
+    border-radius: 10px;
+    box-shadow: 0 0 15px rgba(124, 92, 255, 0.8);
+    animation: fadeInOut 2s ease;
+}
+
+@keyframes fadeInOut {
+    0% {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    20% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    80% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0;
+    }
+}
+
+/* ======================
+   TOAST NOTIFICATION
+====================== */
+.toast {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: #7c5cff;
+    color: white;
+    padding: 12px 18px;
+    border-radius: 10px;
+    box-shadow: 0 0 15px rgba(124, 92, 255, 0.8);
+    animation: fadeInOut 2s ease;
+    z-index: 9999;
+}
+
+@keyframes fadeInOut {
+    0% {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    20% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    80% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0;
+    }
+}
+
+/* ======================
+   CONFETTI
+====================== */
+.confetti {
+    position: fixed;
+    width: 8px;
+    height: 8px;
+    background: red;
+    top: 0;
+    left: 50%;
+    opacity: 0.8;
+    animation: fall 2s linear forwards;
+    z-index: 9999;
+}
+
+@keyframes fall {
+    to {
+        transform: translateY(100vh) rotate(720deg);
+        opacity: 0;
+    }
+}
+
+/* ======================
+   BUTTON RIPPLE EFFECT
+====================== */
+button {
+    position: relative;
+    overflow: hidden;
+}
+
+button::after {
+    content: "";
+    position: absolute;
+    width: 0;
+    height: 0;
+    background: rgba(255, 255, 255, 0.5);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+}
+
+button:active::after {
+    width: 200px;
+    height: 200px;
+    transition: 0.4s;
+}
+
+/* ======================
+   TASK COMPLETE ANIMATION
+====================== */
+.task-item span.done {
+    text-decoration: line-through;
+    opacity: 0.6;
+    animation: popDone 0.3s ease;
+}
+
+@keyframes popDone {
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.2);
+        color: #00ffcc;
+    }
+
+    100% {
+        transform: scale(1);
+    }
 }
