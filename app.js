@@ -75,3 +75,27 @@ document.getElementById('complete-day').addEventListener('click', () => {
         alert("Great job, " + currentUser + "!");
     }
 });
+// --- PINK MODE / WELLNESS TOGGLE LOGIC ---
+const pcosToggle = document.getElementById('pcos-mode');
+const wellnessBox = document.getElementById('yoga-box');
+const wellnessMsg = document.getElementById('pcos-off-msg');
+
+if (pcosToggle) {
+    pcosToggle.addEventListener('change', (e) => {
+        if (e.target.checked) {
+            // Turns the whole app Pink/Dark Red
+            document.body.classList.add('pcos-active');
+            // Shows the Yoga Circle
+            if (wellnessBox) wellnessBox.classList.remove('hidden');
+            // Hides the "Enable Wellness" message
+            if (wellnessMsg) wellnessMsg.style.display = 'none';
+        } else {
+            // Turns the app back to Purple
+            document.body.classList.remove('pcos-active');
+            // Hides the Yoga Circle
+            if (wellnessBox) wellnessBox.classList.add('hidden');
+            // Shows the "Enable Wellness" message again
+            if (wellnessMsg) wellnessMsg.style.display = 'block';
+        }
+    });
+}
