@@ -7,6 +7,7 @@
     <title>My Win | Discipline & Growth</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 
 <body>
@@ -30,7 +31,7 @@
 
         <main class="main-content">
             <header class="profile-section">
-                <div class="avatar-ring">
+                <div class="avatar-ring" id="settings-trigger" style="cursor: pointer;">
                     <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" class="profile-avatar">
                 </div>
                 <div>
@@ -59,12 +60,8 @@
                     </div>
                 </div>
 
-                <div class="panel health-card">
-                    <h3>Pink Mode (PCOS)</h3>
-                    <label class="switch">
-                        <input type="checkbox" id="pcos-toggle">
-                        <span class="slider"></span>
-                    </label>
+                <div class="panel wellness-card">
+                    <h3>Daily Wellness</h3>
                     <div id="yoga-box" class="hidden">
                         <div class="yoga-circle"></div>
                         <p>Focus on Breath</p>
@@ -78,9 +75,23 @@
     <div id="guddu-overlay" class="fullscreen-overlay hidden">
         <div class="celebration-box">
             <span class="huge-emoji">🫂</span>
-            <h2>Proud of you, Guddu!</h2>
-            <p>You conquered today.</p>
+            <h2>Proud of you, Guddu bhai!</h2>
+            <p>You conquered today like a true brother.</p>
             <button onclick="location.reload()">Finish</button>
+        </div>
+    </div>
+
+    <div id="settings-modal" class="fullscreen-overlay hidden">
+        <div class="panel login-card">
+            <h2>Settings & Privacy</h2>
+            <div style="margin-top: 1.5rem; display: flex; justify-content: space-between; align-items: center; border: 1px solid rgba(255,255,255,0.1); padding: 1rem; border-radius: 10px;">
+                <span>Wellness Mode (Pink Mode)</span>
+                <label class="switch">
+                    <input type="checkbox" id="pcos-toggle">
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <button id="close-settings" class="btn-glow" style="margin-top: 1.5rem; background: var(--blue);">Close</button>
         </div>
     </div>
 
