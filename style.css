@@ -156,3 +156,57 @@ body.pcos-active .streak-val {
         display: none;
     }
 }
+
+/* --- THE PROFESSIONAL HEADER FIX --- */
+
+/* 1. Profile Avatar (Prevents the giant face issue) */
+.profile-avatar {
+    width: 65px !important;
+    height: 65px !important;
+    border-radius: 50%;
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    object-fit: cover;
+    display: block;
+}
+
+/* 2. Hero Card (The Top Banner) */
+.hero-card {
+    background: linear-gradient(135deg, var(--purple), #4c1d95) !important;
+    padding: 1.5rem 2rem !important;
+    border-radius: 20px;
+    margin-bottom: 2rem;
+}
+
+.hero-content {
+    display: flex;
+    justify-content: space-between;
+    /* Profile left, Mood right */
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+/* 3. Mood Buttons (Glow and Hover) */
+.mood-options button {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    font-size: 1.5rem;
+    padding: 10px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: 0.3s transform ease;
+}
+
+.mood-options button:hover {
+    transform: translateY(-5px) scale(1.1);
+    box-shadow: 0 0 15px var(--purple);
+}
+
+/* 4. Pink Mode Support */
+body.pcos-active .hero-card {
+    background: linear-gradient(135deg, var(--pink), #831843) !important;
+}
+
+body.pcos-active .mood-options button:hover {
+    box-shadow: 0 0 15px var(--pink);
+}
