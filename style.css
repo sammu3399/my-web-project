@@ -225,7 +225,16 @@ body[data-mood="🧘"] {
     overflow: hidden;
 }
 
-.
+.xp-fill {
+    height: 100%;
+    width: 0%;
+    /* new user */
+    background: linear-gradient(90deg, #00f2fe, #4facfe);
+    box-shadow: 0 0 15px #00f2fe;
+    animation: xpGlow 2s infinite alternate;
+    transition: width 1s ease-in-out;
+    /* smooth fill */
+}
 
 /* ======================
    XP GLOW ANIMATION
@@ -393,6 +402,7 @@ button {
     position: relative;
     overflow: hidden;
 }
+
 
 button::after {
     content: "";

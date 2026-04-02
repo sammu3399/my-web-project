@@ -5,7 +5,7 @@ let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
 let streak = parseInt(localStorage.getItem("streak")) || 0;
 let mood = localStorage.getItem("mood") || "";
 let xp = parseInt(localStorage.getItem("xp")) || 0;
-
+let level = parseInt(localStorage.getItem("level")) || 1; // ✅ add this
 // ======================
 // ELEMENTS
 // ======================
@@ -25,6 +25,7 @@ function init() {
     updateStreakUI();
     updateXPUI();
     applyMood();
+    dailyReset();
 }
 init();
 
@@ -44,7 +45,7 @@ function addTask() {
     };
 
     tasks.push(task);
-    saveTasks();
+    saveAll();
     renderTasks();
     taskInput.value = "";
 }
@@ -71,25 +72,21 @@ function renderTasks() {
 function toggleTask(id) {
     tasks = tasks.map(task => {
         if (task.id === id && !task.completed) {
-            xp += 10; // 🎮 XP gain
+            addXP(10); // XP per task
         }
-        return task.id === id
-            ? { ...task, completed: !task.completed }
-            : task;
+        return task.id === id ? { ...task, completed: !task.completed } : task;
     });
 
     checkAllCompleted();
     saveAll();
     renderTasks();
-    updateXPUI();
 }
 
 function deleteTask(id) {
     tasks = tasks.filter(task => task.id !== id);
-    saveTasks();
+    saveAll();
     renderTasks();
 }
-
 // ======================
 // STREAK SYSTEM
 // ======================
@@ -100,12 +97,12 @@ function checkAllCompleted() {
 
     if (allDone) {
         streak++;
-        xp += 50; // bonus XP 🔥
-
+        addXP(50); // bonus XP
         showToast("🔥 Streak Increased!");
         launchConfetti();
+
         tasks = [];
-        saveTasks();
+        saveAll();
     }
 
     updateStreakUI();
@@ -118,14 +115,27 @@ function updateStreakUI() {
 // ======================
 // XP SYSTEM
 // ======================
+const maxXp = 100;
+
 function updateXPUI() {
-    let level = Math.floor(xp / 100);
-    let progress = xp % 100;
+    let percent = (xp / maxXp) * 100;
+    xpFill.style.width = percent + "%";
+    document.querySelector(".xp-text").innerText = xp + " / " + maxXp + " XP";
+    document.getElementById("user-level").textContent = "Level " + level + " 🔥";
+}
 
-    xpFill.style.width = progress + "%";
+function addXP(amount) {
+    xp += amount;
 
-    document.getElementById("user-level").textContent =
-        "Level " + level + " 🔥";
+    while (xp >= maxXp) {
+        xp -= maxXp;
+        level++;
+        showToast("🎉 Level Up!");
+        launchConfetti();
+    }
+
+    saveAll();
+    updateXPUI();
 }
 
 // ======================
@@ -162,6 +172,7 @@ function saveAll() {
     localStorage.setItem("tasks", JSON.stringify(tasks));
     localStorage.setItem("streak", streak);
     localStorage.setItem("xp", xp);
+    localStorage.setItem("level", level); // ✅ important
 }
 
 // ======================
@@ -207,11 +218,52 @@ function dailyReset() {
 }
 dailyReset();
 // toast function
-function showToast(msg) { ... }
-
-// confetti function
-function launchConfetti() { ... }
 
 // somewhere in streak logic
 showToast("🔥 Streak Increased!");
 launchConfetti();
+
+// ================= XP SYSTEM =================
+// UPDATE UI
+function updateXPUI() {
+    let percent = (xp / maxXp) * 100;
+
+    xpFill.style.width = percent + "%";
+
+    document.querySelector(".xp-text").innerText =
+        xp + " / " + maxXp + " XP";
+
+    document.getElementById("user-level").textContent =
+        "Level " + level + " 🔥";
+}
+
+// ================= XP SYSTEM =================
+const maxXp = 100;
+
+// UPDATE XP BAR AND LEVEL DISPLAY
+function updateXPUI() {
+    let percent = (xp / maxXp) * 100;
+    xpFill.style.width = percent + "%";
+    document.querySelector(".xp-text").innerText = xp + " / " + maxXp + " XP";
+    document.getElementById("user-level").textContent = "Level " + level + " 🔥";
+}
+
+// ADD XP AND HANDLE LEVEL UP
+function addXP(amount) {
+    xp += amount;
+
+    // Handle level-ups if XP exceeds maxXp
+    while (xp >= maxXp) {
+        xp -= maxXp;
+        level++;
+        showToast("🎉 Level Up!");
+        launchConfetti();
+    }
+
+    // Save to localStorage and update UI
+    saveAll();
+    updateXPUI();
+}
+
+// INITIALIZE XP BAR ON PAGE LOAD
+updateXPUI();
