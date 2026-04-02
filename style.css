@@ -245,3 +245,24 @@ body.pcos-active .mood-options button:hover {
     margin: 0 auto !important;
     padding: 20px !important;
 }
+
+/* FORCE AVATAR SIZE - DO NOT REMOVE */
+img.profile-avatar {
+    width: 65px !important;
+    height: 65px !important;
+    max-width: 65px !important;
+    max-height: 65px !important;
+    min-width: 65px !important;
+    min-height: 65px !important;
+    border-radius: 50% !important;
+    object-fit: cover !important;
+    display: inline-block !important;
+}
+
+/* Fix the container to prevent the image from pushing the layout */
+.profile-info {
+    display: flex !important;
+    align-items: center !important;
+    gap: 15px !important;
+    max-height: 80px !important;
+}
