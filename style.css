@@ -76,18 +76,38 @@ body[data-mood="🧘"] {
 /* ======================
    AVATAR GLOW
 ====================== */
+/* ======================
+   AVATAR BOX (FIXED + PREMIUM)
+====================== */
 .avatar-box {
+    width: 60px;
+    /* 🔥 IMPORTANT */
+    height: 60px;
+    /* 🔥 IMPORTANT */
     border-radius: 50%;
     overflow: hidden;
     position: relative;
+    flex-shrink: 0;
+    box-shadow: 0 0 15px #7c5cff;
 }
 
+/* IMAGE INSIDE */
+.profile-avatar {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    /* 🔥 FIXES BIG IMAGE ISSUE */
+    display: block;
+}
+
+/* GLOW EFFECT */
 .avatar-box::after {
     content: "";
     position: absolute;
     inset: 0;
     border-radius: 50%;
-    box-shadow: 0 0 20px var(--accent-glow);
+    box-shadow: 0 0 15px var(--accent-glow);
+    pointer-events: none;
 }
 
 /* ======================
