@@ -208,3 +208,47 @@ body {
     font-size: 1.5rem;
     cursor: pointer;
 }
+
+/* --- THE MASTER MIXED LAYOUT --- */
+
+/* This fixes the top banner with Profile + Mood */
+.hero-top-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.profile-card-hero {
+    background: linear-gradient(135deg, var(--purple), #4c1d95) !important;
+    padding: 2.5rem;
+    border-radius: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+/* This makes the Streak look like the pro version */
+.streak-val {
+    font-size: 3.5rem;
+    color: var(--purple);
+    margin: 10px 0;
+}
+
+/* This puts Quests and Stats side-by-side on Laptop */
+@media (min-width: 769px) {
+    .grid-layout {
+        display: grid;
+        grid-template-columns: 1.5fr 1fr;
+        gap: 1.5rem;
+        align-items: start;
+    }
+}
+
+/* Pink Mode Overrides */
+body.pcos-active .profile-card-hero {
+    background: linear-gradient(135deg, var(--pink), #831843) !important;
+}
+
+body.pcos-active .streak-val {
+    color: var(--pink);
+}

@@ -30,27 +30,30 @@
         </nav>
 
         <main class="main-content">
-            <header class="profile-section">
-                <div class="avatar-ring" id="settings-trigger" style="cursor: pointer;">
-                    <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" class="profile-avatar">
-                </div>
-                <div>
-                    <h2 id="display-name">User</h2>
-                    <p>Level: Disciplined 🔥</p>
-                </div>
-            </header>
+            <div class="panel profile-card-hero">
+                <div class="hero-top-row">
+                    <div class="profile-info">
+                        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" class="profile-avatar">
+                        <div>
+                            <h2 id="display-name">Guest User</h2>
+                            <p>Level: Disciplined 🔥</p>
+                        </div>
+                    </div>
 
-            <section class="mood-selector panel">
-                <h3>How is your mood?</h3>
-                <div class="mood-options">
-                    <button onclick="setMood('😊')">😊</button>
-                    <button onclick="setMood('🔥')">🔥</button>
-                    <button onclick="setMood('😴')">😴</button>
-                    <button onclick="setMood('🧘')">🧘</button>
+                    <div class="mood-container">
+                        <h3>How is your mood?</h3>
+                        <div class="mood-options">
+                            <button onclick="setMood('😊')">😊</button>
+                            <button onclick="setMood('🔥')">🔥</button>
+                            <button onclick="setMood('😴')">😴</button>
+                            <button onclick="setMood('🧘')">🧘</button>
+                        </div>
+                    </div>
                 </div>
-            </section>
+            </div>
 
             <div class="grid-layout">
+
                 <div class="panel">
                     <h3>Daily Quests</h3>
                     <div id="task-list"></div>
@@ -60,42 +63,52 @@
                     </div>
                 </div>
 
-                <div class="panel wellness-card">
-                    <h3>Daily Wellness</h3>
-                    <div id="yoga-box" class="hidden">
-                        <div class="yoga-circle"></div>
-                        <p>Focus on Breath</p>
+                <div class="side-column">
+                    <div class="panel stat-card">
+                        <h3>🔥 Streak</h3>
+                        <h1 class="streak-val">0</h1>
+                        <p>Keep pushing!</p>
+                    </div>
+
+                    <div class="panel wellness-card">
+                        <h3>Daily Wellness</h3>
+                        <div id="yoga-box" class="hidden">
+                            <div class="yoga-circle"></div>
+                            <p>Focus on Breath</p>
+                        </div>
+                        <p id="pcos-off-msg">Enable Wellness in Settings</p>
                     </div>
                 </div>
             </div>
+
             <button id="complete-day" class="btn-glow">Complete Day</button>
         </main>
-    </div>
-
-    <div id="guddu-overlay" class="fullscreen-overlay hidden">
-        <div class="celebration-box">
-            <span class="huge-emoji">🫂</span>
-            <h2>Proud of you, Guddu bhai!</h2>
-            <p>You conquered today like a true brother.</p>
-            <button onclick="location.reload()">Finish</button>
-        </div>
-    </div>
-
-    <div id="settings-modal" class="fullscreen-overlay hidden">
-        <div class="panel login-card">
-            <h2>Settings & Privacy</h2>
-            <div style="margin-top: 1.5rem; display: flex; justify-content: space-between; align-items: center; border: 1px solid rgba(255,255,255,0.1); padding: 1rem; border-radius: 10px;">
-                <span>Wellness Mode (Pink Mode)</span>
-                <label class="switch">
-                    <input type="checkbox" id="pcos-toggle">
-                    <span class="slider"></span>
-                </label>
+        <div id="guddu-overlay" class="fullscreen-overlay hidden">
+            <div class="celebration-box">
+                <span class="huge-emoji">🫂</span>
+                <h2>Proud of you, Guddu bhai!</h2>
+                <p>You conquered today like a true brother.</p>
+                <button onclick="location.reload()">Finish</button>
             </div>
-            <button id="close-settings" class="btn-glow" style="margin-top: 1.5rem; background: var(--blue);">Close</button>
         </div>
-    </div>
 
-    <script src="app.js"></script>
+        <div id="settings-modal" class="fullscreen-overlay hidden">
+            <div class="panel login-card">
+                <h2>Settings & Privacy</h2>
+                <div
+                    style="margin-top: 1.5rem; display: flex; justify-content: space-between; align-items: center; border: 1px solid rgba(255,255,255,0.1); padding: 1rem; border-radius: 10px;">
+                    <span>Wellness Mode (Pink Mode)</span>
+                    <label class="switch">
+                        <input type="checkbox" id="pcos-toggle">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <button id="close-settings" class="btn-glow"
+                    style="margin-top: 1.5rem; background: var(--blue);">Close</button>
+            </div>
+        </div>
+
+        <script src="app.js"></script>
 </body>
 
 </html>
