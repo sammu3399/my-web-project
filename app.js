@@ -668,3 +668,30 @@ if (pcosToggle && pcosRecs) {
         }
     });
 }
+// --- PCOS/PCOD Toggle Logic ---
+const pcosToggle = document.getElementById('pcos-toggle');
+const pcosRecs = document.getElementById('pcos-recommendations');
+
+if (pcosToggle && pcosRecs) {
+    pcosToggle.addEventListener('change', function () {
+        if (this.checked) {
+            pcosRecs.classList.remove('hidden');
+            pcosRecs.scrollIntoView({ behavior: 'smooth' });
+        } else {
+            pcosRecs.classList.add('hidden');
+        }
+    });
+}
+
+// --- Celebration Overlay Function ---
+function showGudduCelebration(message = "Awesome job today!") {
+    const overlay = document.getElementById('guddu-celebration');
+    const msgTag = document.getElementById('guddu-message');
+    if (overlay && msgTag) {
+        msgTag.innerText = message;
+        overlay.classList.remove('hidden');
+        setTimeout(() => {
+            overlay.classList.add('hidden');
+        }, 3000);
+    }
+}
