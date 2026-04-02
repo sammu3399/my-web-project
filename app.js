@@ -115,7 +115,7 @@ function updateStreakUI() {
 // ======================
 // XP SYSTEM
 // ======================
-const maxXp = 100;
+maxXp = 150; // no const/let here
 
 function updateXPUI() {
     let percent = (xp / maxXp) * 100;
@@ -147,11 +147,9 @@ function setMood(m) {
     applyMood();
 }
 
-function applyMood() {
-    if (!mood) return;
-    document.body.setAttribute("data-mood", mood);
-}
-
+function applyMood()
+if (!mood) return;
+document.body.setAttribute("data-mood", "😊");
 // ======================
 // WELLNESS TOGGLE
 // ======================
@@ -261,9 +259,7 @@ function addXP(amount) {
     }
 
     // Save to localStorage and update UI
+    // Save and refresh UI
     saveAll();
     updateXPUI();
 }
-
-// INITIALIZE XP BAR ON PAGE LOAD
-updateXPUI();

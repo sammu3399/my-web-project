@@ -1,6 +1,6 @@
 /* ======================
    ROOT THEME VARIABLES
-====================== */
+===================== */
 :root {
     --bg-main: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
     --card-glass: rgba(255, 255, 255, 0.06);
@@ -17,7 +17,7 @@
 
 /* ======================
    GLOBAL
-====================== */
+===================== */
 body {
     background: var(--bg-main);
     color: var(--text-main);
@@ -26,7 +26,7 @@ body {
 
 /* ======================
    DYNAMIC MOOD BACKGROUNDS
-====================== */
+===================== */
 body[data-mood="😊"] {
     --bg-main: linear-gradient(135deg, #1d976c, #93f9b9);
 }
@@ -45,7 +45,7 @@ body[data-mood="🧘"] {
 
 /* ======================
    GLASS PANEL PREMIUM
-====================== */
+===================== */
 .panel {
     background: var(--card-glass);
     backdrop-filter: blur(20px);
@@ -67,40 +67,25 @@ body[data-mood="🧘"] {
 
 /* ======================
    HERO CARD (GRADIENT GLOW)
-====================== */
+===================== */
 .hero-card {
     background: linear-gradient(135deg, #6a11cb, #2575fc);
     box-shadow: 0 0 25px rgba(124, 92, 255, 0.6);
 }
 
 /* ======================
-   AVATAR GLOW
-====================== */
-/* ======================
-   AVATAR BOX (FIXED + PREMIUM)
-====================== */
+   AVATAR BOX WITH GLOW
+===================== */
 .avatar-box {
     width: 60px;
-    /* 🔥 IMPORTANT */
     height: 60px;
-    /* 🔥 IMPORTANT */
     border-radius: 50%;
     overflow: hidden;
     position: relative;
     flex-shrink: 0;
-    box-shadow: 0 0 15px #7c5cff;
+    box-shadow: 0 0 15px var(--accent);
 }
 
-/* IMAGE INSIDE */
-.profile-avatar {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    /* 🔥 FIXES BIG IMAGE ISSUE */
-    display: block;
-}
-
-/* GLOW EFFECT */
 .avatar-box::after {
     content: "";
     position: absolute;
@@ -108,11 +93,33 @@ body[data-mood="🧘"] {
     border-radius: 50%;
     box-shadow: 0 0 15px var(--accent-glow);
     pointer-events: none;
+    animation: avatarGlow 2s infinite alternate;
+}
+
+.profile-avatar {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+@keyframes avatarGlow {
+    0% {
+        box-shadow: 0 0 10px var(--accent-glow);
+    }
+
+    50% {
+        box-shadow: 0 0 25px var(--accent-glow);
+    }
+
+    100% {
+        box-shadow: 0 0 10px var(--accent-glow);
+    }
 }
 
 /* ======================
    MOOD BUTTONS PREMIUM
-====================== */
+===================== */
 .mood-options button {
     background: rgba(255, 255, 255, 0.1);
     border: none;
@@ -132,7 +139,7 @@ body[data-mood="🧘"] {
 
 /* ======================
    TASK INPUT PREMIUM
-====================== */
+===================== */
 .input-group input {
     background: rgba(255, 255, 255, 0.08);
     border: 1px solid transparent;
@@ -146,7 +153,7 @@ body[data-mood="🧘"] {
 
 /* ======================
    ADD BUTTON (NEON)
-====================== */
+===================== */
 .input-group button {
     background: linear-gradient(135deg, #7c5cff, #00c6ff);
     border: none;
@@ -162,7 +169,7 @@ body[data-mood="🧘"] {
 
 /* ======================
    TASK ITEM PREMIUM
-====================== */
+===================== */
 .task-item {
     display: flex;
     justify-content: space-between;
@@ -180,18 +187,34 @@ body[data-mood="🧘"] {
 
 .task-item span.done {
     text-decoration: line-through;
+    opacity: 0.6;
     color: var(--text-muted);
+    animation: popDone 0.3s ease;
+}
+
+@keyframes popDone {
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.2);
+        color: #00ffcc;
+    }
+
+    100% {
+        transform: scale(1);
+    }
 }
 
 /* ======================
    STREAK CARD (GLOW EFFECT)
-====================== */
+===================== */
 .stat-card {
     text-align: center;
     position: relative;
 }
 
-/* 🔥 PREMIUM STREAK FIRE */
 .streak-val {
     font-size: 48px;
     font-weight: bold;
@@ -216,7 +239,7 @@ body[data-mood="🧘"] {
 
 /* ======================
    XP PROGRESS BAR
-====================== */
+===================== */
 .xp-bar {
     height: 8px;
     background: rgba(255, 255, 255, 0.1);
@@ -227,24 +250,11 @@ body[data-mood="🧘"] {
 
 .xp-fill {
     height: 100%;
-    width: 0%;
-    /* new user */
-    background: linear-gradient(90deg, #00f2fe, #4facfe);
-    box-shadow: 0 0 15px #00f2fe;
-    animation: xpGlow 2s infinite alternate;
-    transition: width 1s ease-in-out;
-    /* smooth fill */
-}
-
-/* ======================
-   XP GLOW ANIMATION
-====================== */
-.xp-fill {
-    height: 100%;
     width: 60%;
     background: linear-gradient(90deg, #00f2fe, #4facfe);
     box-shadow: 0 0 15px #00f2fe;
     animation: xpGlow 2s infinite alternate;
+    transition: width 1s ease-in-out;
 }
 
 @keyframes xpGlow {
@@ -259,7 +269,7 @@ body[data-mood="🧘"] {
 
 /* ======================
    WELLNESS ANIMATION
-====================== */
+===================== */
 .yoga-circle {
     width: 90px;
     height: 90px;
@@ -288,7 +298,7 @@ body[data-mood="🧘"] {
 
 /* ======================
    TEXT
-====================== */
+===================== */
 h2,
 h3 {
     font-weight: 600;
@@ -300,46 +310,14 @@ p {
 
 /* ======================
    SMOOTH TRANSITIONS
-====================== */
+===================== */
 * {
     transition: all 0.2s ease-in-out;
 }
 
-.toast {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    background: #7c5cff;
-    color: white;
-    padding: 12px 18px;
-    border-radius: 10px;
-    box-shadow: 0 0 15px rgba(124, 92, 255, 0.8);
-    animation: fadeInOut 2s ease;
-}
-
-@keyframes fadeInOut {
-    0% {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-
-    20% {
-        opacity: 1;
-        transform: translateY(0);
-    }
-
-    80% {
-        opacity: 1;
-    }
-
-    100% {
-        opacity: 0;
-    }
-}
-
 /* ======================
    TOAST NOTIFICATION
-====================== */
+===================== */
 .toast {
     position: fixed;
     bottom: 20px;
@@ -375,7 +353,7 @@ p {
 
 /* ======================
    CONFETTI
-====================== */
+===================== */
 .confetti {
     position: fixed;
     width: 8px;
@@ -397,12 +375,11 @@ p {
 
 /* ======================
    BUTTON RIPPLE EFFECT
-====================== */
+===================== */
 button {
     position: relative;
     overflow: hidden;
 }
-
 
 button::after {
     content: "";
@@ -419,28 +396,4 @@ button:active::after {
     width: 200px;
     height: 200px;
     transition: 0.4s;
-}
-
-/* ======================
-   TASK COMPLETE ANIMATION
-====================== */
-.task-item span.done {
-    text-decoration: line-through;
-    opacity: 0.6;
-    animation: popDone 0.3s ease;
-}
-
-@keyframes popDone {
-    0% {
-        transform: scale(1);
-    }
-
-    50% {
-        transform: scale(1.2);
-        color: #00ffcc;
-    }
-
-    100% {
-        transform: scale(1);
-    }
 }
