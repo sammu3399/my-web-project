@@ -177,3 +177,34 @@ body {
         margin-bottom: 100px;
     }
 }
+
+/* --- INPUT AREA POLISH --- */
+.input-group {
+    display: flex;
+    gap: 10px;
+    margin-top: 1.5rem;
+}
+
+#task-input {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 0.8rem;
+    border-radius: 8px;
+    color: white;
+    outline: none;
+}
+
+#task-input:focus {
+    border-color: var(--purple);
+}
+
+#add-task-btn {
+    background: var(--purple);
+    color: white;
+    border: none;
+    padding: 0 1.2rem;
+    border-radius: 8px;
+    font-size: 1.5rem;
+    cursor: pointer;
+}
