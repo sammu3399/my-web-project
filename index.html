@@ -3,68 +3,86 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Win - Productivity</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>My Win | Discipline & Growth</title>
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 </head>
 
 <body>
-
-    <nav class="sidebar">
-        <div class="brand">
-            <h2>🏆 My Win</h2>
+    <div id="login-screen" class="fullscreen-overlay">
+        <div class="panel login-card">
+            <h1>🏆 My Win</h1>
+            <input type="text" id="username-input" placeholder="Enter Name...">
+            <button id="login-btn" class="btn-glow">Start Winning</button>
         </div>
-        <ul class="nav-links">
-            <li class="active"><a href="#">🏠 Dashboard</a></li>
-            <li><a href="#">🧘 Health</a></li>
-            <li><a href="#">👥 Social</a></li>
-        </ul>
-    </nav>
+    </div>
 
-    <main class="main-content">
+    <div id="main-app" class="app-container hidden">
+        <nav class="sidebar">
+            <div class="brand">🏆 My Win</div>
+            <ul class="nav-links">
+                <li class="active">🏠 <span>Dash</span></li>
+                <li>🧘 <span>Health</span></li>
+                <li>📊 <span>Stats</span></li>
+            </ul>
+        </nav>
 
-        <header class="profile-section">
-            <img src="your-avatar-url.jpg" id="user-avatar" class="profile-avatar" alt="Profile">
-            <div>
-                <h1 class="username">Guest User</h1>
-                <p style="color: var(--text-dim);">Grinding everyday 🚀</p>
-            </div>
-        </header>
-
-        <div class="grid-layout">
-
-            <div class="tasks-module panel">
-                <h3>Daily Quests</h3>
-                <div id="task-list" class="task-list">
+        <main class="main-content">
+            <header class="profile-section">
+                <div class="avatar-ring">
+                    <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" class="profile-avatar">
                 </div>
-                <div class="add-task-row">
-                    <input type="text" id="task-input" placeholder="Add a task...">
-                    <button id="add-task-btn">Add</button>
+                <div>
+                    <h2 id="display-name">User</h2>
+                    <p>Level: Disciplined 🔥</p>
                 </div>
-            </div>
+            </header>
 
-            <div class="stats-module">
+            <section class="mood-selector panel">
+                <h3>How is your mood?</h3>
+                <div class="mood-options">
+                    <button onclick="setMood('😊')">😊</button>
+                    <button onclick="setMood('🔥')">🔥</button>
+                    <button onclick="setMood('😴')">😴</button>
+                    <button onclick="setMood('🧘')">🧘</button>
+                </div>
+            </section>
+
+            <div class="grid-layout">
                 <div class="panel">
-                    <h3>PCOD/PCOS Mode</h3>
+                    <h3>Daily Quests</h3>
+                    <div id="task-list"></div>
+                    <div class="input-group">
+                        <input type="text" id="task-input" placeholder="e.g. Drink Water">
+                        <button id="add-task-btn">+</button>
+                    </div>
+                </div>
+
+                <div class="panel health-card">
+                    <h3>Pink Mode (PCOS)</h3>
                     <label class="switch">
                         <input type="checkbox" id="pcos-toggle">
                         <span class="slider"></span>
                     </label>
-                    <div id="yoga-container" class="hidden">
+                    <div id="yoga-box" class="hidden">
                         <div class="yoga-circle"></div>
-                        <p style="text-align:center; font-size: 0.8rem; margin-top:10px;">Deep Breathing Active</p>
+                        <p>Focus on Breath</p>
                     </div>
                 </div>
-
-                <div class="panel">
-                    <h3>🔥 Streak</h3>
-                    <p id="streak-count">0 Days</p>
-                </div>
             </div>
+            <button id="complete-day" class="btn-glow">Complete Day</button>
+        </main>
+    </div>
 
+    <div id="guddu-overlay" class="fullscreen-overlay hidden">
+        <div class="celebration-box">
+            <span class="huge-emoji">🫂</span>
+            <h2>Proud of you, Guddu!</h2>
+            <p>You conquered today.</p>
+            <button onclick="location.reload()">Finish</button>
         </div>
-    </main>
+    </div>
 
     <script src="app.js"></script>
 </body>

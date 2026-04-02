@@ -1,45 +1,54 @@
-// --- 1. SELECTING THE ELEMENTS ---
-const pcosToggle = document.getElementById('pcos-toggle');
-const yogaContainer = document.getElementById('yoga-container');
-const taskInput = document.getElementById('task-input');
-const addTaskBtn = document.getElementById('add-task-btn');
-const taskList = document.getElementById('task-list');
+let currentUser = "";
 
-// --- 2. THE PINK MODE LOGIC ---
-// This listens for when you click the switch
-pcosToggle.addEventListener('change', () => {
-    if (pcosToggle.checked) {
-        // Adds the pink theme class to the body
-        document.body.classList.add('pcos-active');
-        // Shows the breathing yoga circle
-        yogaContainer.classList.remove('hidden');
-    } else {
-        // Removes the pink theme
-        document.body.classList.remove('pcos-active');
-        // Hides the yoga circle
-        yogaContainer.classList.add('hidden');
+// LOGIN
+document.getElementById('login-btn').addEventListener('click', () => {
+    const name = document.getElementById('username-input').value.trim();
+    if (name) {
+        currentUser = name;
+        document.getElementById('display-name').innerText = name;
+        document.getElementById('login-screen').classList.add('hidden');
+        document.getElementById('main-app').classList.remove('hidden');
     }
 });
 
-// --- 3. SMART TASK ADDER ---
-addTaskBtn.addEventListener('click', () => {
-    const text = taskInput.value.trim();
-    if (!text) return; // Don't add empty tasks
+// MOOD SELECTOR
+function setMood(emoji) {
+    console.log("Mood set to:", emoji);
+    alert("Mood updated to " + emoji + ". Stay Focused!");
+}
 
-    const li = document.createElement('div');
-    li.className = 'task-item';
+// PINK MODE (PCOS)
+const pcosToggle = document.getElementById('pcos-toggle');
+pcosToggle.addEventListener('change', (e) => {
+    document.body.classList.toggle('pcos-active', e.target.checked);
+    document.getElementById('yoga-box').classList.toggle('hidden', !e.target.checked);
+});
 
-    // SMART DETECTION: Adds specific glows based on what you type
+// SMART GLOW TASKS
+document.getElementById('add-task-btn').addEventListener('click', () => {
+    const input = document.getElementById('task-input');
+    const text = input.value.trim();
+    if (!text) return;
+
+    const taskItem = document.createElement('div');
+    taskItem.className = 'task-item';
+
+    // Auto-apply glow effects
     const lowerText = text.toLowerCase();
-    if (lowerText.includes('water')) li.classList.add('water');
-    if (lowerText.includes('steps') || lowerText.includes('walk')) li.classList.add('steps');
-    if (lowerText.includes('read')) li.classList.add('reading');
+    if (lowerText.includes('water')) taskItem.classList.add('water');
+    else if (lowerText.includes('step') || lowerText.includes('walk')) taskItem.classList.add('step');
+    else if (lowerText.includes('read') || lowerText.includes('book')) taskItem.classList.add('read');
 
-    li.innerHTML = `
-        <span>${text}</span>
-        <input type="checkbox" class="task-check">
-    `;
+    taskItem.innerHTML = `<span>${text}</span><input type="checkbox">`;
+    document.getElementById('task-list').appendChild(taskItem);
+    input.value = "";
+});
 
-    taskList.appendChild(li);
-    taskInput.value = ''; // Clears the input box
+// GUDDU SPECIAL CELEBRATION
+document.getElementById('complete-day').addEventListener('click', () => {
+    if (currentUser.toLowerCase() === 'guddu') {
+        document.getElementById('guddu-overlay').classList.remove('hidden');
+    } else {
+        alert("Awesome job, " + currentUser + "! Day Complete! ✅");
+    }
 });
