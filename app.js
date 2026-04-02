@@ -1,4 +1,26 @@
-let currentUser = "";
+const loginBtn = document.getElementById('login-btn');
+const loginScreen = document.getElementById('login-screen');
+const mainApp = document.getElementById('main-app');
+const usernameInput = document.getElementById('username-input');
+const displayName = document.getElementById('display-name');
+
+loginBtn.addEventListener('click', () => {
+    const name = usernameInput.value.trim();
+
+    if (name) {
+        // Save name and swap screens
+        displayName.innerText = name;
+        loginScreen.classList.add('hidden');
+        mainApp.classList.remove('hidden');
+
+        // Special Guddu Logic
+        if (name.toLowerCase() === 'guddu') {
+            console.log("Welcome, Guddu bhai!");
+        }
+    } else {
+        alert("Please enter a name to start winning!");
+    }
+}); let currentUser = "";
 
 // SUPABASE INIT
 const SUPABASE_URL = "https://nhfzhnmopnvandpugvkr.supabase.co";
