@@ -1,114 +1,69 @@
-<!DOCTYPE html>
-<html lang="en">
+<div id="app">
+    <nav class="sidebar">
+        <div class="brand">My Win</div>
+        <ul class="nav-links">
+            <li onclick="showSection('dash')">🏠 <span>Dash</span></li>
+            <li onclick="showSection('health')">🧘 <span>Health</span></li>
+            <li onclick="showSection('stats')">📊 <span>Stats</span></li>
+            <li onclick="showSection('social')">👥 <span>Social</span></li>
+        </ul>
+    </nav>
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>My Win | Discipline & Growth</title>
-    <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-</head>
-
-<body>
-    <div id="login-screen" class="fullscreen-overlay">
-        <div class="panel login-card">
-            <h1>🏆 My Win</h1>
-            <input type="text" id="username-input" placeholder="Enter Name...">
-            <button id="login-btn" class="btn-glow">Start Winning</button>
-        </div>
-    </div>
-
-    <div id="main-app" class="app-container hidden">
-        <nav class="sidebar">
-            <div class="brand">🏆 My Win</div>
-            <ul class="nav-links">
-                <li class="active">🏠 <span>Dash</span></li>
-                <li>🧘 <span>Health</span></li>
-                <li>📊 <span>Stats</span></li>
-            </ul>
-        </nav>
-
-        <main class="main-content">
-            <div class="panel profile-card-hero">
-                <div class="hero-top-row">
-                    <div class="profile-info">
-                        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" class="profile-avatar">
-                        <div>
-                            <h2 id="display-name">Guest User</h2>
-                            <p>Level: Disciplined 🔥</p>
-                        </div>
-                    </div>
-
-                    <div class="mood-container">
-                        <h3>How is your mood?</h3>
-                        <div class="mood-options">
-                            <button onclick="setMood('😊')">😊</button>
-                            <button onclick="setMood('🔥')">🔥</button>
-                            <button onclick="setMood('😴')">😴</button>
-                            <button onclick="setMood('🧘')">🧘</button>
-                        </div>
+    <main class="main-content">
+        <div class="panel hero-card">
+            <div class="hero-content">
+                <div class="profile-info">
+                    <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" class="profile-avatar">
+                    <div>
+                        <h2 id="display-name">Guest User</h2>
+                        <p>Level: <span id="user-level">Disciplined 🔥</span></p>
                     </div>
                 </div>
-            </div>
-
-            <div class="grid-layout">
-
-                <div class="panel">
-                    <h3>Daily Quests</h3>
-                    <div id="task-list"></div>
-                    <div class="input-group">
-                        <input type="text" id="task-input" placeholder="e.g. Drink Water">
-                        <button id="add-task-btn">+</button>
+                <div class="mood-container">
+                    <p>How is your mood?</p>
+                    <div class="mood-options">
+                        <button onclick="setMood('😊')">😊</button>
+                        <button onclick="setMood('🔥')">🔥</button>
+                        <button onclick="setMood('😴')">😴</button>
+                        <button onclick="setMood('🧘')">🧘</button>
                     </div>
                 </div>
-
-                <div class="side-column">
-                    <div class="panel stat-card">
-                        <h3>🔥 Streak</h3>
-                        <h1 class="streak-val">0</h1>
-                        <p>Keep pushing!</p>
-                    </div>
-
-                    <div class="panel wellness-card">
-                        <h3>Daily Wellness</h3>
-                        <div id="yoga-box" class="hidden">
-                            <div class="yoga-circle"></div>
-                            <p>Focus on Breath</p>
-                        </div>
-                        <p id="pcos-off-msg">Enable Wellness in Settings</p>
-                    </div>
-                </div>
-            </div>
-
-            <button id="complete-day" class="btn-glow">Complete Day</button>
-        </main>
-        <div id="guddu-overlay" class="fullscreen-overlay hidden">
-            <div class="celebration-box">
-                <span class="huge-emoji">🫂</span>
-                <h2>Proud of you, Guddu bhai!</h2>
-                <p>You conquered today like a true brother.</p>
-                <button onclick="location.reload()">Finish</button>
             </div>
         </div>
 
-        <div id="settings-modal" class="fullscreen-overlay hidden">
-            <div class="panel login-card">
-                <h2>Settings & Privacy</h2>
-                <div
-                    style="margin-top: 1.5rem; display: flex; justify-content: space-between; align-items: center; border: 1px solid rgba(255,255,255,0.1); padding: 1rem; border-radius: 10px;">
-                    <span>Wellness Mode (Pink Mode)</span>
-                    <label class="switch">
-                        <input type="checkbox" id="pcos-toggle">
-                        <span class="slider"></span>
-                    </label>
+        <div class="grid-layout">
+            <div class="panel quest-section">
+                <h3>Daily Quests</h3>
+                <div id="task-list"></div>
+                <div class="input-group">
+                    <input type="text" id="task-input" placeholder="e.g. Drink Water">
+                    <button id="add-task-btn">+</button>
                 </div>
-                <button id="close-settings" class="btn-glow"
-                    style="margin-top: 1.5rem; background: var(--blue);">Close</button>
+                <button id="complete-day" class="btn-glow">Complete Day</button>
+            </div>
+
+            <div class="side-column">
+                <div class="panel stat-card">
+                    <span class="stat-label">🔥 Current Streak</span>
+                    <h1 class="streak-val" id="streak-counter">0</h1>
+                    <p>Days of Consistency</p>
+                </div>
+
+                <div class="panel wellness-card">
+                    <h3>Wellness Hub</h3>
+                    <div id="yoga-box" class="hidden">
+                        <div class="yoga-circle"></div>
+                        <p>Focus on Breath</p>
+                    </div>
+                    <div id="pcos-off-msg">
+                        <p>Wellness Mode is Off</p>
+                        <label class="switch">
+                            <input type="checkbox" id="pcos-mode">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
             </div>
         </div>
-
-        <script src="app.js"></script>
-</body>
-
-</html>
+    </main>
+</div>
