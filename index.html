@@ -8,13 +8,12 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
-
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 
-<body>
+<body id="app-body">
     <div class="app-container">
         <nav class="sidebar">
             <div class="brand">
@@ -29,38 +28,27 @@
         </nav>
 
         <main class="main-content">
-
             <section class="profile-section" id="profile">
-                <div class="profile-banner">
-                    <button id="edit-banner-btn" class="edit-btn"><i class="fa-solid fa-camera"></i></button>
-                </div>
+                <div class="profile-banner"></div>
                 <div class="profile-info-container">
                     <div class="profile-avatar-wrapper">
-                        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Guddu" alt="User Avatar"
-                            id="user-avatar" class="profile-avatar">
+                        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Guddu" id="user-avatar"
+                            class="profile-avatar">
                         <div class="status-indicator online"></div>
                     </div>
                     <div class="profile-details">
                         <h1 id="username-display" class="username">Guest User</h1>
                         <p id="user-status" class="status-text">Grinding everyday 🚀</p>
-                        <div id="sync-status" class="sync-status"><span class="status-dot"></span> <span
-                                id="sync-text">Local</span></div>
                     </div>
                     <button id="edit-profile-btn" class="settings-btn"><i class="fa-solid fa-gear"></i></button>
                 </div>
 
                 <div id="profile-modal" class="modal hidden">
                     <div class="modal-content glass-panel">
-                        <div class="modal-header">
-                            <h3>Edit Profile</h3>
-                            <button id="close-modal-btn" class="close-btn"><i class="fa-solid fa-xmark"></i></button>
-                        </div>
-                        <div class="form-group">
-                            <label for="username-input">Username</label>
-                            <input type="text" id="username-input" placeholder="Enter username...">
-                            <small class="hint">Try setting it to "Guddu" for a surprise!</small>
-                        </div>
+                        <h3>Edit Profile</h3>
+                        <input type="text" id="username-input" placeholder="Enter username...">
                         <button id="save-profile-btn" class="primary-btn">Save Changes</button>
+                        <button id="close-modal-btn" class="secondary-btn">Cancel</button>
                     </div>
                 </div>
             </section>
@@ -72,44 +60,30 @@
                             <h3>Daily Quests</h3>
                             <span id="date-display" class="date-badge">Today</span>
                         </div>
-                        <p id="motivational-text" class="motivation">Keep pushing! You got this!</p>
+                        <p id="motivational-text" class="motivation">Keep pushing!</p>
 
                         <div class="progress-container">
                             <div class="progress-bar-bg">
-                                <div id="daily-progress" class="progress-bar-fill" style="width: 0%;"></div>
+                                <div id="daily-progress" class="progress-bar-fill"></div>
                             </div>
                             <span id="progress-text">0% Completed</span>
                         </div>
 
-                        <ul id="task-list" class="task-list"></ul>
+                        <ul id="task-list" class="task-list">
+                        </ul>
 
                         <div class="add-task-wrapper">
-                            <input type="text" id="new-task-input" placeholder="Add a new task...">
+                            <input type="text" id="new-task-input" placeholder="Add a task...">
                             <button id="add-task-btn"><i class="fa-solid fa-plus"></i></button>
                         </div>
-                        <button id="complete-day-btn" class="glow-btn complete-day-btn" disabled>Complete Day <i
-                                class="fa-solid fa-check-double"></i></button>
+                        <button id="complete-day-btn" class="glow-btn complete-day-btn">Complete Day</button>
                     </div>
 
-                    <div class="stats-module grid-column-layout">
+                    <div class="stats-module">
                         <div class="panel streak-panel">
-                            <div class="streak-header">
-                                <h3><i class="fa-solid fa-fire text-orange"></i> Streak</h3>
-                                <div class="shield-status hidden" id="streak-shield">
-                                    <i class="fa-solid fa-shield text-blue hint-tooltip"
-                                        title="Streak Shield Active!"></i>
-                                </div>
-                            </div>
+                            <h3><i class="fa-solid fa-fire text-orange"></i> Streak</h3>
                             <div class="streak-counter">
-                                <span id="streak-count">0</span>
-                                <span>Days</span>
-                            </div>
-                        </div>
-
-                        <div class="panel chart-panel">
-                            <h3>Weekly Summary</h3>
-                            <div class="chart-container">
-                                <canvas id="weeklyChart"></canvas>
+                                <span id="streak-count">0</span> Days
                             </div>
                         </div>
                     </div>
@@ -118,101 +92,28 @@
 
             <section class="health-section section-block" id="health">
                 <div class="panel">
-                    <div class="panel-header">
-                        <h2><i class="fa-solid fa-heart-pulse text-red"></i> Health & Biometrics</h2>
+                    <div class="toggle-header">
+                        <h3>PCOD/PCOS Mode</h3>
+                        <label class="switch">
+                            <input type="checkbox" id="pcos-toggle">
+                            <span class="slider round"></span>
+                        </label>
                     </div>
-
-                    <div class="health-grid">
-                        <div class="biometrics-card glass-card">
-                            <h3>Your Vitals</h3>
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label for="height-input">Height (cm)</label>
-                                    <input type="number" id="height-input" placeholder="e.g. 175">
-                                </div>
-                                <div class="form-group">
-                                    <label for="weight-input">Weight (kg)</label>
-                                    <input type="number" id="weight-input" placeholder="e.g. 70">
-                                </div>
-                            </div>
-                            <div class="form-actions">
-                                <button id="calc-intensity-btn" class="secondary-btn">Calculate Intensity</button>
-                            </div>
-                            <div id="intensity-result" class="result-box hidden">
-                                <h4>Recommended Intensity:</h4>
-                                <p id="intensity-level" class="badge">Moderate</p>
-                                <p id="intensity-desc" class="desc">Mix of cardio and strength training.</p>
-                            </div>
-                        </div>
-
-                        <div class="condition-card glass-card">
-                            <div class="toggle-header">
-                                <h3>Special Conditions</h3>
-                                <label class="switch">
-                                    <input type="checkbox" id="pcos-toggle">
-                                    <span class="slider round"></span>
-                                </label>
-                            </div>
-                            <p class="condition-desc">Enable PCOD/PCOS Mode</p>
-                        </div>
-
-                        <div class="mood-card glass-card">
-                            <h3><i class="fa-solid fa-face-smile text-pink"></i> Daily Mood</h3>
-                            <div class="mood-options">
-                                <button class="mood-btn" data-mood="Fantastic">🤩</button>
-                                <button class="mood-btn" data-mood="Good">😊</button>
-                                <button class="mood-btn" data-mood="Okay">😐</button>
-                                <button class="mood-btn" data-mood="Low">😔</button>
-                            </div>
-                            <p id="mood-status" class="mood-status-text">How are you feeling today?</p>
-                        </div>
-                    </div>
-
                     <div id="pcos-recommendations" class="recommendations hidden">
-                        <div class="rec-grid">
-                            <div class="rec-block diet glass-card">
-                                <h4><i class="fa-solid fa-leaf text-green"></i> Anti-Inflammatory Diet</h4>
-                                <ul>
-                                    <li>Berries, nuts, and leafy greens</li>
-                                    <li>Avoid refined carbs and sugar</li>
-                                </ul>
-                            </div>
-                            <div class="exercise-card glass-card">
-                                <h3><i class="fa-solid fa-person-hiking"></i> PCOS Friendly Move</h3>
-                                <div class="exercise-container">
-                                    <div class="yoga-pose">
-                                        <i class="fa-solid fa-spa pose-icon"></i>
-                                    </div>
-                                    <div class="exercise-info">
-                                        <h4>Child's Pose (Balasana)</h4>
-                                        <p>Focus on deep belly breathing.</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        <div class="yoga-circle"><i class="fa-solid fa-spa"></i></div>
+                        <p>Focus on Child's Pose (Balasana) - Deep Breathing active.</p>
                     </div>
                 </div>
             </section>
-
-            <section class="leaderboard-section section-block" id="leaderboard">
-                <div class="panel">
-                    <div class="panel-header">
-                        <h2><i class="fa-solid fa-trophy text-gold"></i> Friends Leaderboard</h2>
-                    </div>
-                    <ul class="leaderboard-list" id="leaderboard-list"></ul>
-                </div>
-            </section>
-
         </main>
-
-        <div id="guddu-celebration" class="fullscreen-overlay hidden">
-            <div class="celebration-content">
-                <h1 class="huge-emoji">🫂</h1>
-                <h2 id="guddu-message">Awesome job today!</h2>
-            </div>
-        </div>
     </div>
 
+    <div id="guddu-celebration" class="fullscreen-overlay hidden">
+        <div class="celebration-content">
+            <h1 class="huge-emoji">🫂</h1>
+            <h2 id="guddu-message">Awesome job!</h2>
+        </div>
+    </div>
     <script src="app.js"></script>
 </body>
 
