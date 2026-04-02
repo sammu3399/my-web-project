@@ -252,3 +252,68 @@ body.pcos-active .profile-card-hero {
 body.pcos-active .streak-val {
     color: var(--pink);
 }
+
+/* --- PINK MODE OVERRIDE (MASTER) --- */
+
+/* When the 'pcos-active' class is added to the body... */
+body.pcos-active {
+    --purple: var(--pink);
+    /* Changes the purple variable to pink globally */
+    background: radial-gradient(circle at top, #2d0b1a, #09090b);
+}
+
+/* Specifically target the Hero Banner to turn pink */
+body.pcos-active .profile-card-hero {
+    background: linear-gradient(135deg, #ec4899, #831843) !important;
+}
+
+/* Make the streak number turn pink */
+body.pcos-active .streak-val {
+    color: var(--pink) !important;
+}
+
+/* Make the yoga circle appear pink and glowing */
+.yoga-circle {
+    width: 60px;
+    height: 60px;
+    background: var(--pink);
+    border-radius: 50%;
+    margin: 1rem auto;
+    animation: yogaBreathe 4s infinite;
+    box-shadow: 0 0 20px var(--pink);
+}
+
+/* When Pink Mode is ON, hide the 'Enable Wellness' message */
+body.pcos-active #pcos-off-msg {
+    display: none;
+}
+
+/* When Pink Mode is ON, show the yoga animation */
+body.pcos-active #yoga-box {
+    display: block !important;
+}
+
+/* The glowing pink yoga circle */
+.yoga-circle {
+    width: 60px;
+    height: 60px;
+    background: var(--pink);
+    border-radius: 50%;
+    margin: 1rem auto;
+    animation: yogaBreathe 4s infinite;
+    box-shadow: 0 0 20px var(--pink);
+}
+
+@keyframes yogaBreathe {
+
+    0%,
+    100% {
+        transform: scale(1);
+        opacity: 0.7;
+    }
+
+    50% {
+        transform: scale(1.3);
+        opacity: 1;
+    }
+}
