@@ -210,3 +210,38 @@ body.pcos-active .hero-card {
 body.pcos-active .mood-options button:hover {
     box-shadow: 0 0 15px var(--pink);
 }
+
+/* --- FINAL RECOVERY & LAYOUT FIX --- */
+
+/* 1. Force Avatar to stay small (Fixes Screenshot 105) */
+.profile-avatar {
+    width: 65px !important;
+    height: 65px !important;
+    min-width: 65px !important;
+    border-radius: 50% !important;
+    border: 3px solid rgba(255, 255, 255, 0.3) !important;
+    object-fit: cover !important;
+}
+
+/* 2. Fix the Hero Banner Layout */
+.hero-card {
+    background: linear-gradient(135deg, var(--purple), #4c1d95) !important;
+    padding: 1.5rem 2rem !important;
+    border-radius: 20px !important;
+    margin-bottom: 2rem !important;
+}
+
+.hero-content {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    flex-wrap: wrap !important;
+    gap: 20px !important;
+}
+
+/* 3. Ensure the dashboard doesn't stretch forever */
+.main-content {
+    max-width: 1200px !important;
+    margin: 0 auto !important;
+    padding: 20px !important;
+}
