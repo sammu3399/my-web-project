@@ -22,36 +22,26 @@ body {
     background-attachment: fixed;
     color: #fafafa;
     min-height: 100vh;
+    display: flex;
+    /* CRITICAL: Keeps sidebar on the left */
     transition: 0.5s ease;
 }
 
-/* Pink Mode Theme Change */
 body.pcos-active {
     background: radial-gradient(circle at 0% 0%, #451226 0%, #09090b 50%),
         radial-gradient(circle at 100% 100%, #2b0816 0%, #09090b 50%);
 }
 
-.app-container {
-    display: flex;
-    min-height: 100vh;
-    width: 100%;
-}
-
-/* Sidebar */
+/* Sidebar Fixes */
 .sidebar {
     width: 260px;
     background: var(--sidebar-bg);
     border-right: 1px solid rgba(255, 255, 255, 0.1);
     padding: 2rem 1.5rem;
+    height: 100vh;
+    position: sticky;
+    top: 0;
     flex-shrink: 0;
-}
-
-.brand {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 2rem;
-    color: var(--glow-purple);
 }
 
 .nav-links li {
@@ -67,6 +57,7 @@ body.pcos-active {
     align-items: center;
     gap: 12px;
     border-radius: 8px;
+    transition: 0.3s;
 }
 
 .nav-links li.active a {
@@ -75,13 +66,30 @@ body.pcos-active {
     color: white;
 }
 
-/* Main Content */
+/* Main Content Layout */
 .main-content {
     flex: 1;
     padding: 2.5rem;
-    max-width: 1400px;
+    max-width: 1200px;
 }
 
+/* Fix for the Giant Avatar from your screenshot */
+.profile-section {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 2rem;
+}
+
+.profile-avatar {
+    width: 80px !important;
+    height: 80px !important;
+    border-radius: 50%;
+    border: 3px solid var(--glow-purple);
+    object-fit: cover;
+}
+
+/* Dashboard Panels */
 .panel {
     background: var(--glass);
     border: 1px solid rgba(255, 255, 255, 0.08);
@@ -91,7 +99,7 @@ body.pcos-active {
     backdrop-filter: blur(10px);
 }
 
-/* Task Color Grading & Glows */
+/* Modern Task Items */
 .task-item {
     display: flex;
     justify-content: space-between;
@@ -107,50 +115,21 @@ body.pcos-active {
     border-left-color: var(--water-blue);
 }
 
-.task-item.water:hover {
-    box-shadow: 0 0 15px rgba(59, 130, 246, 0.3);
-}
-
 .task-item.steps {
     border-left-color: var(--steps-green);
-}
-
-.task-item.steps:hover {
-    box-shadow: 0 0 15px rgba(34, 197, 94, 0.3);
 }
 
 .task-item.reading {
     border-left-color: var(--reading-orange);
 }
 
-.task-item.reading:hover {
-    box-shadow: 0 0 15px rgba(245, 158, 11, 0.3);
-}
-
-/* Profile Avatar Fix */
-.profile-avatar-wrapper {
-    position: relative;
-    width: 100px;
-    margin-bottom: 1rem;
-}
-
-.profile-avatar {
-    width: 100px !important;
-    height: 100px !important;
-    border-radius: 50%;
-    border: 3px solid var(--glow-purple);
-}
-
-/* Yoga Animation */
+/* Yoga Breathing Animation */
 .yoga-circle {
-    width: 70px;
-    height: 70px;
+    width: 60px;
+    height: 60px;
     background: var(--pcos-pink);
     border-radius: 50%;
     margin: 1rem auto;
-    display: flex;
-    align-items: center;
-    justify-content: center;
     animation: yogaBreathe 4s infinite ease-in-out;
     box-shadow: 0 0 25px var(--pcos-pink);
 }
@@ -209,21 +188,6 @@ input:checked+.slider:before {
     transform: translateX(26px);
 }
 
-/* Celebration */
 .hidden {
     display: none !important;
-}
-
-.fullscreen-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.9);
-    z-index: 1000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
 }

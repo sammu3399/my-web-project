@@ -1,88 +1,45 @@
-const SUPABASE_URL = 'https://nhfzhnmopnvandpugvkr.supabase.co';
-const SUPABASE_ANON_KEY = 'sb_publishable_g96CwRBlO-h4uHvhSAm_5Q_80UiY5QR';
+// --- 1. SELECTING THE ELEMENTS ---
+const pcosToggle = document.getElementById('pcos-toggle');
+const yogaContainer = document.getElementById('yoga-container');
+const taskInput = document.getElementById('task-input');
+const addTaskBtn = document.getElementById('add-task-btn');
+const taskList = document.getElementById('task-list');
 
-let appState = {
-    user: { username: "Guest User", avatarSeed: "Guest" },
-    tasks: [
-        { id: 1, text: "Drink 2L Water", status: "pending", type: "water" },
-        { id: 2, text: "Read 10 pages", status: "pending", type: "reading" },
-        { id: 3, text: "10000 Steps", status: "pending", type: "steps" }
-    ],
-    streak: { current: 0 },
-    health: { pcosMode: false }
-};
+// --- 2. THE PINK MODE LOGIC ---
+// This listens for when you click the switch
+pcosToggle.addEventListener('change', () => {
+    if (pcosToggle.checked) {
+        // Adds the pink theme class to the body
+        document.body.classList.add('pcos-active');
+        // Shows the breathing yoga circle
+        yogaContainer.classList.remove('hidden');
+    } else {
+        // Removes the pink theme
+        document.body.classList.remove('pcos-active');
+        // Hides the yoga circle
+        yogaContainer.classList.add('hidden');
+    }
+});
 
-const elements = {
-    taskList: document.getElementById('task-list'),
-    pcosToggle: document.getElementById('pcos-toggle'),
-    pcosRecommendations: document.getElementById('pcos-recommendations'),
-    appBody: document.getElementById('app-body'),
-    streakCount: document.getElementById('streak-count'),
-    dailyProgressFill: document.getElementById('daily-progress'),
-    progressText: document.getElementById('progress-text')
-};
+// --- 3. SMART TASK ADDER ---
+addTaskBtn.addEventListener('click', () => {
+    const text = taskInput.value.trim();
+    if (!text) return; // Don't add empty tasks
 
-function init() {
-    setupEventListeners();
-    renderAll();
-}
+    const li = document.createElement('div');
+    li.className = 'task-item';
 
-function setupEventListeners() {
-    elements.pcosToggle?.addEventListener('change', (e) => {
-        appState.health.pcosMode = e.target.checked;
-        if (e.target.checked) {
-            elements.appBody.classList.add('pcos-active');
-            elements.pcosRecommendations.classList.remove('hidden');
-        } else {
-            elements.appBody.classList.remove('pcos-active');
-            elements.pcosRecommendations.classList.add('hidden');
-        }
-    });
+    // SMART DETECTION: Adds specific glows based on what you type
+    const lowerText = text.toLowerCase();
+    if (lowerText.includes('water')) li.classList.add('water');
+    if (lowerText.includes('steps') || lowerText.includes('walk')) li.classList.add('steps');
+    if (lowerText.includes('read')) li.classList.add('reading');
 
-    document.getElementById('add-task-btn').onclick = () => {
-        const val = document.getElementById('new-task-input').value;
-        if (val) {
-            let type = "default";
-            if (val.toLowerCase().includes("water")) type = "water";
-            if (val.toLowerCase().includes("step")) type = "steps";
-            if (val.toLowerCase().includes("read")) type = "reading";
+    li.innerHTML = `
+        <span>${text}</span>
+        <input type="checkbox" class="task-check">
+    `;
 
-            appState.tasks.push({ id: Date.now(), text: val, status: "pending", type: type });
-            document.getElementById('new-task-input').value = '';
-            renderTasks();
-        }
-    };
-}
-
-function renderTasks() {
-    elements.taskList.innerHTML = '';
-    let completed = 0;
-    appState.tasks.forEach(task => {
-        const li = document.createElement('li');
-        li.className = `task-item ${task.type} ${task.status}`;
-        li.innerHTML = `
-            <span>${task.text}</span>
-            <input type="checkbox" ${task.status === 'completed' ? 'checked' : ''} 
-                onclick="toggleTask(${task.id})">
-        `;
-        elements.taskList.appendChild(li);
-        if (task.status === 'completed') completed++;
-    });
-
-    const percent = Math.round((completed / appState.tasks.length) * 100) || 0;
-    elements.dailyProgressFill.style.width = percent + '%';
-    elements.progressText.innerText = percent + '% Completed';
-}
-
-window.toggleTask = (id) => {
-    const task = appState.tasks.find(t => t.id === id);
-    task.status = task.status === 'completed' ? 'pending' : 'completed';
-    renderTasks();
-};
-
-function renderAll() {
-    renderTasks();
-    elements.streakCount.innerText = appState.streak.current;
-}
-
-document.addEventListener('DOMContentLoaded', init);
+    taskList.appendChild(li);
+    taskInput.value = ''; // Clears the input box
+});

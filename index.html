@@ -4,116 +4,68 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Win – Productivity & Health</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>My Win - Productivity</title>
     <link rel="stylesheet" href="style.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
 
-<body id="app-body">
-    <div class="app-container">
-        <nav class="sidebar">
-            <div class="brand">
-                <i class="fa-solid fa-trophy brand-icon"></i>
-                <h2>My Win</h2>
-            </div>
-            <ul class="nav-links">
-                <li class="active"><a href="#dashboard"><i class="fa-solid fa-chart-pie"></i> Dashboard</a></li>
-                <li><a href="#health"><i class="fa-solid fa-heart-pulse"></i> Health</a></li>
-                <li><a href="#leaderboard"><i class="fa-solid fa-ranking-star"></i> Social</a></li>
-            </ul>
-        </nav>
+<body>
 
-        <main class="main-content">
-            <section class="profile-section" id="profile">
-                <div class="profile-banner"></div>
-                <div class="profile-info-container">
-                    <div class="profile-avatar-wrapper">
-                        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Guddu" id="user-avatar"
-                            class="profile-avatar">
-                        <div class="status-indicator online"></div>
-                    </div>
-                    <div class="profile-details">
-                        <h1 id="username-display" class="username">Guest User</h1>
-                        <p id="user-status" class="status-text">Grinding everyday 🚀</p>
-                    </div>
-                    <button id="edit-profile-btn" class="settings-btn"><i class="fa-solid fa-gear"></i></button>
-                </div>
-
-                <div id="profile-modal" class="modal hidden">
-                    <div class="modal-content glass-panel">
-                        <h3>Edit Profile</h3>
-                        <input type="text" id="username-input" placeholder="Enter username...">
-                        <button id="save-profile-btn" class="primary-btn">Save Changes</button>
-                        <button id="close-modal-btn" class="secondary-btn">Cancel</button>
-                    </div>
-                </div>
-            </section>
-
-            <section class="dashboard-section section-block" id="dashboard">
-                <div class="grid-layout">
-                    <div class="tasks-module panel">
-                        <div class="panel-header">
-                            <h3>Daily Quests</h3>
-                            <span id="date-display" class="date-badge">Today</span>
-                        </div>
-                        <p id="motivational-text" class="motivation">Keep pushing!</p>
-
-                        <div class="progress-container">
-                            <div class="progress-bar-bg">
-                                <div id="daily-progress" class="progress-bar-fill"></div>
-                            </div>
-                            <span id="progress-text">0% Completed</span>
-                        </div>
-
-                        <ul id="task-list" class="task-list">
-                        </ul>
-
-                        <div class="add-task-wrapper">
-                            <input type="text" id="new-task-input" placeholder="Add a task...">
-                            <button id="add-task-btn"><i class="fa-solid fa-plus"></i></button>
-                        </div>
-                        <button id="complete-day-btn" class="glow-btn complete-day-btn">Complete Day</button>
-                    </div>
-
-                    <div class="stats-module">
-                        <div class="panel streak-panel">
-                            <h3><i class="fa-solid fa-fire text-orange"></i> Streak</h3>
-                            <div class="streak-counter">
-                                <span id="streak-count">0</span> Days
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <section class="health-section section-block" id="health">
-                <div class="panel">
-                    <div class="toggle-header">
-                        <h3>PCOD/PCOS Mode</h3>
-                        <label class="switch">
-                            <input type="checkbox" id="pcos-toggle">
-                            <span class="slider round"></span>
-                        </label>
-                    </div>
-                    <div id="pcos-recommendations" class="recommendations hidden">
-                        <div class="yoga-circle"><i class="fa-solid fa-spa"></i></div>
-                        <p>Focus on Child's Pose (Balasana) - Deep Breathing active.</p>
-                    </div>
-                </div>
-            </section>
-        </main>
-    </div>
-
-    <div id="guddu-celebration" class="fullscreen-overlay hidden">
-        <div class="celebration-content">
-            <h1 class="huge-emoji">🫂</h1>
-            <h2 id="guddu-message">Awesome job!</h2>
+    <nav class="sidebar">
+        <div class="brand">
+            <h2>🏆 My Win</h2>
         </div>
-    </div>
+        <ul class="nav-links">
+            <li class="active"><a href="#">🏠 Dashboard</a></li>
+            <li><a href="#">🧘 Health</a></li>
+            <li><a href="#">👥 Social</a></li>
+        </ul>
+    </nav>
+
+    <main class="main-content">
+
+        <header class="profile-section">
+            <img src="your-avatar-url.jpg" id="user-avatar" class="profile-avatar" alt="Profile">
+            <div>
+                <h1 class="username">Guest User</h1>
+                <p style="color: var(--text-dim);">Grinding everyday 🚀</p>
+            </div>
+        </header>
+
+        <div class="grid-layout">
+
+            <div class="tasks-module panel">
+                <h3>Daily Quests</h3>
+                <div id="task-list" class="task-list">
+                </div>
+                <div class="add-task-row">
+                    <input type="text" id="task-input" placeholder="Add a task...">
+                    <button id="add-task-btn">Add</button>
+                </div>
+            </div>
+
+            <div class="stats-module">
+                <div class="panel">
+                    <h3>PCOD/PCOS Mode</h3>
+                    <label class="switch">
+                        <input type="checkbox" id="pcos-toggle">
+                        <span class="slider"></span>
+                    </label>
+                    <div id="yoga-container" class="hidden">
+                        <div class="yoga-circle"></div>
+                        <p style="text-align:center; font-size: 0.8rem; margin-top:10px;">Deep Breathing Active</p>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <h3>🔥 Streak</h3>
+                    <p id="streak-count">0 Days</p>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
     <script src="app.js"></script>
 </body>
 
