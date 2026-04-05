@@ -639,6 +639,36 @@ button:active::after {
     100% { transform: rotate(25deg); }
 }
 
+/* Extended Yoga Animation Additions */
+
+.cobra-lift { animation: liftCobra 3s infinite alternate ease-in-out; }
+@keyframes liftCobra {
+    0% { transform: rotate(-35deg) scaleY(0.8) translate(-10px, 15px); }
+    100% { transform: rotate(0deg) scaleY(1) translate(0, 0); }
+}
+.cobra-arm { animation: flexArm 3s infinite alternate ease-in-out; }
+@keyframes flexArm {
+    0% { transform: translateX(-15px) translateY(5px); }
+    100% { transform: translateX(0) translateY(0); }
+}
+
+.cat-cow-spine { animation: catCowSpine 3.5s infinite alternate ease-in-out; }
+.cat-cow-head { animation: catCowHead 3.5s infinite alternate ease-in-out; }
+@keyframes catCowSpine {
+    0% { transform: scaleY(1); }
+    100% { transform: scaleY(-0.6); }
+}
+@keyframes catCowHead {
+    0% { transform: rotate(15deg); }
+    100% { transform: rotate(-25deg); }
+}
+
+.garland-squat { animation: garlandSquat 3s infinite alternate ease-in-out; }
+@keyframes garlandSquat {
+    0% { transform: scaleY(1) translateY(0); }
+    100% { transform: scaleY(0.9) translateY(4px); }
+}
+
 /* ======================
    PINK MODE TOGGLE
 ===================== */
