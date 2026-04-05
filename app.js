@@ -267,15 +267,18 @@ function applyMood() {
         document.body.setAttribute("data-mood", mood);
     }
     
-    const pcosPanel = document.getElementById("pcos-panel");
+    const pcosContent = document.getElementById("pcos-content");
+    const pinkModePanel = document.getElementById("pink-mode-panel");
     const pinkToggleBtn = document.getElementById("pink-toggle-btn");
     
-    if (pcosPanel) {
+    if (pcosContent && pinkModePanel) {
         if (isPinkMode) {
-            pcosPanel.classList.remove("hidden");
+            pcosContent.classList.remove("hidden");
+            pinkModePanel.classList.add("pcos-active");
             if(pinkToggleBtn) pinkToggleBtn.textContent = "🌸 Turn Pink Mode OFF";
         } else {
-            pcosPanel.classList.add("hidden");
+            pcosContent.classList.add("hidden");
+            pinkModePanel.classList.remove("pcos-active");
             if(pinkToggleBtn) pinkToggleBtn.textContent = "🌸 Turn Pink Mode ON";
         }
     }

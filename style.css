@@ -557,10 +557,10 @@ button:active::after {
     display: none !important;
 }
 
-#pcos-panel {
-    background: linear-gradient(135deg, rgba(255, 154, 158, 0.2), rgba(254, 207, 239, 0.15));
-    border: 1px solid rgba(255, 154, 158, 0.4);
-    box-shadow: 0 8px 32px rgba(255, 154, 158, 0.2);
+.pcos-active {
+    background: linear-gradient(135deg, rgba(255, 154, 158, 0.2), rgba(254, 207, 239, 0.15)) !important;
+    border: 1px solid rgba(255, 154, 158, 0.4) !important;
+    box-shadow: 0 8px 32px rgba(255, 154, 158, 0.2) !important;
 }
 
 .pcos-exercises {
