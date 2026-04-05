@@ -159,9 +159,12 @@ function renderTasks() {
 }
 
 function toggleTask(id) {
+    // Dynamic formula: Distributes 100 max XP evenly across all existing tasks
+    let xpReward = tasks.length > 0 ? Math.round(100 / tasks.length) : 0;
+
     tasks = tasks.map(task => {
         if (task.id === id && !task.completed) {
-            addXP(20); // Base reward updated to 20 XP per task
+            addXP(xpReward);
         }
         return task.id === id ? { ...task, completed: !task.completed } : task;
     });
