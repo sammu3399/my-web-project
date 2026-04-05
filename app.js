@@ -1,11 +1,50 @@
 // ======================
+// AUTH CHECK
+// ======================
+const currentUser = localStorage.getItem("username");
+if (!currentUser) {
+    window.location.href = "login.html";
+} else {
+    document.addEventListener("DOMContentLoaded", () => {
+        const displayName = document.getElementById("display-name");
+        if (displayName) displayName.textContent = currentUser;
+        
+        const avatar = document.querySelector(".profile-avatar");
+        if (avatar) avatar.src = `https://api.dicebear.com/7.x/avataaars/svg?seed=${currentUser}`;
+        
+        const logoutBtn = document.getElementById("logout-btn");
+        if (logoutBtn) {
+            logoutBtn.addEventListener("click", () => {
+                localStorage.removeItem("username");
+                window.location.href = "login.html";
+            });
+        }
+    });
+}
+
+// ======================
 // LOCAL STORAGE DATA
 // ======================
-let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
-let streak = parseInt(localStorage.getItem("streak")) || 0;
-let mood = localStorage.getItem("mood") || "";
-let xp = parseInt(localStorage.getItem("xp")) || 0;
-let level = parseInt(localStorage.getItem("level")) || 1; // ✅ add this
+let tasks = [];
+let streak = 0;
+let mood = "";
+let xp = 0;
+let level = 1;
+
+if (currentUser) {
+    tasks = JSON.parse(localStorage.getItem(`${currentUser}_tasks`)) || [];
+    
+    let parsedStreak = parseInt(localStorage.getItem(`${currentUser}_streak`));
+    streak = isNaN(parsedStreak) ? 0 : parsedStreak;
+    
+    mood = localStorage.getItem(`${currentUser}_mood`) || "";
+    
+    let parsedXp = parseInt(localStorage.getItem(`${currentUser}_xp`));
+    xp = isNaN(parsedXp) ? 0 : parsedXp;
+    
+    let parsedLevel = parseInt(localStorage.getItem(`${currentUser}_level`));
+    level = isNaN(parsedLevel) ? 1 : parsedLevel;
+}
 // ======================
 // ELEMENTS
 // ======================
@@ -115,7 +154,7 @@ function updateStreakUI() {
 // ======================
 // XP SYSTEM
 // ======================
-maxXp = 150; // no const/let here
+const maxXp = 150;
 
 function updateXPUI() {
     let percent = (xp / maxXp) * 100;
@@ -143,13 +182,14 @@ function addXP(amount) {
 // ======================
 function setMood(m) {
     mood = m;
-    localStorage.setItem("mood", mood);
+    if (currentUser) localStorage.setItem(`${currentUser}_mood`, mood);
     applyMood();
 }
 
-function applyMood()
-if (!mood) return;
-document.body.setAttribute("data-mood", "😊");
+function applyMood() {
+    if (!mood) return;
+    document.body.setAttribute("data-mood", mood);
+}
 // ======================
 // WELLNESS TOGGLE
 // ======================
@@ -167,10 +207,11 @@ function enableWellness(enable = true) {
 // SAVE ALL
 // ======================
 function saveAll() {
-    localStorage.setItem("tasks", JSON.stringify(tasks));
-    localStorage.setItem("streak", streak);
-    localStorage.setItem("xp", xp);
-    localStorage.setItem("level", level); // ✅ important
+    if (!currentUser) return;
+    localStorage.setItem(`${currentUser}_tasks`, JSON.stringify(tasks));
+    localStorage.setItem(`${currentUser}_streak`, streak);
+    localStorage.setItem(`${currentUser}_xp`, xp);
+    localStorage.setItem(`${currentUser}_level`, level);
 }
 
 // ======================
@@ -205,61 +246,13 @@ function launchConfetti() {
 // DAILY RESET SYSTEM
 // ======================
 function dailyReset() {
-    const lastDate = localStorage.getItem("lastDate");
+    if (!currentUser) return;
+    const lastDate = localStorage.getItem(`${currentUser}_lastDate`);
     const today = new Date().toDateString();
 
     if (lastDate !== today) {
         tasks = [];
-        saveTasks();
-        localStorage.setItem("lastDate", today);
+        saveAll();
+        localStorage.setItem(`${currentUser}_lastDate`, today);
     }
-}
-dailyReset();
-// toast function
-
-// somewhere in streak logic
-showToast("🔥 Streak Increased!");
-launchConfetti();
-
-// ================= XP SYSTEM =================
-// UPDATE UI
-function updateXPUI() {
-    let percent = (xp / maxXp) * 100;
-
-    xpFill.style.width = percent + "%";
-
-    document.querySelector(".xp-text").innerText =
-        xp + " / " + maxXp + " XP";
-
-    document.getElementById("user-level").textContent =
-        "Level " + level + " 🔥";
-}
-
-// ================= XP SYSTEM =================
-const maxXp = 100;
-
-// UPDATE XP BAR AND LEVEL DISPLAY
-function updateXPUI() {
-    let percent = (xp / maxXp) * 100;
-    xpFill.style.width = percent + "%";
-    document.querySelector(".xp-text").innerText = xp + " / " + maxXp + " XP";
-    document.getElementById("user-level").textContent = "Level " + level + " 🔥";
-}
-
-// ADD XP AND HANDLE LEVEL UP
-function addXP(amount) {
-    xp += amount;
-
-    // Handle level-ups if XP exceeds maxXp
-    while (xp >= maxXp) {
-        xp -= maxXp;
-        level++;
-        showToast("🎉 Level Up!");
-        launchConfetti();
-    }
-
-    // Save to localStorage and update UI
-    // Save and refresh UI
-    saveAll();
-    updateXPUI();
 }
