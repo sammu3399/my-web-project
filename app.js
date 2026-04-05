@@ -48,9 +48,9 @@ if (!currentUser) {
         // Pink Mode Logic
         const pinkToggleBtn = document.getElementById("pink-toggle-btn");
         if (pinkToggleBtn) {
-            pinkToggleBtn.addEventListener("click", () => {
+            pinkToggleBtn.addEventListener("click", async () => {
                 isPinkMode = !isPinkMode;
-                localStorage.setItem(`${currentUser}_pinkMode`, isPinkMode);
+                await saveAll(); // Sync to Supabase
                 applyMood();
             });
         }
@@ -111,11 +111,21 @@ async function init() {
     }
     
     // Load profile from Supabase
-    const { data: profile } = await _supabase
+    let { data: profile, error: profileErr } = await _supabase
         .from('profiles')
         .select('*')
         .eq('username', currentUser)
         .single();
+    
+    // Auto-create profile if missing (helps with database resets)
+    if (!profile && profileErr && (profileErr.code === 'PGRST116' || profileErr.message.includes('not found'))) {
+        const { data: newProfile, error: createErr } = await _supabase
+            .from('profiles')
+            .insert([{ username: currentUser, streak: 0, xp: 0, level: 1 }])
+            .select()
+            .single();
+        if (!createErr) profile = newProfile;
+    }
     
     if (profile) {
         streak = profile.streak || 0;
@@ -295,7 +305,11 @@ async function loadPCOSRoutine() {
         "🧘‍♀️ Butterfly Pose (2 mins)",
         "🧘‍♀️ Cobra Pose (1 min)",
         "🧘‍♀️ Cat-Cow Stretch (10 reps)",
-        "🧘‍♀️ Garland Pose (1 min)"
+        "🧘‍♀️ Garland Pose (1 min)",
+        "🧘‍♀️ Bridge Pose (1 min)",
+        "🧘‍♀️ Child's Pose (2 mins)",
+        "🧘‍♀️ Pigeon Pose (1 min per side)",
+        "🧘‍♀️ Reclining Bound Angle (2 mins)"
     ];
 
     let addedCount = 0;

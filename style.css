@@ -669,6 +669,30 @@ button:active::after {
     100% { transform: scaleY(0.9) translateY(4px); }
 }
 
+.bridge-lift { animation: bridgeLift 4s infinite alternate ease-in-out; }
+@keyframes bridgeLift {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(-30px); }
+}
+
+.childs-breath { animation: childsBreath 5s infinite alternate ease-in-out; }
+@keyframes childsBreath {
+    0% { transform: scale(1); opacity: 0.8; }
+    100% { transform: scale(1.05); opacity: 1; }
+}
+
+.pigeon-pulse { animation: pigeonPulse 4s infinite alternate ease-in-out; }
+@keyframes pigeonPulse {
+    0% { transform: translateY(0); opacity: 0.9; }
+    100% { transform: translateY(-8px); opacity: 1; }
+}
+
+.reclining-breath { animation: recliningBreath 6s infinite alternate ease-in-out; }
+@keyframes recliningBreath {
+    0% { transform: scale(1); }
+    100% { transform: scale(1.03); }
+}
+
 /* ======================
    PINK MODE TOGGLE
 ===================== */
