@@ -55,6 +55,7 @@ let streak = 0;
 let mood = "";
 let xp = 0;
 let level = 1;
+const maxXp = 150;
 
 if (currentUser) {
     tasks = JSON.parse(localStorage.getItem(`${currentUser}_tasks`)) || [];
@@ -177,7 +178,6 @@ function updateStreakUI() {
 // ======================
 // XP SYSTEM
 // ======================
-const maxXp = 150;
 
 function updateXPUI() {
     let percent = (xp / maxXp) * 100;
