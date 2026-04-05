@@ -670,7 +670,7 @@ button:active::after {
 /* ======================
    MOOD BACKGROUNDS
 ===================== */
-body.mood-happy { background: linear-gradient(135deg, #11998e, #38ef7d) !important; }
-body.mood-fire { background: linear-gradient(135deg, #ff416c, #ff4b2b) !important; }
-body.mood-sleep { background: linear-gradient(135deg, #141e30, #243b55) !important; }
-body.mood-yoga { background: linear-gradient(135deg, #8e2de2, #4a00e0) !important; }
+body.mood-happy, body.mood-happy .hero-card { background: linear-gradient(135deg, #11998e, #38ef7d) !important; box-shadow: 0 0 25px rgba(17, 153, 142, 0.6); }
+body.mood-fire, body.mood-fire .hero-card { background: linear-gradient(135deg, #ff416c, #ff4b2b) !important; box-shadow: 0 0 25px rgba(255, 65, 108, 0.6); }
+body.mood-sleep, body.mood-sleep .hero-card { background: linear-gradient(135deg, #141e30, #243b55) !important; box-shadow: 0 0 25px rgba(20, 30, 48, 0.6); }
+body.mood-yoga, body.mood-yoga .hero-card { background: linear-gradient(135deg, #8e2de2, #4a00e0) !important; box-shadow: 0 0 25px rgba(142, 45, 226, 0.6); }
