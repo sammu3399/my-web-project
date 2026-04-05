@@ -1,4 +1,4 @@
-﻿/* ======================
+/* ======================
    ROOT THEME VARIABLES
 ===================== */
 :root {
@@ -670,8 +670,7 @@ button:active::after {
 /* ======================
    MOOD BACKGROUNDS
 ===================== */
-body[data-mood="😊"] { background: linear-gradient(135deg, #11998e, #38ef7d) !important; }
-body[data-mood="🔥"] { background: linear-gradient(135deg, #ff416c, #ff4b2b) !important; }
-body[data-mood="😴"] { background: linear-gradient(135deg, #141e30, #243b55) !important; }
-body[data-mood="🧘"] { background: linear-gradient(135deg, #8e2de2, #4a00e0) !important; }
-
+body.mood-happy { background: linear-gradient(135deg, #11998e, #38ef7d) !important; }
+body.mood-fire { background: linear-gradient(135deg, #ff416c, #ff4b2b) !important; }
+body.mood-sleep { background: linear-gradient(135deg, #141e30, #243b55) !important; }
+body.mood-yoga { background: linear-gradient(135deg, #8e2de2, #4a00e0) !important; }

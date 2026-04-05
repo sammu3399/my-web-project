@@ -275,6 +275,12 @@ function setMood(m) {
 }
 
 function applyMood() {
+    document.body.classList.remove('mood-happy', 'mood-fire', 'mood-sleep', 'mood-yoga');
+    if (mood === '😊') document.body.classList.add('mood-happy');
+    if (mood === '🔥') document.body.classList.add('mood-fire');
+    if (mood === '😴') document.body.classList.add('mood-sleep');
+    if (mood === '🧘') document.body.classList.add('mood-yoga');
+
     if (!mood) {
         document.body.removeAttribute("data-mood");
     } else {
