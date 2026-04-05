@@ -7,23 +7,61 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const loginForm = document.getElementById("login-form");
 
-    loginForm.addEventListener("submit", (e) => {
+    loginForm.addEventListener("submit", async (e) => {
         e.preventDefault();
         
         const usernameInput = document.getElementById("username").value.trim();
         
         if (usernameInput) {
-            // Save username to localStorage to establish a "session"
-            localStorage.setItem("username", usernameInput);
-            
-            // Add a visual flair before redirecting
+            // Visual flair
             const btn = document.querySelector(".login-btn");
-            btn.innerHTML = "Logging in... <span class='spinner'></span>";
-            btn.style.boxShadow = "0 0 30px var(--success)";
-            
-            setTimeout(() => {
-                window.location.href = "index.html";
-            }, 800); // Slight delay for the animation
+            const originalText = btn.innerHTML;
+            btn.innerHTML = "Authenticating... <span class='spinner'></span>";
+            btn.disabled = true;
+
+            try {
+                // Check if user profile exists in Supabase
+                let { data: profile, error } = await _supabase
+                    .from('profiles')
+                    .select('*')
+                    .eq('username', usernameInput)
+                    .single();
+
+                if (!profile && !error) {
+                    // Create new profile if it doesn't exist
+                    const { error: insertError } = await _supabase
+                        .from('profiles')
+                        .insert([{ 
+                            username: usernameInput,
+                            streak: 0,
+                            xp: 0,
+                            level: 1,
+                            mood: '',
+                            pink_mode: false
+                        }]);
+                    
+                    if (insertError) throw insertError;
+                } else if (error && error.code !== 'PGRST116') {
+                    // PGRST116 is "no rows returned", which is fine - we'll create the user
+                    throw error;
+                }
+
+                // Save username to localStorage to establish a "session"
+                localStorage.setItem("username", usernameInput);
+                
+                btn.innerHTML = "Success! Redirecting...";
+                btn.style.boxShadow = "0 0 30px var(--success)";
+                
+                setTimeout(() => {
+                    window.location.href = "index.html";
+                }, 800);
+            } catch (err) {
+                console.error("Login Error:", err);
+                btn.innerHTML = "Connection Error";
+                btn.style.boxShadow = "0 0 30px var(--warning)";
+                btn.disabled = false;
+                setTimeout(() => { btn.innerHTML = originalText; }, 2000);
+            }
         }
     });
 });

@@ -11,6 +11,9 @@
 
     <!-- Your CSS -->
     <link rel="stylesheet" href="style.css">
+    
+    <!-- Supabase SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 </head>
 
@@ -83,6 +86,16 @@
                 <div class="input-group">
                     <input type="text" id="task-input" placeholder="e.g. Drink Water">
                     <button id="add-task-btn">+</button>
+                </div>
+                
+                <!-- NEW: Task History Log -->
+                <div class="task-history-container" style="margin-top: 30px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px;">
+                    <h4 style="font-size: 14px; color: var(--text-muted); margin-bottom: 15px; display: flex; align-items: center; gap: 8px;">
+                        🕒 Recent Completions
+                    </h4>
+                    <div id="history-list" class="history-list">
+                        <p style="font-size: 12px; color: var(--text-muted); font-style: italic;">No recent activity</p>
+                    </div>
                 </div>
             </div>
 
@@ -191,6 +204,7 @@
     </main>
 
     <!-- ================= JS ================= -->
+    <script src="supabase-config.js"></script>
     <script src="app.js"></script>
 
 </body>

@@ -72,7 +72,7 @@ if (!currentUser) {
 }
 
 // ======================
-// LOCAL STORAGE DATA
+// SUPABASE SYNCED DATA
 // ======================
 let tasks = [];
 let streak = 0;
@@ -82,21 +82,8 @@ let xp = 0;
 let level = 1;
 const maxXp = 100;
 
-if (currentUser) {
-    tasks = JSON.parse(localStorage.getItem(`${currentUser}_tasks`)) || [];
-
-    let parsedStreak = parseInt(localStorage.getItem(`${currentUser}_streak`));
-    streak = isNaN(parsedStreak) ? 0 : parsedStreak;
-
-    mood = localStorage.getItem(`${currentUser}_mood`) || "";
-    isPinkMode = localStorage.getItem(`${currentUser}_pinkMode`) === "true";
-
-    let parsedXp = parseInt(localStorage.getItem(`${currentUser}_xp`));
-    xp = isNaN(parsedXp) ? 0 : parsedXp;
-
-    let parsedLevel = parseInt(localStorage.getItem(`${currentUser}_level`));
-    level = isNaN(parsedLevel) ? 1 : parsedLevel;
-}
+// Variables will be loaded in the async init() function
+// ======================
 // ======================
 // ELEMENTS
 // ======================
@@ -109,8 +96,34 @@ const xpFill = document.querySelector(".xp-fill");
 // ======================
 // INIT
 // ======================
-function init() {
+async function init() {
+    if (!currentUser) return;
+    
+    // Load profile from Supabase
+    const { data: profile } = await _supabase
+        .from('profiles')
+        .select('*')
+        .eq('username', currentUser)
+        .single();
+    
+    if (profile) {
+        streak = profile.streak || 0;
+        xp = profile.xp || 0;
+        level = profile.level || 1;
+        mood = profile.mood || "";
+        isPinkMode = !!profile.pink_mode;
+    }
+
+    // Load tasks from Supabase
+    const { data: dbTasks } = await _supabase
+        .from('tasks')
+        .select('*')
+        .eq('username', currentUser);
+    
+    tasks = dbTasks || [];
+
     renderTasks();
+    renderHistory();
     updateStreakUI();
     updateXPUI();
     applyMood();
@@ -123,20 +136,27 @@ init();
 // ======================
 addTaskBtn.addEventListener("click", addTask);
 
-function addTask() {
+async function addTask() {
     const text = taskInput.value.trim();
     if (!text) return;
 
-    const task = {
-        id: Date.now(),
-        text,
-        completed: false
-    };
+    const { data, error } = await _supabase
+        .from('tasks')
+        .insert([{
+            username: currentUser,
+            text: text,
+            completed: false
+        }])
+        .select()
+        .single();
 
-    tasks.push(task);
-    saveAll();
-    renderTasks();
-    taskInput.value = "";
+    if (!error && data) {
+        tasks.push(data);
+        renderTasks();
+        taskInput.value = "";
+    } else {
+        showToast("❌ Failed to add task");
+    }
 }
 
 function renderTasks() {
@@ -158,26 +178,94 @@ function renderTasks() {
     });
 }
 
-function toggleTask(id) {
-    // Dynamic formula: Distributes 100 max XP evenly across all existing tasks
+async function toggleTask(id) {
     let xpReward = tasks.length > 0 ? Math.round(100 / tasks.length) : 0;
+    
+    const taskIndex = tasks.findIndex(t => t.id === id);
+    if (taskIndex === -1) return;
+    
+    const wasCompleted = tasks[taskIndex].completed;
+    const newCompletedStatus = !wasCompleted;
 
-    tasks = tasks.map(task => {
-        if (task.id === id && !task.completed) {
-            addXP(xpReward);
-        }
-        return task.id === id ? { ...task, completed: !task.completed } : task;
-    });
+    const { error } = await _supabase
+        .from('tasks')
+        .update({ completed: newCompletedStatus })
+        .eq('id', id);
+
+    if (error) {
+        showToast("❌ Error updating task");
+        return;
+    }
+
+    tasks[taskIndex].completed = newCompletedStatus;
+
+    if (!wasCompleted && newCompletedStatus) {
+        addXP(xpReward);
+        logCompletion(tasks[taskIndex].text); // RECORD HISTORY
+    }
 
     checkAllCompleted();
     saveAll();
     renderTasks();
 }
 
-function deleteTask(id) {
-    tasks = tasks.filter(task => task.id !== id);
-    saveAll();
-    renderTasks();
+async function logCompletion(taskName) {
+    const { error } = await _supabase
+        .from('task_history')
+        .insert([{
+            username: currentUser,
+            task_text: taskName,
+            completed_at: new Date().toISOString()
+        }]);
+
+    if (!error) renderHistory(); // Refresh the list
+}
+
+async function renderHistory() {
+    const historyList = document.getElementById("history-list");
+    if (!historyList) return;
+
+    const { data: history, error } = await _supabase
+        .from('task_history')
+        .select('*')
+        .eq('username', currentUser)
+        .order('completed_at', { ascending: false })
+        .limit(10);
+
+    if (error || !history || history.length === 0) {
+        historyList.innerHTML = `<p style='font-size: 11px; color: var(--text-muted); font-style: italic;'>No recent activity</p>`;
+        return;
+    }
+
+    historyList.innerHTML = history.map(item => {
+        const date = new Date(item.completed_at);
+        const timeStr = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        const dateStr = date.toLocaleDateString();
+        
+        return `
+            <div class="history-item">
+                <div class="history-item-top">
+                    <span class="history-item-name">${item.task_text}</span>
+                    <span class="history-item-time">${dateStr} @ ${timeStr}</span>
+                </div>
+                <span class="history-item-status">✔️ Completed</span>
+            </div>
+        `;
+    }).join("");
+}
+
+async function deleteTask(id) {
+    const { error } = await _supabase
+        .from('tasks')
+        .delete()
+        .eq('id', id);
+
+    if (!error) {
+        tasks = tasks.filter(task => task.id !== id);
+        renderTasks();
+    } else {
+        showToast("❌ Failed to delete task");
+    }
 }
 
 function loadPCOSRoutine() {
@@ -267,12 +355,11 @@ function addXP(amount) {
 // ======================
 // MOOD SYSTEM
 // ======================
-function setMood(m) {
+async function setMood(m) {
     mood = m;
     isPinkMode = false; // Selecting standard mood forces pink mode off
     if (currentUser) {
-        localStorage.setItem(`${currentUser}_mood`, mood);
-        localStorage.setItem(`${currentUser}_pinkMode`, isPinkMode);
+        await saveAll(); // Sync to Supabase
     }
     applyMood();
 }
@@ -311,12 +398,21 @@ function applyMood() {
 // ======================
 // SAVE ALL
 // ======================
-function saveAll() {
+async function saveAll() {
     if (!currentUser) return;
-    localStorage.setItem(`${currentUser}_tasks`, JSON.stringify(tasks));
-    localStorage.setItem(`${currentUser}_streak`, streak);
-    localStorage.setItem(`${currentUser}_xp`, xp);
-    localStorage.setItem(`${currentUser}_level`, level);
+    
+    const { error } = await _supabase
+        .from('profiles')
+        .update({
+            streak: streak,
+            xp: xp,
+            level: level,
+            mood: mood,
+            pink_mode: isPinkMode
+        })
+        .eq('username', currentUser);
+
+    if (error) console.error("Sync Error:", error);
 }
 
 // ======================
@@ -350,15 +446,22 @@ function launchConfetti() {
 // ======================
 // DAILY RESET SYSTEM
 // ======================
-function dailyReset() {
+async function dailyReset() {
     if (!currentUser) return;
     const lastDate = localStorage.getItem(`${currentUser}_lastDate`);
     const today = new Date().toDateString();
 
     if (lastDate !== today) {
-        tasks.forEach(t => t.completed = false);
-        saveAll();
-        renderTasks();
-        localStorage.setItem(`${currentUser}_lastDate`, today);
+        // Reset in Supabase
+        const { error } = await _supabase
+            .from('tasks')
+            .update({ completed: false })
+            .eq('username', currentUser);
+
+        if (!error) {
+            tasks.forEach(t => t.completed = false);
+            renderTasks();
+            localStorage.setItem(`${currentUser}_lastDate`, today);
+        }
     }
 }
