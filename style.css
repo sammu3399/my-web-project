@@ -617,7 +617,7 @@ button:active::after {
 .yoga-breath-circle {
     width: 40px;
     height: 40px;
-    background: radial-gradient(circle, #ff9a9e, transparent);
+    background: radial-gradient(circle, #00f2fe, transparent); /* Vibrant Cyan Contrast */
     border-radius: 50%;
     animation: breathPace 5s infinite ease-in-out;
 }

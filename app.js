@@ -54,6 +54,20 @@ if (!currentUser) {
                 applyMood();
             });
         }
+
+        // Exclusive Details Accordion Logic
+        const exerciseDetails = document.querySelectorAll('.exercise-details');
+        exerciseDetails.forEach(detail => {
+            detail.addEventListener('toggle', () => {
+                if (detail.open) {
+                    exerciseDetails.forEach(other => {
+                        if (other !== detail) {
+                            other.removeAttribute('open');
+                        }
+                    });
+                }
+            });
+        });
     });
 }
 
