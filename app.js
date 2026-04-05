@@ -244,10 +244,10 @@ function applyMood() {
     if (pcosPanel) {
         if (isPinkMode) {
             pcosPanel.classList.remove("hidden");
-            if(pinkToggleBtn) pinkToggleBtn.textContent = "🌸 Disable Pink Mode";
+            if(pinkToggleBtn) pinkToggleBtn.textContent = "🌸 Turn Pink Mode OFF";
         } else {
             pcosPanel.classList.add("hidden");
-            if(pinkToggleBtn) pinkToggleBtn.textContent = "🌸 Enable Pink Mode (PCOS)";
+            if(pinkToggleBtn) pinkToggleBtn.textContent = "🌸 Turn Pink Mode ON";
         }
     }
 }
