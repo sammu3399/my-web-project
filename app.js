@@ -169,8 +169,8 @@ function renderTasks() {
         div.innerHTML = `
             <span class="${task.completed ? 'done' : ''}">${task.text}</span>
             <div>
-                <button onclick="toggleTask(${task.id})">✔</button>
-                <button onclick="deleteTask(${task.id})">❌</button>
+                <button onclick="toggleTask('${task.id}')">✔</button>
+                <button onclick="deleteTask('${task.id}')">❌</button>
             </div>
         `;
 
@@ -181,7 +181,7 @@ function renderTasks() {
 async function toggleTask(id) {
     let xpReward = tasks.length > 0 ? Math.round(100 / tasks.length) : 0;
     
-    const taskIndex = tasks.findIndex(t => t.id === id);
+    const taskIndex = tasks.findIndex(t => String(t.id) === String(id));
     if (taskIndex === -1) return;
     
     const wasCompleted = tasks[taskIndex].completed;
@@ -261,14 +261,14 @@ async function deleteTask(id) {
         .eq('id', id);
 
     if (!error) {
-        tasks = tasks.filter(task => task.id !== id);
+        tasks = tasks.filter(task => String(task.id) !== String(id));
         renderTasks();
     } else {
         showToast("❌ Failed to delete task");
     }
 }
 
-function loadPCOSRoutine() {
+async function loadPCOSRoutine() {
     const routine = [
         "🧘‍♀️ Butterfly Pose (2 mins)",
         "🧘‍♀️ Cobra Pose (1 min)",
@@ -277,22 +277,29 @@ function loadPCOSRoutine() {
     ];
 
     let addedCount = 0;
-    routine.forEach((routineText, index) => {
+    for (const routineText of routine) {
         const exists = tasks.some(t => t.text === routineText);
         if (!exists) {
-            tasks.push({
-                id: Date.now() + index,
-                text: routineText,
-                completed: false
-            });
-            addedCount++;
+            const { data, error } = await _supabase
+                .from('tasks')
+                .insert([{
+                    username: currentUser,
+                    text: routineText,
+                    completed: false
+                }])
+                .select()
+                .single();
+
+            if (!error && data) {
+                tasks.push(data);
+                addedCount++;
+            }
         }
-    });
+    }
 
     if (addedCount > 0) {
-        saveAll();
         renderTasks();
-        showToast("🌸 Routine Added to Tasks!");
+        showToast(`🌸 ${addedCount} Exercises Added to Tasks!`);
     } else {
         showToast("⚠️ Routine is already in your tasks!");
     }
