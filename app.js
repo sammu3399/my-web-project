@@ -136,6 +136,11 @@ init();
 // ======================
 addTaskBtn.addEventListener("click", addTask);
 
+// Support Enter key
+taskInput.addEventListener("keypress", (e) => {
+    if (e.key === "Enter") addTask();
+});
+
 async function addTask() {
     const text = taskInput.value.trim();
     if (!text) return;
@@ -155,7 +160,8 @@ async function addTask() {
         renderTasks();
         taskInput.value = "";
     } else {
-        showToast("❌ Failed to add task");
+        console.error("Supabase Add Error:", error);
+        showToast("❌ Failed to add task. Check console for details.");
     }
 }
 

@@ -27,8 +27,8 @@ document.addEventListener("DOMContentLoaded", () => {
                     .eq('username', usernameInput)
                     .single();
 
-                if (!profile && !error) {
-                    // Create new profile if it doesn't exist
+                // If no profile was found (PGRST116 error or null data), create a new one
+                if (!profile) {
                     const { error: insertError } = await _supabase
                         .from('profiles')
                         .insert([{ 
@@ -42,7 +42,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     
                     if (insertError) throw insertError;
                 } else if (error && error.code !== 'PGRST116') {
-                    // PGRST116 is "no rows returned", which is fine - we'll create the user
+                    // Only throw if it's an actual database error, not just a "not found"
                     throw error;
                 }
 
