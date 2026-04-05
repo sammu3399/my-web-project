@@ -162,6 +162,36 @@ function deleteTask(id) {
     saveAll();
     renderTasks();
 }
+
+function loadPCOSRoutine() {
+    const routine = [
+        "🧘‍♀️ Butterfly Pose (2 mins)",
+        "🧘‍♀️ Cobra Pose (1 min)",
+        "🧘‍♀️ Cat-Cow Stretch (10 reps)",
+        "🧘‍♀️ Garland Pose (1 min)"
+    ];
+    
+    let addedCount = 0;
+    routine.forEach((routineText, index) => {
+        const exists = tasks.some(t => t.text === routineText);
+        if (!exists) {
+            tasks.push({
+                id: Date.now() + index,
+                text: routineText,
+                completed: false
+            });
+            addedCount++;
+        }
+    });
+    
+    if (addedCount > 0) {
+        saveAll();
+        renderTasks();
+        showToast("🌸 Routine Added to Tasks!");
+    } else {
+        showToast("⚠️ Routine is already in your tasks!");
+    }
+}
 // ======================
 // STREAK SYSTEM
 // ======================
@@ -231,11 +261,10 @@ function setMood(m) {
 }
 
 function applyMood() {
-    let currentTheme = isPinkMode ? "🌸" : mood;
-    if (!currentTheme) {
+    if (!mood) {
         document.body.removeAttribute("data-mood");
     } else {
-        document.body.setAttribute("data-mood", currentTheme);
+        document.body.setAttribute("data-mood", mood);
     }
     
     const pcosPanel = document.getElementById("pcos-panel");
