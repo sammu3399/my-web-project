@@ -590,6 +590,27 @@ button:active::after {
     color: white;
 }
 
+.exercise-details summary {
+    cursor: pointer;
+    font-weight: 500;
+    list-style: none; /* remove default arrow */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    outline: none;
+}
+.exercise-details summary::-webkit-details-marker {
+    display: none;
+}
+.exercise-details summary::after {
+    content: "▼";
+    font-size: 10px;
+    transition: transform 0.3s;
+}
+.exercise-details[open] summary::after {
+    transform: rotate(180deg);
+}
+
 /* ======================
    PINK MODE TOGGLE
 ===================== */
