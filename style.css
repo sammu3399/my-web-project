@@ -612,6 +612,22 @@ button:active::after {
 }
 
 /* ======================
+   NATIVE YOGA ANIMATION
+===================== */
+.yoga-breath-circle {
+    width: 40px;
+    height: 40px;
+    background: radial-gradient(circle, #ff9a9e, transparent);
+    border-radius: 50%;
+    animation: breathPace 5s infinite ease-in-out;
+}
+@keyframes breathPace {
+    0% { transform: scale(1); opacity: 0.4; }
+    50% { transform: scale(4); opacity: 0.9; }
+    100% { transform: scale(1); opacity: 0.4; }
+}
+
+/* ======================
    PINK MODE TOGGLE
 ===================== */
 .pink-toggle-btn {
