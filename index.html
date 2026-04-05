@@ -67,25 +67,23 @@
             <!-- SIDE COLUMN -->
             <div class="side-column">
             
-                <!-- PINK MODE UNIFIED PANEL -->
-                <div class="panel" id="pink-mode-panel" style="margin-bottom: 20px; transition: 0.3s ease;">
-                    <div style="text-align: center;">
-                        <button id="pink-toggle-btn" class="pink-toggle-btn" style="margin-bottom: 5px;">🌸 Turn Pink Mode ON</button>
-                        <p style="font-size: 12px; color: var(--text-muted);">Unlocks PCOD & PCOS Routine</p>
-                    </div>
-                    
-                    <div id="pcos-content" class="hidden">
-                        <hr style="border: 0; border-top: 1px solid rgba(255,154,158,0.3); margin: 15px 0;">
-                        <h3 style="font-size: 18px; color: #ff9a9e;">🌸 PCOD & PCOS Exercises</h3>
-                        <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 10px;">A daily flow designed to balance hormones.</p>
-                        <ul class="pcos-exercises">
-                            <li>🧘‍♀️ Butterfly Pose (2 mins)</li>
-                            <li>🧘‍♀️ Cobra Pose (1 min)</li>
-                            <li>🧘‍♀️ Cat-Cow Stretch (10 reps)</li>
-                            <li>🧘‍♀️ Garland Pose (1 min)</li>
-                        </ul>
-                        <button class="pink-toggle-btn" style="margin-top: 15px; margin-bottom: 0;" onclick="loadPCOSRoutine()">➕ Add Routine to Tasks</button>
-                    </div>
+                <!-- PINK MODE TOGGLE -->
+                <div class="panel" id="pink-toggle-panel" style="text-align: center; margin-bottom: 20px; transition: 0.3s ease;">
+                    <button id="pink-toggle-btn" class="pink-toggle-btn" style="margin-bottom: 5px;">🌸 Turn Pink Mode ON</button>
+                    <p style="font-size: 12px; color: var(--text-muted);">Unlocks PCOD & PCOS Routine</p>
+                </div>
+                
+                <!-- PCOD & PCOS EXERCISES (PINK MODE ONLY) -->
+                <div class="panel pcos-active hidden" id="pcos-panel" style="margin-bottom: 20px;">
+                    <h3 style="font-size: 18px; color: #ff9a9e;">🌸 PCOD & PCOS Exercises</h3>
+                    <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 10px;">A daily flow designed to balance hormones.</p>
+                    <ul class="pcos-exercises">
+                        <li>🧘‍♀️ Butterfly Pose (2 mins)</li>
+                        <li>🧘‍♀️ Cobra Pose (1 min)</li>
+                        <li>🧘‍♀️ Cat-Cow Stretch (10 reps)</li>
+                        <li>🧘‍♀️ Garland Pose (1 min)</li>
+                    </ul>
+                    <button class="pink-toggle-btn" style="margin-top: 15px; margin-bottom: 0;" onclick="loadPCOSRoutine()">➕ Add Routine to Tasks</button>
                 </div>
 
                 <!-- STREAK -->

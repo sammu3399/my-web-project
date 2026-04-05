@@ -267,18 +267,18 @@ function applyMood() {
         document.body.setAttribute("data-mood", mood);
     }
     
-    const pcosContent = document.getElementById("pcos-content");
-    const pinkModePanel = document.getElementById("pink-mode-panel");
+    const pcosPanel = document.getElementById("pcos-panel");
+    const pinkTogglePanel = document.getElementById("pink-toggle-panel");
     const pinkToggleBtn = document.getElementById("pink-toggle-btn");
     
-    if (pcosContent && pinkModePanel) {
+    if (pcosPanel) {
         if (isPinkMode) {
-            pcosContent.classList.remove("hidden");
-            pinkModePanel.classList.add("pcos-active");
+            pcosPanel.classList.remove("hidden");
+            if (pinkTogglePanel) pinkTogglePanel.classList.add("pcos-active");
             if(pinkToggleBtn) pinkToggleBtn.textContent = "🌸 Turn Pink Mode OFF";
         } else {
-            pcosContent.classList.add("hidden");
-            pinkModePanel.classList.remove("pcos-active");
+            pcosPanel.classList.add("hidden");
+            if (pinkTogglePanel) pinkTogglePanel.classList.remove("pcos-active");
             if(pinkToggleBtn) pinkToggleBtn.textContent = "🌸 Turn Pink Mode ON";
         }
     }
