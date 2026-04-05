@@ -159,13 +159,18 @@ function checkAllCompleted() {
     const allDone = tasks.every(t => t.completed);
 
     if (allDone) {
-        streak++;
-        addXP(50); // bonus XP
-        showToast("🔥 Streak Increased!");
-        launchConfetti();
-
-        tasks = [];
-        saveAll();
+        const streakDateStr = localStorage.getItem(`${currentUser}_streakDate`);
+        const today = new Date().toDateString();
+        
+        if (streakDateStr !== today) {
+            streak++;
+            addXP(50); // bonus XP
+            showToast("🔥 Streak Increased!");
+            launchConfetti();
+            
+            localStorage.setItem(`${currentUser}_streakDate`, today);
+            saveAll();
+        }
     }
 
     updateStreakUI();
@@ -212,6 +217,15 @@ function setMood(m) {
 function applyMood() {
     if (!mood) return;
     document.body.setAttribute("data-mood", mood);
+    
+    const pcosPanel = document.getElementById("pcos-panel");
+    if (pcosPanel) {
+        if (mood === "🌸") {
+            pcosPanel.classList.remove("hidden");
+        } else {
+            pcosPanel.classList.add("hidden");
+        }
+    }
 }
 // Wellness removed
 
@@ -263,8 +277,9 @@ function dailyReset() {
     const today = new Date().toDateString();
 
     if (lastDate !== today) {
-        tasks = [];
+        tasks.forEach(t => t.completed = false);
         saveAll();
+        renderTasks();
         localStorage.setItem(`${currentUser}_lastDate`, today);
     }
 }
