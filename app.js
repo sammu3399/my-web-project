@@ -1,17 +1,15 @@
 // ======================
 // AUTH & SESSION
 // ======================
-let user = null;
+const currentUser = localStorage.getItem("username");
 
-async function checkAuth() {
-    const { data: { session } } = await _supabase.auth.getSession();
-    if (!session) {
+function checkAuth() {
+    if (!currentUser) {
         window.location.href = "login.html";
-        return;
+    } else {
+        setupUI();
+        init();
     }
-    user = session.user;
-    setupUI();
-    init();
 }
 
 async function uploadAvatar(e) {
@@ -20,7 +18,7 @@ async function uploadAvatar(e) {
 
     showToast("📸 Uploading...");
     const fileExt = file.name.split('.').pop();
-    const fileName = `${user.id}-${Date.now()}.${fileExt}`;
+    const fileName = `${currentUser}-${Date.now()}.${fileExt}`;
 
     const { error: uploadError } = await _supabase.storage
         .from('avatars')
@@ -38,7 +36,7 @@ async function uploadAvatar(e) {
     const { error: updateError } = await _supabase
         .from('profiles')
         .update({ avatar_url: publicUrl })
-        .eq('user_id', user.id);
+        .eq('username', currentUser);
 
     if (!updateError) {
         document.getElementById("profile-img").src = publicUrl;
@@ -47,11 +45,11 @@ async function uploadAvatar(e) {
 }
 
 function setupUI() {
-    document.addEventListener("DOMContentLoaded", () => {
+    const initUI = () => {
         const logoutBtn = document.getElementById("logout-btn");
         if (logoutBtn) {
-            logoutBtn.addEventListener("click", async () => {
-                await _supabase.auth.signOut();
+            logoutBtn.addEventListener("click", () => {
+                localStorage.removeItem("username");
                 window.location.href = "login.html";
             });
         }
@@ -85,7 +83,13 @@ function setupUI() {
                 }
             });
         });
-    });
+    };
+
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", initUI);
+    } else {
+        initUI();
+    }
 }
 
 checkAuth();
@@ -107,13 +111,13 @@ function handleDailyQuote() {
             "Stay focused, go after your dreams and keep moving toward your goals."
         ];
         const todayStr = new Date().toDateString();
-        let quoteIndex = parseInt(localStorage.getItem(`quoteIndex_${user.id}`));
-        const lastQuoteDate = localStorage.getItem(`lastQuoteDate_${user.id}`);
+        let quoteIndex = parseInt(localStorage.getItem(`quoteIndex_${currentUser}`));
+        const lastQuoteDate = localStorage.getItem(`lastQuoteDate_${currentUser}`);
 
         if (isNaN(quoteIndex) || lastQuoteDate !== todayStr) {
             quoteIndex = Math.floor(Math.random() * quotes.length);
-            localStorage.setItem(`quoteIndex_${user.id}`, quoteIndex);
-            localStorage.setItem(`lastQuoteDate_${user.id}`, todayStr);
+            localStorage.setItem(`quoteIndex_${currentUser}`, quoteIndex);
+            localStorage.setItem(`lastQuoteDate_${currentUser}`, todayStr);
         }
         dailyQuote.textContent = `"${quotes[quoteIndex]}"`;
     }
@@ -145,23 +149,21 @@ const xpFill = document.querySelector(".xp-fill");
 // INIT
 // ======================
 async function init() {
-    if (!user) return;
+    if (!currentUser) return;
     
     // Load profile from Supabase
     let { data: profile, error: profileErr } = await _supabase
         .from('profiles')
         .select('*')
-        .eq('user_id', user.id)
+        .eq('username', currentUser)
         .single();
     
     // Auto-create profile if missing
     if (!profile && profileErr && (profileErr.code === 'PGRST116' || profileErr.message.includes('not found'))) {
-        const displayName = user.user_metadata.display_name || user.email.split('@')[0];
         const { data: newProfile, error: createErr } = await _supabase
             .from('profiles')
             .insert([{ 
-                user_id: user.id, 
-                username: displayName, 
+                username: currentUser, 
                 streak: 0, 
                 xp: 0, 
                 level: 1 
@@ -190,7 +192,7 @@ async function init() {
     const { data: dbTasks } = await _supabase
         .from('tasks')
         .select('*')
-        .eq('user_id', user.id);
+        .eq('username', currentUser);
     
     tasks = dbTasks || [];
 
@@ -221,7 +223,7 @@ async function addTask() {
     const { error } = await _supabase
         .from('tasks')
         .insert([{
-            user_id: user.id,
+            username: currentUser,
             text: text,
             completed: false
         }]);
@@ -298,7 +300,7 @@ async function logCompletion(taskName) {
     const { error } = await _supabase
         .from('task_history')
         .insert([{
-            user_id: user.id,
+            username: currentUser,
             task_text: taskName,
             completed_at: new Date().toISOString()
         }]);
@@ -313,7 +315,7 @@ async function renderHistory() {
     const { data: history, error } = await _supabase
         .from('task_history')
         .select('*')
-        .eq('user_id', user.id)
+        .eq('username', currentUser)
         .order('completed_at', { ascending: false })
         .limit(10);
 
@@ -372,7 +374,7 @@ async function loadPCOSRoutine() {
             const { data, error } = await _supabase
                 .from('tasks')
                 .insert([{
-                    user_id: user.id,
+                    username: currentUser,
                     text: routineText,
                     completed: false
                 }])
@@ -402,7 +404,7 @@ function checkAllCompleted() {
     const allDone = tasks.every(t => t.completed);
 
     if (allDone) {
-        const streakKey = `streakDate_${user.id}`;
+        const streakKey = `streakDate_${currentUser}`;
         const streakDateStr = localStorage.getItem(streakKey);
         const today = new Date().toDateString();
 
@@ -455,7 +457,7 @@ function addXP(amount) {
 async function setMood(m) {
     mood = m;
     isPinkMode = false; // Selecting standard mood forces pink mode off
-    if (user) {
+    if (currentUser) {
         await saveAll(); // Sync to Supabase
     }
     applyMood();
@@ -496,7 +498,7 @@ function applyMood() {
 // SAVE ALL
 // ======================
 async function saveAll() {
-    if (!user) return;
+    if (!currentUser) return;
     
     const { error } = await _supabase
         .from('profiles')
@@ -507,7 +509,7 @@ async function saveAll() {
             mood: mood,
             pink_mode: isPinkMode
         })
-        .eq('user_id', user.id);
+        .eq('username', currentUser);
 
     if (error) console.error("Sync Error:", error);
 }
@@ -576,8 +578,8 @@ function launchConfetti() {
 // DAILY RESET SYSTEM
 // ======================
 async function dailyReset() {
-    if (!user) return;
-    const lastDate = localStorage.getItem(`lastDate_${user.id}`);
+    if (!currentUser) return;
+    const lastDate = localStorage.getItem(`lastDate_${currentUser}`);
     const today = new Date().toDateString();
 
     if (lastDate !== today) {
@@ -590,7 +592,7 @@ async function dailyReset() {
         if (!error) {
             tasks.forEach(t => t.completed = false);
             renderTasks();
-            localStorage.setItem(`lastDate_${user.id}`, today);
+            localStorage.setItem(`lastDate_${currentUser}`, today);
         }
     }
 }

@@ -20,32 +20,16 @@
     <div class="login-container">
         <div class="panel login-panel">
             <div class="login-header">
-                <h2 id="auth-title">Welcome Back</h2>
-                <p id="auth-subtitle">Login to continue your streak 🔥</p>
+                <h2>Welcome Back</h2>
+                <p>Enter your username to continue your streak 🔥</p>
             </div>
             
             <form id="login-form" class="login-form">
-                <div class="input-group" id="username-group" style="display: none;">
+                <div class="input-group">
                     <label for="username">Username</label>
-                    <input type="text" id="username" placeholder="Pick a cool username" autocomplete="off">
+                    <input type="text" id="username" placeholder="Enter your username" required autocomplete="off">
                 </div>
-                <div class="input-group">
-                    <label for="email">Email Address</label>
-                    <input type="email" id="email" placeholder="Enter your email" required autocomplete="email">
-                </div>
-                <div class="input-group">
-                    <label for="password">Password</label>
-                    <input type="password" id="password" placeholder="••••••••" required autocomplete="current-password">
-                </div>
-                
-                <div class="auth-extras" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; font-size: 13px;">
-                    <a href="#" id="forgot-password" style="color: var(--accent); text-decoration: none;">Forgot Password?</a>
-                    <span style="color: var(--text-muted);">
-                        <a href="#" id="toggle-auth" style="color: var(--accent); font-weight: 600; text-decoration: none;">Create Account</a>
-                    </span>
-                </div>
-
-                <button type="submit" class="login-btn" id="submit-btn">Start Winning</button>
+                <button type="submit" class="login-btn">Start Winning</button>
             </form>
         </div>
     </div>

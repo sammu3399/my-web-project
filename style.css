@@ -102,6 +102,16 @@ body {
     opacity: 1 !important;
 }
 
+.avatar-box {
+    cursor: pointer !important;
+    transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.avatar-box:hover {
+    transform: scale(1.08);
+    box-shadow: 0 0 25px var(--accent-glow);
+}
+
 /* ======================
    MOOD BUTTONS PREMIUM
 ===================== */
