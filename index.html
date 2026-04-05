@@ -81,8 +81,22 @@
                         <li>
                             <details class="exercise-details">
                                 <summary>🧘‍♀️ Butterfly Pose (2 mins)</summary>
-                                <div style="width: 100%; border-radius: 8px; margin-top: 10px; overflow: hidden; border: 1px solid rgba(255,255,255,0.2);">
-                                    <iframe width="100%" height="180" src="https://www.youtube.com/embed/vET5f288kVM?autoplay=1&mute=1&loop=1&playlist=vET5f288kVM" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+                                <div style="width: 100%; height: 140px; background: rgba(0,0,0,0.15); border-radius: 8px; margin-top: 10px; display: flex; align-items: center; justify-content: center; position: relative; border: 1px solid rgba(255,255,255,0.2);">
+                                    <svg viewBox="0 0 200 150" style="width:100%; height:100%;">
+                                        <!-- Head & Body -->
+                                        <circle cx="100" cy="45" r="10" fill="#00f2fe"/>
+                                        <line x1="100" y1="55" x2="100" y2="105" stroke="#00f2fe" stroke-width="5" stroke-linecap="round"/>
+                                        <!-- Arms holding feet -->
+                                        <path d="M100 65 Q 120 75 105 120" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" opacity="0.5"/>
+                                        <path d="M100 65 Q 80 75 95 120" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" opacity="0.5"/>
+                                        <!-- Animated Legs (Butterfly Flap) -->
+                                        <g class="leg-flap-left" style="transform-origin: 100px 105px;">
+                                           <path d="M100 105 L 60 120 L 95 125" fill="none" stroke="#00f2fe" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+                                        </g>
+                                        <g class="leg-flap-right" style="transform-origin: 100px 105px;">
+                                           <path d="M100 105 L 140 120 L 105 125" fill="none" stroke="#00f2fe" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+                                        </g>
+                                    </svg>
                                 </div>
                                 <p style="font-size: 12px; margin-top: 8px; color: #fff;">Bring soles of feet together, knees out. Flap knees gently like butterfly wings.</p>
                             </details>

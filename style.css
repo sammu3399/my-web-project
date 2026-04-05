@@ -627,6 +627,18 @@ button:active::after {
     100% { transform: scale(1); opacity: 0.4; }
 }
 
+.leg-flap-left { animation: flapLeft 2s infinite alternate ease-in-out; }
+.leg-flap-right { animation: flapRight 2s infinite alternate ease-in-out; }
+
+@keyframes flapLeft {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(-25deg); }
+}
+@keyframes flapRight {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(25deg); }
+}
+
 /* ======================
    PINK MODE TOGGLE
 ===================== */
