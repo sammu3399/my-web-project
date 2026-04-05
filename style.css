@@ -578,3 +578,25 @@ button:active::after {
     transform: translateX(5px);
     color: white;
 }
+
+/* ======================
+   PINK MODE TOGGLE
+===================== */
+.pink-toggle-btn {
+    width: 100%;
+    padding: 12px;
+    background: linear-gradient(135deg, #ff9a9e, #fecfef);
+    color: #333;
+    border: none;
+    border-radius: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 0 10px rgba(255, 154, 158, 0.4);
+    transition: 0.3s;
+    margin-bottom: 20px;
+    font-size: 14px;
+}
+.pink-toggle-btn:hover {
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 5px 20px rgba(255, 154, 158, 0.7);
+}

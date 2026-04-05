@@ -44,6 +44,16 @@ if (!currentUser) {
             }
             dailyQuote.textContent = `"${quotes[quoteIndex]}"`;
         }
+        
+        // Pink Mode Logic
+        const pinkToggleBtn = document.getElementById("pink-toggle-btn");
+        if (pinkToggleBtn) {
+            pinkToggleBtn.addEventListener("click", () => {
+                isPinkMode = !isPinkMode;
+                localStorage.setItem(`${currentUser}_pinkMode`, isPinkMode);
+                applyMood();
+            });
+        }
     });
 }
 
@@ -53,6 +63,7 @@ if (!currentUser) {
 let tasks = [];
 let streak = 0;
 let mood = "";
+let isPinkMode = false;
 let xp = 0;
 let level = 1;
 const maxXp = 150;
@@ -64,6 +75,7 @@ if (currentUser) {
     streak = isNaN(parsedStreak) ? 0 : parsedStreak;
 
     mood = localStorage.getItem(`${currentUser}_mood`) || "";
+    isPinkMode = localStorage.getItem(`${currentUser}_pinkMode`) === "true";
 
     let parsedXp = parseInt(localStorage.getItem(`${currentUser}_xp`));
     xp = isNaN(parsedXp) ? 0 : parsedXp;
@@ -210,20 +222,32 @@ function addXP(amount) {
 // ======================
 function setMood(m) {
     mood = m;
-    if (currentUser) localStorage.setItem(`${currentUser}_mood`, mood);
+    isPinkMode = false; // Selecting standard mood forces pink mode off
+    if (currentUser) {
+        localStorage.setItem(`${currentUser}_mood`, mood);
+        localStorage.setItem(`${currentUser}_pinkMode`, isPinkMode);
+    }
     applyMood();
 }
 
 function applyMood() {
-    if (!mood) return;
-    document.body.setAttribute("data-mood", mood);
+    let currentTheme = isPinkMode ? "🌸" : mood;
+    if (!currentTheme) {
+        document.body.removeAttribute("data-mood");
+    } else {
+        document.body.setAttribute("data-mood", currentTheme);
+    }
     
     const pcosPanel = document.getElementById("pcos-panel");
+    const pinkToggleBtn = document.getElementById("pink-toggle-btn");
+    
     if (pcosPanel) {
-        if (mood === "🌸") {
+        if (isPinkMode) {
             pcosPanel.classList.remove("hidden");
+            if(pinkToggleBtn) pinkToggleBtn.textContent = "🌸 Disable Pink Mode";
         } else {
             pcosPanel.classList.add("hidden");
+            if(pinkToggleBtn) pinkToggleBtn.textContent = "🌸 Enable Pink Mode (PCOS)";
         }
     }
 }
