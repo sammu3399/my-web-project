@@ -99,6 +99,17 @@ const xpFill = document.querySelector(".xp-fill");
 async function init() {
     if (!currentUser) return;
     
+    // Test Connection
+    try {
+        const { error: testErr } = await _supabase.from('profiles').select('count');
+        if (testErr) {
+            console.error("Supabase Connection Failed:", testErr);
+            showToast(`⚠️ Connection Error: ${testErr.message}`);
+        }
+    } catch (e) {
+        showToast("⚠️ Cannot connect to Supabase. Check your keys!");
+    }
+    
     // Load profile from Supabase
     const { data: profile } = await _supabase
         .from('profiles')
@@ -145,24 +156,28 @@ async function addTask() {
     const text = taskInput.value.trim();
     if (!text) return;
 
-    const { data, error } = await _supabase
+    const { error } = await _supabase
         .from('tasks')
         .insert([{
             username: currentUser,
             text: text,
             completed: false
-        }])
-        .select()
-        .single();
+        }]);
 
-    if (!error && data) {
-        tasks.push(data);
+    if (!error) {
+        // Refresh local tasks and render
+        const { data: dbTasks } = await _supabase
+            .from('tasks')
+            .select('*')
+            .eq('username', currentUser);
+        
+        tasks = dbTasks || [];
         renderTasks();
         taskInput.value = "";
         showToast("✅ Task added!");
     } else {
         console.error("Supabase Add Error:", error);
-        showToast(`❌ Error: ${error?.message || 'Unknown error'}`);
+        showToast(`❌ Error: ${error.message}`);
     }
 }
 
