@@ -39,6 +39,7 @@
                 <div class="mood-container">
                     <p>How is your mood?</p>
                     <div class="mood-options">
+                        <button onclick="setMood('🌸')">🌸</button>
                         <button onclick="setMood('😊')">😊</button>
                         <button onclick="setMood('🔥')">🔥</button>
                         <button onclick="setMood('😴')">😴</button>
@@ -54,7 +55,7 @@
 
             <!-- TASK SECTION -->
             <div class="panel quest-section">
-                <h3>Daily Quests</h3>
+                <h3>Daily Tasks</h3>
 
                 <div id="task-list"></div>
 
@@ -80,15 +81,11 @@
                 </div>
 
                 <p class="xp-text">0 / 100 XP</p>
-                <!-- WELLNESS -->
-                <div class="panel wellness-card">
-                    <h3>Wellness</h3>
-
-                    <div id="yoga-box" class="hidden">
-                        <div class="yoga-circle"></div>
-                    </div>
-
-                    <p id="pcos-off-msg">Enable Wellness in Settings</p>
+                
+                <!-- DAILY QUOTE -->
+                <div class="panel quote-card">
+                    <h3>💬 Daily Quote</h3>
+                    <p id="daily-quote-text" style="font-style: italic; margin-top: 15px; color: var(--text-main); font-size: 14px;">"Loading quote..."</p>
                 </div>
 
             </div>

@@ -43,6 +43,10 @@ body[data-mood="🧘"] {
     --bg-main: linear-gradient(135deg, #4facfe, #00f2fe);
 }
 
+body[data-mood="🌸"] {
+    --bg-main: linear-gradient(135deg, #ff9a9e, #fecfef);
+}
+
 /* ======================
    GLASS PANEL PREMIUM
 ===================== */
@@ -267,34 +271,7 @@ body[data-mood="🧘"] {
     }
 }
 
-/* ======================
-   WELLNESS ANIMATION
-===================== */
-.yoga-circle {
-    width: 90px;
-    height: 90px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #00f2fe, #4facfe);
-    animation: glowPulse 2s infinite;
-    margin: auto;
-}
-
-@keyframes glowPulse {
-    0% {
-        transform: scale(1);
-        box-shadow: 0 0 10px #00f2fe;
-    }
-
-    50% {
-        transform: scale(1.15);
-        box-shadow: 0 0 30px #4facfe;
-    }
-
-    100% {
-        transform: scale(1);
-        box-shadow: 0 0 10px #00f2fe;
-    }
-}
+/* Wellness animation styling removed */
 
 /* ======================
    TEXT

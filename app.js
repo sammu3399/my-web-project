@@ -8,16 +8,41 @@ if (!currentUser) {
     document.addEventListener("DOMContentLoaded", () => {
         const displayName = document.getElementById("display-name");
         if (displayName) displayName.textContent = currentUser;
-        
+
         const avatar = document.querySelector(".profile-avatar");
         if (avatar) avatar.src = `https://api.dicebear.com/7.x/avataaars/svg?seed=${currentUser}`;
-        
+
         const logoutBtn = document.getElementById("logout-btn");
         if (logoutBtn) {
             logoutBtn.addEventListener("click", () => {
                 localStorage.removeItem("username");
                 window.location.href = "login.html";
             });
+        }
+
+        // Daily Quote Logic
+        const dailyQuote = document.getElementById("daily-quote-text");
+        if (dailyQuote) {
+            const quotes = [
+                "Believe you can and you're halfway there.",
+                "The only way to do great work is to love what you do.",
+                "Success is not final, failure is not fatal: it is the courage to continue that counts.",
+                "Act as if what you do makes a difference. It does.",
+                "Your limitation—it's only your imagination.",
+                "Push yourself, because no one else is going to do it for you.",
+                "Dream it. Wish it. Do it.",
+                "Stay focused, go after your dreams and keep moving toward your goals."
+            ];
+            const todayStr = new Date().toDateString();
+            let quoteIndex = parseInt(localStorage.getItem(`${currentUser}_quoteIndex`));
+            const lastQuoteDate = localStorage.getItem(`${currentUser}_lastQuoteDate`);
+
+            if (isNaN(quoteIndex) || lastQuoteDate !== todayStr) {
+                quoteIndex = Math.floor(Math.random() * quotes.length);
+                localStorage.setItem(`${currentUser}_quoteIndex`, quoteIndex);
+                localStorage.setItem(`${currentUser}_lastQuoteDate`, todayStr);
+            }
+            dailyQuote.textContent = `"${quotes[quoteIndex]}"`;
         }
     });
 }
@@ -33,15 +58,15 @@ let level = 1;
 
 if (currentUser) {
     tasks = JSON.parse(localStorage.getItem(`${currentUser}_tasks`)) || [];
-    
+
     let parsedStreak = parseInt(localStorage.getItem(`${currentUser}_streak`));
     streak = isNaN(parsedStreak) ? 0 : parsedStreak;
-    
+
     mood = localStorage.getItem(`${currentUser}_mood`) || "";
-    
+
     let parsedXp = parseInt(localStorage.getItem(`${currentUser}_xp`));
     xp = isNaN(parsedXp) ? 0 : parsedXp;
-    
+
     let parsedLevel = parseInt(localStorage.getItem(`${currentUser}_level`));
     level = isNaN(parsedLevel) ? 1 : parsedLevel;
 }
@@ -53,8 +78,6 @@ const addTaskBtn = document.getElementById("add-task-btn");
 const taskList = document.getElementById("task-list");
 const streakVal = document.querySelector(".streak-val");
 const xpFill = document.querySelector(".xp-fill");
-const yogaBox = document.getElementById("yoga-box");
-const pcosMsg = document.getElementById("pcos-off-msg");
 
 // ======================
 // INIT
@@ -190,18 +213,7 @@ function applyMood() {
     if (!mood) return;
     document.body.setAttribute("data-mood", mood);
 }
-// ======================
-// WELLNESS TOGGLE
-// ======================
-function enableWellness(enable = true) {
-    if (enable) {
-        yogaBox.classList.remove("hidden");
-        pcosMsg.style.display = "none";
-    } else {
-        yogaBox.classList.add("hidden");
-        pcosMsg.style.display = "block";
-    }
-}
+// Wellness removed
 
 // ======================
 // SAVE ALL
