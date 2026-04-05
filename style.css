@@ -196,10 +196,33 @@ body {
     position: relative;
 }
 
+.streak-square {
+    background: rgba(0, 0, 0, 0.15);
+    padding: 10px 15px;
+    border-radius: 12px;
+    text-align: center;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    min-width: 80px;
+    box-shadow: inset 0 0 10px rgba(255, 179, 71, 0.1);
+}
+
+.streak-square h3 {
+    font-size: 13px;
+    margin: 0;
+    color: #ffb347;
+}
+
+.streak-square p {
+    font-size: 11px;
+    margin: 0;
+    color: var(--text-muted);
+}
+
 .streak-val {
-    font-size: 48px;
+    font-size: 32px;
     font-weight: bold;
     color: #ffb347;
+    margin: 2px 0;
     text-shadow: 0 0 10px #ffb347, 0 0 20px #ff6a00;
     animation: firePulse 1.5s infinite;
 }

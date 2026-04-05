@@ -25,13 +25,18 @@
         <div class="panel hero-card" style="margin-bottom: 20px;">
             <div class="hero-content">
 
-                <div class="profile-info">
+                <div class="profile-info" style="flex: 1; min-width: 200px;">
                     <div class="avatar-box">
                         <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" class="profile-avatar">
                     </div>
-                    <div>
+                    <div style="flex-grow: 1;">
                         <h2 id="display-name">Guest User</h2>
-                        <p>Level: <span id="user-level">Disciplined 🔥</span></p>
+                        <p style="margin-bottom: 5px;">Level: <span id="user-level">Disciplined 🔥</span></p>
+                        <!-- XP BAR (RELOCATED) -->
+                        <div class="xp-bar" style="height: 6px; margin-top: 2px; max-width: 150px;">
+                            <div class="xp-fill"></div>
+                        </div>
+                        <p class="xp-text" style="font-size: 11px; margin-top: 4px; color: var(--text-muted);">0 / 100 XP</p>
                     </div>
                 </div>
 
@@ -44,6 +49,13 @@
                         <button onclick="setMood('😴')">😴</button>
                         <button onclick="setMood('🧘')">🧘</button>
                     </div>
+                </div>
+
+                <!-- STREAK SQUARE (RELOCATED) -->
+                <div class="streak-square">
+                    <h3>🔥 Streak</h3>
+                    <h1 class="streak-val">0</h1>
+                    <p>Days</p>
                 </div>
 
             </div>
@@ -170,19 +182,7 @@
                     <button class="pink-toggle-btn" style="margin-top: 15px; margin-bottom: 0;" onclick="loadPCOSRoutine()">➕ Add Routine to Tasks</button>
                 </div>
 
-                <!-- STREAK -->
-                <div class="panel stat-card">
-                    <h3>🔥 Streak</h3>
-                    <h1 class="streak-val">0</h1>
-                    <p>Days Consistent</p>
 
-                    <!-- XP BAR -->
-                    <div class="xp-bar">
-                        <div class="xp-fill"></div>
-                    </div>
-                </div>
-
-                <p class="xp-text">0 / 100 XP</p>
                 
 
             </div>
