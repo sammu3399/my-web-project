@@ -80,7 +80,7 @@ let mood = "";
 let isPinkMode = false;
 let xp = 0;
 let level = 1;
-const maxXp = 150;
+const maxXp = 100;
 
 if (currentUser) {
     tasks = JSON.parse(localStorage.getItem(`${currentUser}_tasks`)) || [];
@@ -161,7 +161,7 @@ function renderTasks() {
 function toggleTask(id) {
     tasks = tasks.map(task => {
         if (task.id === id && !task.completed) {
-            addXP(10); // XP per task
+            addXP(20); // Base reward updated to 20 XP per task
         }
         return task.id === id ? { ...task, completed: !task.completed } : task;
     });
