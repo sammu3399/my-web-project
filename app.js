@@ -1,48 +1,59 @@
 // ======================
-// AUTH CHECK
+// AUTH & SESSION
 // ======================
-const currentUser = localStorage.getItem("username");
-if (!currentUser) {
-    window.location.href = "login.html";
-} else {
+let user = null;
+
+async function checkAuth() {
+    const { data: { session } } = await _supabase.auth.getSession();
+    if (!session) {
+        window.location.href = "login.html";
+        return;
+    }
+    user = session.user;
+    setupUI();
+    init();
+}
+
+async function uploadAvatar(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    showToast("📸 Uploading...");
+    const fileExt = file.name.split('.').pop();
+    const fileName = `${user.id}-${Date.now()}.${fileExt}`;
+
+    const { error: uploadError } = await _supabase.storage
+        .from('avatars')
+        .upload(fileName, file);
+
+    if (uploadError) {
+        showToast(`❌ Error: ${uploadError.message}`);
+        return;
+    }
+
+    const { data: { publicUrl } } = _supabase.storage
+        .from('avatars')
+        .getPublicUrl(fileName);
+
+    const { error: updateError } = await _supabase
+        .from('profiles')
+        .update({ avatar_url: publicUrl })
+        .eq('user_id', user.id);
+
+    if (!updateError) {
+        document.getElementById("profile-img").src = publicUrl;
+        showToast("✅ Profile photo updated!");
+    }
+}
+
+function setupUI() {
     document.addEventListener("DOMContentLoaded", () => {
-        const displayName = document.getElementById("display-name");
-        if (displayName) displayName.textContent = currentUser;
-
-        const avatar = document.querySelector(".profile-avatar");
-        if (avatar) avatar.src = `https://api.dicebear.com/7.x/avataaars/svg?seed=${currentUser}`;
-
         const logoutBtn = document.getElementById("logout-btn");
         if (logoutBtn) {
-            logoutBtn.addEventListener("click", () => {
-                localStorage.removeItem("username");
+            logoutBtn.addEventListener("click", async () => {
+                await _supabase.auth.signOut();
                 window.location.href = "login.html";
             });
-        }
-
-        // Daily Quote Logic
-        const dailyQuote = document.getElementById("daily-quote-text");
-        if (dailyQuote) {
-            const quotes = [
-                "Believe you can and you're halfway there.",
-                "The only way to do great work is to love what you do.",
-                "Success is not final, failure is not fatal: it is the courage to continue that counts.",
-                "Act as if what you do makes a difference. It does.",
-                "Your limitation—it's only your imagination.",
-                "Push yourself, because no one else is going to do it for you.",
-                "Dream it. Wish it. Do it.",
-                "Stay focused, go after your dreams and keep moving toward your goals."
-            ];
-            const todayStr = new Date().toDateString();
-            let quoteIndex = parseInt(localStorage.getItem(`${currentUser}_quoteIndex`));
-            const lastQuoteDate = localStorage.getItem(`${currentUser}_lastQuoteDate`);
-
-            if (isNaN(quoteIndex) || lastQuoteDate !== todayStr) {
-                quoteIndex = Math.floor(Math.random() * quotes.length);
-                localStorage.setItem(`${currentUser}_quoteIndex`, quoteIndex);
-                localStorage.setItem(`${currentUser}_lastQuoteDate`, todayStr);
-            }
-            dailyQuote.textContent = `"${quotes[quoteIndex]}"`;
         }
 
         // Pink Mode Logic
@@ -50,9 +61,15 @@ if (!currentUser) {
         if (pinkToggleBtn) {
             pinkToggleBtn.addEventListener("click", async () => {
                 isPinkMode = !isPinkMode;
-                await saveAll(); // Sync to Supabase
+                await saveAll();
                 applyMood();
             });
+        }
+
+        // Avatar Upload Listener
+        const avatarInput = document.getElementById("avatar-upload");
+        if (avatarInput) {
+            avatarInput.addEventListener("change", uploadAvatar);
         }
 
         // Exclusive Details Accordion Logic
@@ -69,6 +86,37 @@ if (!currentUser) {
             });
         });
     });
+}
+
+checkAuth();
+
+// ======================
+// SYNCED LOGIC
+// ======================
+function handleDailyQuote() {
+    const dailyQuote = document.getElementById("daily-quote-text");
+    if (dailyQuote) {
+        const quotes = [
+            "Believe you can and you're halfway there.",
+            "The only way to do great work is to love what you do.",
+            "Success is not final, failure is not fatal: it is the courage to continue that counts.",
+            "Act as if what you do makes a difference. It does.",
+            "Your limitation—it's only your imagination.",
+            "Push yourself, because no one else is going to do it for you.",
+            "Dream it. Wish it. Do it.",
+            "Stay focused, go after your dreams and keep moving toward your goals."
+        ];
+        const todayStr = new Date().toDateString();
+        let quoteIndex = parseInt(localStorage.getItem(`quoteIndex_${user.id}`));
+        const lastQuoteDate = localStorage.getItem(`lastQuoteDate_${user.id}`);
+
+        if (isNaN(quoteIndex) || lastQuoteDate !== todayStr) {
+            quoteIndex = Math.floor(Math.random() * quotes.length);
+            localStorage.setItem(`quoteIndex_${user.id}`, quoteIndex);
+            localStorage.setItem(`lastQuoteDate_${user.id}`, todayStr);
+        }
+        dailyQuote.textContent = `"${quotes[quoteIndex]}"`;
+    }
 }
 
 // ======================
@@ -97,31 +145,27 @@ const xpFill = document.querySelector(".xp-fill");
 // INIT
 // ======================
 async function init() {
-    if (!currentUser) return;
-    
-    // Test Connection
-    try {
-        const { error: testErr } = await _supabase.from('profiles').select('count');
-        if (testErr) {
-            console.error("Supabase Connection Failed:", testErr);
-            showToast(`⚠️ Connection Error: ${testErr.message}`);
-        }
-    } catch (e) {
-        showToast("⚠️ Cannot connect to Supabase. Check your keys!");
-    }
+    if (!user) return;
     
     // Load profile from Supabase
     let { data: profile, error: profileErr } = await _supabase
         .from('profiles')
         .select('*')
-        .eq('username', currentUser)
+        .eq('user_id', user.id)
         .single();
     
-    // Auto-create profile if missing (helps with database resets)
+    // Auto-create profile if missing
     if (!profile && profileErr && (profileErr.code === 'PGRST116' || profileErr.message.includes('not found'))) {
+        const displayName = user.user_metadata.display_name || user.email.split('@')[0];
         const { data: newProfile, error: createErr } = await _supabase
             .from('profiles')
-            .insert([{ username: currentUser, streak: 0, xp: 0, level: 1 }])
+            .insert([{ 
+                user_id: user.id, 
+                username: displayName, 
+                streak: 0, 
+                xp: 0, 
+                level: 1 
+            }])
             .select()
             .single();
         if (!createErr) profile = newProfile;
@@ -133,13 +177,20 @@ async function init() {
         level = profile.level || 1;
         mood = profile.mood || "";
         isPinkMode = !!profile.pink_mode;
+
+        // Update UI
+        document.getElementById("display-name").textContent = profile.username;
+        const profileImg = document.getElementById("profile-img");
+        if (profileImg) {
+            profileImg.src = profile.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${profile.username}`;
+        }
     }
 
     // Load tasks from Supabase
     const { data: dbTasks } = await _supabase
         .from('tasks')
         .select('*')
-        .eq('username', currentUser);
+        .eq('user_id', user.id);
     
     tasks = dbTasks || [];
 
@@ -148,6 +199,7 @@ async function init() {
     updateStreakUI();
     updateXPUI();
     applyMood();
+    handleDailyQuote();
     dailyReset();
 }
 init();
@@ -169,7 +221,7 @@ async function addTask() {
     const { error } = await _supabase
         .from('tasks')
         .insert([{
-            username: currentUser,
+            user_id: user.id,
             text: text,
             completed: false
         }]);
@@ -234,6 +286,7 @@ async function toggleTask(id) {
     if (!wasCompleted && newCompletedStatus) {
         addXP(xpReward);
         logCompletion(tasks[taskIndex].text); // RECORD HISTORY
+        showGudduMessage(); // GUDDU BOOST!
     }
 
     checkAllCompleted();
@@ -245,7 +298,7 @@ async function logCompletion(taskName) {
     const { error } = await _supabase
         .from('task_history')
         .insert([{
-            username: currentUser,
+            user_id: user.id,
             task_text: taskName,
             completed_at: new Date().toISOString()
         }]);
@@ -260,7 +313,7 @@ async function renderHistory() {
     const { data: history, error } = await _supabase
         .from('task_history')
         .select('*')
-        .eq('username', currentUser)
+        .eq('user_id', user.id)
         .order('completed_at', { ascending: false })
         .limit(10);
 
@@ -319,7 +372,7 @@ async function loadPCOSRoutine() {
             const { data, error } = await _supabase
                 .from('tasks')
                 .insert([{
-                    username: currentUser,
+                    user_id: user.id,
                     text: routineText,
                     completed: false
                 }])
@@ -349,7 +402,8 @@ function checkAllCompleted() {
     const allDone = tasks.every(t => t.completed);
 
     if (allDone) {
-        const streakDateStr = localStorage.getItem(`${currentUser}_streakDate`);
+        const streakKey = `streakDate_${user.id}`;
+        const streakDateStr = localStorage.getItem(streakKey);
         const today = new Date().toDateString();
 
         if (streakDateStr !== today) {
@@ -358,7 +412,7 @@ function checkAllCompleted() {
             showToast("🔥 Streak Increased!");
             launchConfetti();
 
-            localStorage.setItem(`${currentUser}_streakDate`, today);
+            localStorage.setItem(streakKey, today);
             saveAll();
         }
     }
@@ -401,7 +455,7 @@ function addXP(amount) {
 async function setMood(m) {
     mood = m;
     isPinkMode = false; // Selecting standard mood forces pink mode off
-    if (currentUser) {
+    if (user) {
         await saveAll(); // Sync to Supabase
     }
     applyMood();
@@ -442,7 +496,7 @@ function applyMood() {
 // SAVE ALL
 // ======================
 async function saveAll() {
-    if (!currentUser) return;
+    if (!user) return;
     
     const { error } = await _supabase
         .from('profiles')
@@ -453,9 +507,41 @@ async function saveAll() {
             mood: mood,
             pink_mode: isPinkMode
         })
-        .eq('username', currentUser);
+        .eq('user_id', user.id);
 
     if (error) console.error("Sync Error:", error);
+}
+
+const gudduMessages = [
+    "Guddu says: Wow! You're crushing it! 🚀",
+    "Guddu is so proud of you! Keep that momentum! 💎",
+    "Guddu: Another win in the bag! You're unstoppable! 🔥",
+    "Guddu: Your future self is thanking you right now! ✨",
+    "Guddu: Look at that focus! You're on fire! 🦁",
+    "Guddu says: Small steps lead to big wins! Keep going! 🏆"
+];
+
+function showGudduMessage() {
+    const existing = document.querySelector(".guddu-toast");
+    if (existing) existing.remove();
+
+    const msg = gudduMessages[Math.floor(Math.random() * gudduMessages.length)];
+    const toast = document.createElement("div");
+    toast.className = "guddu-toast";
+    toast.innerHTML = `
+        <div class="guddu-icon">🦁</div>
+        <div class="guddu-text">${msg}</div>
+    `;
+    document.body.appendChild(toast);
+
+    // Trigger animation
+    setTimeout(() => toast.classList.add("active"), 100);
+    
+    // Auto-remove
+    setTimeout(() => {
+        toast.classList.remove("active");
+        setTimeout(() => toast.remove(), 500);
+    }, 4000);
 }
 
 // ======================
@@ -490,8 +576,8 @@ function launchConfetti() {
 // DAILY RESET SYSTEM
 // ======================
 async function dailyReset() {
-    if (!currentUser) return;
-    const lastDate = localStorage.getItem(`${currentUser}_lastDate`);
+    if (!user) return;
+    const lastDate = localStorage.getItem(`lastDate_${user.id}`);
     const today = new Date().toDateString();
 
     if (lastDate !== today) {
@@ -504,7 +590,7 @@ async function dailyReset() {
         if (!error) {
             tasks.forEach(t => t.completed = false);
             renderTasks();
-            localStorage.setItem(`${currentUser}_lastDate`, today);
+            localStorage.setItem(`lastDate_${user.id}`, today);
         }
     }
 }

@@ -29,9 +29,11 @@
             <div class="hero-content" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px;">
 
                 <div class="profile-info" style="display: flex; align-items: center; gap: 15px; flex: 1; min-width: 200px;">
-                    <div class="avatar-box">
-                        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" class="profile-avatar">
-                    </div>
+                    <label for="avatar-upload" class="avatar-box" style="cursor: pointer; position: relative;" title="Upload your photo">
+                        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" class="profile-avatar" id="profile-img">
+                        <div class="avatar-overlay" style="position: absolute; inset: 0; background: rgba(0,0,0,0.3); border-radius: 50%; opacity: 0; display: flex; align-items: center; justify-content: center; transition: 0.3s;">📸</div>
+                    </label>
+                    <input type="file" id="avatar-upload" accept="image/*" style="display: none;">
                     <div style="flex-grow: 1;">
                         <h2 id="display-name">Guest User</h2>
                         <p style="margin-bottom: 5px;">Level: <span id="user-level">Disciplined 🔥</span></p>

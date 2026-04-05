@@ -98,6 +98,10 @@ body {
     }
 }
 
+.avatar-box:hover .avatar-overlay {
+    opacity: 1 !important;
+}
+
 /* ======================
    MOOD BUTTONS PREMIUM
 ===================== */
@@ -788,4 +792,46 @@ body.mood-yoga, body.mood-yoga .hero-card { background: linear-gradient(135deg, 
     letter-spacing: 0.5px;
     color: #00ffcc;
     font-weight: 600;
+}
+
+/* ======================
+   GUDDU MASCOT TOAST
+ ===================== */
+.guddu-toast {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    background: linear-gradient(135deg, #FF9A8B, #FF6A88, #FF99AC);
+    color: white;
+    padding: 15px 25px;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(255, 106, 136, 0.5);
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    transform: translateX(120%);
+    transition: transform 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.guddu-toast.active {
+    transform: translateX(0);
+}
+
+.guddu-icon {
+    font-size: 24px;
+    background: rgba(255, 255, 255, 0.2);
+    width: 45px;
+    height: 45px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
+
+.guddu-text {
+    font-weight: 600;
+    font-size: 14px;
+    letter-spacing: 0.5px;
 }
