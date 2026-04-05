@@ -159,9 +159,10 @@ async function addTask() {
         tasks.push(data);
         renderTasks();
         taskInput.value = "";
+        showToast("✅ Task added!");
     } else {
         console.error("Supabase Add Error:", error);
-        showToast("❌ Failed to add task. Check console for details.");
+        showToast(`❌ Error: ${error?.message || 'Unknown error'}`);
     }
 }
 
