@@ -2,14 +2,14 @@
    ROOT THEME VARIABLES
 ===================== */
 :root {
-    --bg-main: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
-    --card-glass: rgba(255, 255, 255, 0.06);
-    --border-glass: rgba(255, 255, 255, 0.1);
+    --bg-main: linear-gradient(135deg, #2a2a72, #009ffd, #2a2a72);
+    --card-glass: rgba(255, 255, 255, 0.1);
+    --border-glass: rgba(255, 255, 255, 0.2);
     --text-main: #ffffff;
-    --text-muted: rgba(255, 255, 255, 0.7);
+    --text-muted: rgba(255, 255, 255, 0.85);
 
-    --accent: #7c5cff;
-    --accent-glow: #9b7bff;
+    --accent: #a78bfa;
+    --accent-glow: #c084fc;
 
     --success: #00ffcc;
     --warning: #ffb347;
@@ -50,8 +50,8 @@ body {
    HERO CARD (GRADIENT GLOW)
 ===================== */
 .hero-card {
-    background: linear-gradient(135deg, #6a11cb, #2575fc);
-    box-shadow: 0 0 25px rgba(124, 92, 255, 0.6);
+    background: linear-gradient(135deg, #7c3aed, #0ea5e9);
+    box-shadow: 0 0 35px rgba(124, 58, 237, 0.7);
 }
 
 /* ======================
@@ -717,10 +717,10 @@ button:active::after {
 /* ======================
    MOOD BACKGROUNDS
 ===================== */
-body.mood-happy, body.mood-happy .hero-card { background: linear-gradient(135deg, #11998e, #38ef7d) !important; box-shadow: 0 0 25px rgba(17, 153, 142, 0.6); }
-body.mood-fire, body.mood-fire .hero-card { background: linear-gradient(135deg, #ff416c, #ff4b2b) !important; box-shadow: 0 0 25px rgba(255, 65, 108, 0.6); }
-body.mood-sleep, body.mood-sleep .hero-card { background: linear-gradient(135deg, #141e30, #243b55) !important; box-shadow: 0 0 25px rgba(20, 30, 48, 0.6); }
-body.mood-yoga, body.mood-yoga .hero-card { background: linear-gradient(135deg, #8e2de2, #4a00e0) !important; box-shadow: 0 0 25px rgba(142, 45, 226, 0.6); }
+body.mood-happy, body.mood-happy .hero-card { background: linear-gradient(135deg, #00b09b, #96c93d) !important; box-shadow: 0 0 25px rgba(0, 176, 155, 0.6); }
+body.mood-fire, body.mood-fire .hero-card { background: linear-gradient(135deg, #ff9966, #ff5e62) !important; box-shadow: 0 0 25px rgba(255, 153, 102, 0.6); }
+body.mood-sleep, body.mood-sleep .hero-card { background: linear-gradient(135deg, #2c3e50, #4ca1af) !important; box-shadow: 0 0 25px rgba(44, 62, 80, 0.6); }
+body.mood-yoga, body.mood-yoga .hero-card { background: linear-gradient(135deg, #a8c0ff, #3f2b96) !important; box-shadow: 0 0 25px rgba(168, 192, 255, 0.6); }
 
 /* ======================
    TASK HISTORY
