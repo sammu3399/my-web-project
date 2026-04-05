@@ -44,7 +44,7 @@ if (!currentUser) {
             }
             dailyQuote.textContent = `"${quotes[quoteIndex]}"`;
         }
-        
+
         // Pink Mode Logic
         const pinkToggleBtn = document.getElementById("pink-toggle-btn");
         if (pinkToggleBtn) {
@@ -170,7 +170,7 @@ function loadPCOSRoutine() {
         "🧘‍♀️ Cat-Cow Stretch (10 reps)",
         "🧘‍♀️ Garland Pose (1 min)"
     ];
-    
+
     let addedCount = 0;
     routine.forEach((routineText, index) => {
         const exists = tasks.some(t => t.text === routineText);
@@ -183,7 +183,7 @@ function loadPCOSRoutine() {
             addedCount++;
         }
     });
-    
+
     if (addedCount > 0) {
         saveAll();
         renderTasks();
@@ -203,13 +203,13 @@ function checkAllCompleted() {
     if (allDone) {
         const streakDateStr = localStorage.getItem(`${currentUser}_streakDate`);
         const today = new Date().toDateString();
-        
+
         if (streakDateStr !== today) {
             streak++;
             addXP(50); // bonus XP
             showToast("🔥 Streak Increased!");
             launchConfetti();
-            
+
             localStorage.setItem(`${currentUser}_streakDate`, today);
             saveAll();
         }
@@ -266,20 +266,20 @@ function applyMood() {
     } else {
         document.body.setAttribute("data-mood", mood);
     }
-    
+
     const pcosPanel = document.getElementById("pcos-panel");
     const pinkTogglePanel = document.getElementById("pink-toggle-panel");
     const pinkToggleBtn = document.getElementById("pink-toggle-btn");
-    
+
     if (pcosPanel) {
         if (isPinkMode) {
             pcosPanel.classList.remove("hidden");
             if (pinkTogglePanel) pinkTogglePanel.classList.add("pcos-active");
-            if(pinkToggleBtn) pinkToggleBtn.textContent = "🌸 Turn Pink Mode OFF";
+            if (pinkToggleBtn) pinkToggleBtn.textContent = "🌸 Turn Pink Mode OFF";
         } else {
             pcosPanel.classList.add("hidden");
             if (pinkTogglePanel) pinkTogglePanel.classList.remove("pcos-active");
-            if(pinkToggleBtn) pinkToggleBtn.textContent = "🌸 Turn Pink Mode ON";
+            if (pinkToggleBtn) pinkToggleBtn.textContent = "🌸 Turn Pink Mode ON";
         }
     }
 }
