@@ -562,19 +562,27 @@ async function saveAll() {
 }
 
 const gudduMessages = [
-    "Guddu says: Wow! You're crushing it! 🚀",
-    "Guddu is so proud of you! Keep that momentum! 💎",
-    "Guddu: Another win in the bag! You're unstoppable! 🔥",
-    "Guddu: Your future self is thanking you right now! ✨",
-    "Guddu: Look at that focus! You're on fire! 🦁",
-    "Guddu says: Small steps lead to big wins! Keep going! 🏆"
+    "Sammu says: Wow! You're crushing it! 🚀",
+    "Sammu is so proud of you! Keep that momentum! 💎",
+    "Sammu: Another win in the bag! You're unstoppable! 🔥",
+    "Sammu: Your future self is thanking you right now! ✨",
+    "Sammu: Look at that focus! You're on fire! 🦁",
+    "Sammu says: Small steps lead to big wins! Keep going! 🏆",
+    "Sammu: One more win for the books! 📚",
+    "Sammu: You're on the right track, keep moving! 🛤️",
+    "Sammu: Success looks good on you, Guddu! 💎",
+    "Sammu: Every task counts! Great job! ✅"
 ];
 
 const vipGudduMessages = [
-    "Guddu says: Hey namesake! You're doing incredible today! 👑",
-    "Guddu is extra proud of you, Guddu! Legacy in the making! 🌟",
-    "Guddu: From one legend to another, keep winning! 💎",
-    "Guddu: You're not just a user, you're the inspiration! 🔥"
+    "Sammu says: Hey Guddu! You're doing incredible today, keep it up! 👑",
+    "Sammu is extra proud of you, Guddu! Legacy in the making! 🌟",
+    "Sammu: Guddu, keep winning! You're the best! 💎",
+    "Sammu: You're not just a sister, you're my inspiration, Guddu! 🔥",
+    "Sammu: I always knew you could do it, Guddu! 🌟",
+    "Sammu: You're making me so proud every single day, Guddu! 🦁",
+    "Sammu: Keep shining like the star you are, Guddu! ✨",
+    "Sammu: Guddu, you're the strongest person I know! 🔥"
 ];
 
 function showGudduMessage() {
