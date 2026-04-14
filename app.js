@@ -175,6 +175,17 @@ const taskList = document.getElementById("task-list");
 const streakVal = document.querySelector(".streak-val");
 const xpFill = document.querySelector(".xp-fill");
 
+// Audio Elements
+const soundSuccess = document.getElementById("sound-success");
+const soundLevelUp = document.getElementById("sound-level-up");
+const soundHover = document.getElementById("sound-hover"); // New hover sound
+
+function playSound(type) {
+    if (type === "success" && soundSuccess) soundSuccess.play().catch(e => console.log("Audio play blocked"));
+    if (type === "level-up" && soundLevelUp) soundLevelUp.play().catch(e => console.log("Audio play blocked"));
+    if (type === "hover" && soundHover) soundHover.play().catch(e => null); // Silent catch for hover spam
+}
+
 // ======================
 // INIT
 // ======================
@@ -214,8 +225,13 @@ async function init() {
             mood = profile.mood || "";
             isPinkMode = !!profile.pink_mode;
 
-            // Update UI
-            document.getElementById("display-name").textContent = profile.username;
+            // Dynamic Greeting Logic
+            const hr = new Date().getHours();
+            let greeting = "Good Evening, ";
+            if (hr >= 5 && hr < 12) greeting = "Good Morning, ";
+            else if (hr >= 12 && hr < 18) greeting = "Good Afternoon, ";
+
+            document.getElementById("display-name").textContent = greeting + profile.username + "!";
             const profileImg = document.getElementById("profile-img");
             if (profileImg) {
                 profileImg.src = profile.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${profile.username}`;
@@ -239,12 +255,20 @@ async function init() {
         applyMood();
         handleDailyQuote();
         dailyReset();
+        
+        // --- NEW PREMIUM FEATURES ---
+        initTimer();
+        loadWater();
+        loadGoal();
+        loadBadges();
+        initChart();
 
     } catch (err) {
         console.error("Initialization Error:", err);
-        showToast("⚠️ Database sync failed. Check your Supabase columns!");
-        // Set some defaults so the UI isn't completely broken
-        document.getElementById("display-name").textContent = currentUser;
+        showToast("⚠️ Database sync failed!");
+        if (document.getElementById("display-name")) {
+            document.getElementById("display-name").textContent = currentUser;
+        }
     }
 }
 init();
@@ -252,12 +276,13 @@ init();
 // ======================
 // TASK SYSTEM
 // ======================
-addTaskBtn.addEventListener("click", addTask);
+if (addTaskBtn) addTaskBtn.addEventListener("click", addTask);
 
-// Support Enter key
-taskInput.addEventListener("keypress", (e) => {
-    if (e.key === "Enter") addTask();
-});
+if (taskInput) {
+    taskInput.addEventListener("keypress", (e) => {
+        if (e.key === "Enter") addTask();
+    });
+}
 
 async function addTask() {
     const text = taskInput.value.trim();
@@ -272,7 +297,6 @@ async function addTask() {
         }]);
 
     if (!error) {
-        // Refresh local tasks and render
         const { data: dbTasks } = await _supabase
             .from('tasks')
             .select('*')
@@ -283,18 +307,17 @@ async function addTask() {
         taskInput.value = "";
         showToast("✅ Task added!");
     } else {
-        console.error("Supabase Add Error:", error);
         showToast(`❌ Error: ${error.message}`);
     }
 }
 
 function renderTasks() {
+    if (!taskList) return;
     taskList.innerHTML = "";
 
     tasks.forEach(task => {
         const div = document.createElement("div");
         div.className = "task-item";
-
         div.innerHTML = `
             <span class="${task.completed ? 'done' : ''}">${task.text}</span>
             <div>
@@ -302,14 +325,12 @@ function renderTasks() {
                 <button onclick="deleteTask('${task.id}')">❌</button>
             </div>
         `;
-
         taskList.appendChild(div);
     });
 }
 
 async function toggleTask(id) {
     let xpReward = tasks.length > 0 ? Math.round(100 / tasks.length) : 0;
-    
     const taskIndex = tasks.findIndex(t => String(t.id) === String(id));
     if (taskIndex === -1) return;
     
@@ -330,12 +351,14 @@ async function toggleTask(id) {
 
     if (!wasCompleted && newCompletedStatus) {
         addXP(xpReward);
-        logCompletion(tasks[taskIndex].text); // RECORD HISTORY
+        logCompletion(tasks[taskIndex].text);
         
-        // Show Guddu message ONLY for the user named 'Guddu'
         if (currentUser && currentUser.toLowerCase() === "guddu") {
             showGudduMessage(); 
         }
+        
+        playSound("success");
+        checkAchievements();
     }
 
     checkAllCompleted();
@@ -344,15 +367,14 @@ async function toggleTask(id) {
 }
 
 async function logCompletion(taskName) {
-    const { error } = await _supabase
+    await _supabase
         .from('task_history')
         .insert([{
             username: currentUser,
             task_text: taskName,
             completed_at: new Date().toISOString()
         }]);
-
-    if (!error) renderHistory(); // Refresh the list
+    renderHistory();
 }
 
 async function renderHistory() {
@@ -375,7 +397,6 @@ async function renderHistory() {
         const date = new Date(item.completed_at);
         const timeStr = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
         const dateStr = date.toLocaleDateString();
-        
         return `
             <div class="history-item">
                 <div class="history-item-top">
@@ -404,14 +425,9 @@ async function deleteTask(id) {
 
 async function loadPCOSRoutine() {
     const routine = [
-        "🧘‍♀️ Butterfly Pose (2 mins)",
-        "🧘‍♀️ Cobra Pose (1 min)",
-        "🧘‍♀️ Cat-Cow Stretch (10 reps)",
-        "🧘‍♀️ Garland Pose (1 min)",
-        "🧘‍♀️ Bridge Pose (1 min)",
-        "🧘‍♀️ Child's Pose (2 mins)",
-        "🧘‍♀️ Pigeon Pose (1 min per side)",
-        "🧘‍♀️ Reclining Bound Angle (2 mins)"
+        "🧘‍♀️ Butterfly Pose (2 mins)", "🧘‍♀️ Cobra Pose (1 min)", "🧘‍♀️ Cat-Cow Stretch (10 reps)",
+        "🧘‍♀️ Garland Pose (1 min)", "🧘‍♀️ Bridge Pose (1 min)", "🧘‍♀️ Child's Pose (2 mins)",
+        "🧘‍♀️ Pigeon Pose (1 min per side)", "🧘‍♀️ Reclining Bound Angle (2 mins)"
     ];
 
     let addedCount = 0;
@@ -420,14 +436,8 @@ async function loadPCOSRoutine() {
         if (!exists) {
             const { data, error } = await _supabase
                 .from('tasks')
-                .insert([{
-                    username: currentUser,
-                    text: routineText,
-                    completed: false
-                }])
-                .select()
-                .single();
-
+                .insert([{ username: currentUser, text: routineText, completed: false }])
+                .select().single();
             if (!error && data) {
                 tasks.push(data);
                 addedCount++;
@@ -437,17 +447,15 @@ async function loadPCOSRoutine() {
 
     if (addedCount > 0) {
         renderTasks();
-        showToast(`🌸 ${addedCount} Exercises Added to Tasks!`);
-    } else {
-        showToast("⚠️ Routine is already in your tasks!");
+        showToast(`🌸 ${addedCount} Exercises Added!`);
     }
 }
+
 // ======================
 // STREAK SYSTEM
 // ======================
 function checkAllCompleted() {
     if (tasks.length === 0) return;
-
     const allDone = tasks.every(t => t.completed);
 
     if (allDone) {
@@ -457,43 +465,41 @@ function checkAllCompleted() {
 
         if (streakDateStr !== today) {
             streak++;
-            addXP(50); // bonus XP
+            addXP(50);
             showToast("🔥 Streak Increased!");
             launchConfetti();
-
             localStorage.setItem(streakKey, today);
             saveAll();
         }
     }
-
     updateStreakUI();
 }
 
 function updateStreakUI() {
-    streakVal.textContent = streak;
+    if (streakVal) streakVal.textContent = streak;
 }
 
 // ======================
 // XP SYSTEM
 // ======================
-
 function updateXPUI() {
     let percent = (xp / maxXp) * 100;
-    xpFill.style.width = percent + "%";
-    document.querySelector(".xp-text").innerText = xp + " / " + maxXp + " XP";
-    document.getElementById("user-level").textContent = "Level " + level + " 🔥";
+    if (xpFill) xpFill.style.width = percent + "%";
+    const xpText = document.querySelector(".xp-text");
+    if (xpText) xpText.innerText = xp + " / " + maxXp + " XP";
+    const lvlText = document.getElementById("user-level");
+    if (lvlText) lvlText.textContent = "Level " + level + " 🔥";
 }
 
 function addXP(amount) {
     xp += amount;
-
     while (xp >= maxXp) {
         xp -= maxXp;
         level++;
         showToast("🎉 Level Up!");
         launchConfetti();
+        playSound("level-up");
     }
-
     saveAll();
     updateXPUI();
 }
@@ -503,10 +509,8 @@ function addXP(amount) {
 // ======================
 async function setMood(m) {
     mood = m;
-    isPinkMode = false; // Selecting standard mood forces pink mode off
-    if (currentUser) {
-        await saveAll(); // Sync to Supabase
-    }
+    isPinkMode = false;
+    await saveAll();
     applyMood();
 }
 
@@ -517,15 +521,11 @@ function applyMood() {
     if (mood === '😴') document.body.classList.add('mood-sleep');
     if (mood === '🧘') document.body.classList.add('mood-yoga');
 
-    if (!mood) {
-        document.body.removeAttribute("data-mood");
-    } else {
-        document.body.setAttribute("data-mood", mood);
-    }
+    if (mood) document.body.setAttribute("data-mood", mood);
 
     const pcosPanel = document.getElementById("pcos-panel");
-    const pinkTogglePanel = document.getElementById("pink-toggle-panel");
     const pinkToggleBtn = document.getElementById("pink-toggle-btn");
+    const pinkTogglePanel = document.getElementById("pink-toggle-panel");
 
     if (pcosPanel) {
         if (isPinkMode) {
@@ -539,28 +539,17 @@ function applyMood() {
         }
     }
 }
-// Wellness removed
 
-// ======================
-// SAVE ALL
-// ======================
 async function saveAll() {
     if (!currentUser) return;
-    
-    const { error } = await _supabase
-        .from('profiles')
-        .update({
-            streak: streak,
-            xp: xp,
-            level: level,
-            mood: mood,
-            pink_mode: isPinkMode
-        })
-        .eq('username', currentUser);
-
-    if (error) console.error("Sync Error:", error);
+    await _supabase.from('profiles').update({
+        streak: streak, xp: xp, level: level, mood: mood, pink_mode: isPinkMode
+    }).eq('username', currentUser);
 }
 
+// ======================
+// MASCOT (GUDDU/SAMMU)
+// ======================
 const gudduMessages = [
     "Sammu says: Wow! You're crushing it! 🚀",
     "Sammu is so proud of you! Keep that momentum! 💎",
@@ -586,30 +575,17 @@ const vipGudduMessages = [
 ];
 
 function showGudduMessage() {
-    // Double-check: Only show mascot for the 'Guddu' account
     if (!currentUser || currentUser.toLowerCase() !== "guddu") return;
-
     const existing = document.querySelector(".guddu-toast");
     if (existing) existing.remove();
 
-    let pool = gudduMessages;
-    if (currentUser && currentUser.toLowerCase() === "guddu") {
-        pool = [...gudduMessages, ...vipGudduMessages];
-    }
-
+    let pool = [...gudduMessages, ...vipGudduMessages];
     const msg = pool[Math.floor(Math.random() * pool.length)];
     const toast = document.createElement("div");
     toast.className = "guddu-toast";
-    toast.innerHTML = `
-        <div class="guddu-icon">🦁</div>
-        <div class="guddu-text">${msg}</div>
-    `;
+    toast.innerHTML = `<div class="guddu-icon">🦁</div><div class="guddu-text">${msg}</div>`;
     document.body.appendChild(toast);
-
-    // Trigger animation
     setTimeout(() => toast.classList.add("active"), 100);
-    
-    // Auto-remove
     setTimeout(() => {
         toast.classList.remove("active");
         setTimeout(() => toast.remove(), 500);
@@ -617,66 +593,43 @@ function showGudduMessage() {
 }
 
 // ======================
-// TOAST NOTIFICATION 🔔
+// UTILS
 // ======================
 function showToast(msg) {
     const toast = document.createElement("div");
     toast.className = "toast";
     toast.innerText = msg;
-
     document.body.appendChild(toast);
-
-    setTimeout(() => {
-        toast.remove();
-    }, 2000);
+    setTimeout(() => toast.remove(), 2000);
 }
+
 function launchConfetti() {
     const count = 80;
     const centerX = window.innerWidth / 2;
     const centerY = window.innerHeight / 2;
-
     for (let i = 0; i < count; i++) {
         const confetti = document.createElement("div");
         confetti.className = "confetti";
-
-        // Starting position (center)
         confetti.style.setProperty("--x", centerX + "px");
         confetti.style.setProperty("--y", centerY + "px");
-
-        // Random destination (blast effect)
         const angle = Math.random() * Math.PI * 2;
         const velocity = 100 + Math.random() * 300;
-        const tx = Math.cos(angle) * velocity + "px";
-        const ty = Math.sin(angle) * velocity + "px";
-        const tr = (Math.random() * 720) + "deg";
-
-        confetti.style.setProperty("--tx", tx);
-        confetti.style.setProperty("--ty", ty);
-        confetti.style.setProperty("--tr", tr);
-
-        // Color & Shape
+        confetti.style.setProperty("--tx", Math.cos(angle) * velocity + "px");
+        confetti.style.setProperty("--ty", Math.sin(angle) * velocity + "px");
+        confetti.style.setProperty("--tr", (Math.random() * 720) + "deg");
         confetti.style.background = `hsl(${Math.random() * 360}, 100%, 60%)`;
         confetti.style.borderRadius = Math.random() > 0.5 ? "50%" : "2px";
-
         document.body.appendChild(confetti);
         setTimeout(() => confetti.remove(), 1500);
     }
 }
-// ======================
-// DAILY RESET SYSTEM
-// ======================
+
 async function dailyReset() {
     if (!currentUser) return;
     const lastDate = localStorage.getItem(`lastDate_${currentUser}`);
     const today = new Date().toDateString();
-
     if (lastDate !== today) {
-        // Reset in Supabase
-        const { error } = await _supabase
-            .from('tasks')
-            .update({ completed: false })
-            .eq('username', currentUser);
-
+        const { error } = await _supabase.from('tasks').update({ completed: false }).eq('username', currentUser);
         if (!error) {
             tasks.forEach(t => t.completed = false);
             renderTasks();
@@ -684,3 +637,152 @@ async function dailyReset() {
         }
     }
 }
+
+// ======================
+// PREMIUM FEATURES LOGIC
+// ======================
+
+// 1. Timer
+let timerInterval;
+let timeLeft = 25 * 60;
+let isTimerRunning = false;
+function initTimer() {
+    const startBtn = document.getElementById("timer-start-btn");
+    const resetBtn = document.getElementById("timer-reset-btn");
+    if (!startBtn) return;
+    startBtn.onclick = () => {
+        if (isTimerRunning) { clearInterval(timerInterval); startBtn.innerText = "Resume"; }
+        else { timerInterval = setInterval(() => { 
+            if (timeLeft <= 0) { clearInterval(timerInterval); playSound("level-up"); showToast("⏰ Session complete!"); return; }
+            timeLeft--; updateTimerUI();
+        }, 1000); startBtn.innerText = "Pause"; }
+        isTimerRunning = !isTimerRunning;
+    };
+    resetBtn.onclick = () => { clearInterval(timerInterval); isTimerRunning = false; timeLeft = 25 * 60; startBtn.innerText = "Start"; updateTimerUI(); };
+}
+function updateTimerUI() {
+    const display = document.querySelector(".timer-display");
+    if (display) display.innerText = `${Math.floor(timeLeft / 60)}:${(timeLeft % 60).toString().padStart(2, '0')}`;
+}
+
+// 2. Hydration
+let waterCount = 0;
+async function loadWater() {
+    const today = new Date().toISOString().split('T')[0];
+    const { data } = await _supabase.from('user_habits').select('value').eq('username', currentUser).eq('habit_type', 'water').eq('date', today).single();
+    waterCount = data ? data.value : 0;
+    updateWaterUI();
+}
+const addWaterBtn = document.getElementById("add-water-btn");
+if (addWaterBtn) {
+    addWaterBtn.onclick = async () => {
+        waterCount = Math.min(waterCount + 1, 8);
+        updateWaterUI();
+        await _supabase.from('user_habits').upsert({ username: currentUser, habit_type: 'water', value: waterCount, date: new Date().toISOString().split('T')[0] }, { onConflict: 'username,habit_type,date' });
+    };
+}
+function updateWaterUI() { if (document.getElementById("water-count")) document.getElementById("water-count").innerText = waterCount; }
+
+// 3. Goal Wall
+const goalUpload = document.getElementById("goal-upload");
+if (goalUpload) goalUpload.addEventListener("change", async (e) => {
+    const file = e.target.files[0]; if (!file) return;
+    showToast("🎯 Uploading Goal...");
+    const fileName = `goal-${currentUser}.${file.name.split('.').pop()}`;
+    const { error } = await _supabase.storage.from('goals').upload(fileName, file, { upsert: true });
+    if (!error) {
+        const { data: { publicUrl } } = _supabase.storage.from('goals').getPublicUrl(fileName);
+        await _supabase.from('profiles').update({ goal_image_url: publicUrl }).eq('username', currentUser);
+        updateGoalUI(publicUrl);
+        showToast("✅ Goal set!");
+    }
+});
+async function loadGoal() {
+    const { data } = await _supabase.from('profiles').select('goal_image_url').eq('username', currentUser).single();
+    if (data?.goal_image_url) updateGoalUI(data.goal_image_url);
+}
+function updateGoalUI(url) {
+    const img = document.getElementById("goal-img");
+    const container = document.getElementById("goal-container");
+    if (img && url) {
+        img.src = url; img.style.display = "block";
+        if (document.getElementById("goal-placeholder")) document.getElementById("goal-placeholder").style.display = "none";
+        container.style.border = "none";
+    }
+}
+
+// 4. Achievements
+const ACHIEVEMENTS = { STREAK_7: "🔥 7-Day Warrior", TASKS_50: "👑 Productivity King", WATER_8: "💧 Hydration Master" };
+async function loadBadges() {
+    const { data } = await _supabase.from('user_achievements').select('achievement_type').eq('username', currentUser);
+    if (data) data.forEach(ach => awardBadgeUI(ach.achievement_type));
+}
+async function checkAchievements() {
+    if (streak >= 7) await awardBadge("STREAK_7");
+    if (waterCount >= 8) await awardBadge("WATER_8");
+}
+async function awardBadge(type) {
+    const { error } = await _supabase.from('user_achievements').upsert({ username: currentUser, achievement_type: type });
+    if (!error) awardBadgeUI(type);
+}
+function awardBadgeUI(type) {
+    const container = document.getElementById("badge-container");
+    if (!container || document.getElementById(`badge-${type}`)) return;
+    if (document.getElementById("no-badges")) document.getElementById("no-badges").style.display = "none";
+    const badge = document.createElement("div");
+    badge.className = "badge-item new";
+    badge.id = `badge-${type}`;
+    badge.title = ACHIEVEMENTS[type];
+    badge.innerText = type === "STREAK_7" ? "🔥" : type === "TASKS_50" ? "👑" : "💧";
+    container.appendChild(badge);
+}
+
+// 5. Chart
+let weeklyChartInstance = null;
+function initChart() {
+    const ctx = document.getElementById('weeklyChart');
+    if (!ctx) return;
+    
+    if (weeklyChartInstance) {
+        weeklyChartInstance.destroy();
+    }
+    
+    weeklyChartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+            datasets: [{
+                label: 'Tasks Completed',
+                data: [5, 8, 4, 10, 6, 9, 7],
+                borderColor: '#ccfbf1',
+                backgroundColor: 'rgba(204, 251, 241, 0.2)',
+                tension: 0.4,
+                fill: true
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+                y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#fff' } },
+                x: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#fff' } }
+            }
+        }
+    });
+}
+
+// ======================
+// MICRO-INTERACTIONS
+// ======================
+document.addEventListener("DOMContentLoaded", () => {
+    // Add hover sounds to all interactive buttons
+    document.body.addEventListener("mouseenter", (e) => {
+        if (e.target.tagName === "BUTTON" && !e.target.disabled) {
+            if (soundHover) {
+                soundHover.currentTime = 0;
+                playSound("hover");
+            }
+        }
+    }, true);
+});
