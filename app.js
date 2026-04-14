@@ -540,11 +540,23 @@ const gudduMessages = [
     "Guddu says: Small steps lead to big wins! Keep going! 🏆"
 ];
 
+const vipGudduMessages = [
+    "Guddu says: Hey namesake! You're doing incredible today! 👑",
+    "Guddu is extra proud of you, Guddu! Legacy in the making! 🌟",
+    "Guddu: From one legend to another, keep winning! 💎",
+    "Guddu: You're not just a user, you're the inspiration! 🔥"
+];
+
 function showGudduMessage() {
     const existing = document.querySelector(".guddu-toast");
     if (existing) existing.remove();
 
-    const msg = gudduMessages[Math.floor(Math.random() * gudduMessages.length)];
+    let pool = gudduMessages;
+    if (currentUser && currentUser.toLowerCase() === "guddu") {
+        pool = [...gudduMessages, ...vipGudduMessages];
+    }
+
+    const msg = pool[Math.floor(Math.random() * pool.length)];
     const toast = document.createElement("div");
     toast.className = "guddu-toast";
     toast.innerHTML = `
@@ -578,17 +590,35 @@ function showToast(msg) {
     }, 2000);
 }
 function launchConfetti() {
-    for (let i = 0; i < 40; i++) {
+    const count = 80;
+    const centerX = window.innerWidth / 2;
+    const centerY = window.innerHeight / 2;
+
+    for (let i = 0; i < count; i++) {
         const confetti = document.createElement("div");
         confetti.className = "confetti";
 
-        confetti.style.left = Math.random() * 100 + "vw";
-        confetti.style.background =
-            `hsl(${Math.random() * 360}, 100%, 50%)`;
+        // Starting position (center)
+        confetti.style.setProperty("--x", centerX + "px");
+        confetti.style.setProperty("--y", centerY + "px");
+
+        // Random destination (blast effect)
+        const angle = Math.random() * Math.PI * 2;
+        const velocity = 100 + Math.random() * 300;
+        const tx = Math.cos(angle) * velocity + "px";
+        const ty = Math.sin(angle) * velocity + "px";
+        const tr = (Math.random() * 720) + "deg";
+
+        confetti.style.setProperty("--tx", tx);
+        confetti.style.setProperty("--ty", ty);
+        confetti.style.setProperty("--tr", tr);
+
+        // Color & Shape
+        confetti.style.background = `hsl(${Math.random() * 360}, 100%, 60%)`;
+        confetti.style.borderRadius = Math.random() > 0.5 ? "50%" : "2px";
 
         document.body.appendChild(confetti);
-
-        setTimeout(() => confetti.remove(), 2000);
+        setTimeout(() => confetti.remove(), 1500);
     }
 }
 // ======================
