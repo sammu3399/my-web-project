@@ -5,7 +5,11 @@ const currentUser = localStorage.getItem("username");
 
 function checkAuth() {
     if (!currentUser) {
-        window.location.href = "login.html";
+        // Only redirect if we are not already on login.html or reset-password.html
+        const path = window.location.pathname;
+        if (!path.includes("login.html") && !path.includes("reset-password.html")) {
+            window.location.href = "login.html";
+        }
     } else {
         setupUI();
         init();
@@ -151,58 +155,71 @@ const xpFill = document.querySelector(".xp-fill");
 async function init() {
     if (!currentUser) return;
     
-    // Load profile from Supabase
-    let { data: profile, error: profileErr } = await _supabase
-        .from('profiles')
-        .select('*')
-        .eq('username', currentUser)
-        .single();
-    
-    // Auto-create profile if missing
-    if (!profile && profileErr && (profileErr.code === 'PGRST116' || profileErr.message.includes('not found'))) {
-        const { data: newProfile, error: createErr } = await _supabase
+    try {
+        // Load profile from Supabase
+        let { data: profile, error: profileErr } = await _supabase
             .from('profiles')
-            .insert([{ 
-                username: currentUser, 
-                streak: 0, 
-                xp: 0, 
-                level: 1 
-            }])
-            .select()
+            .select('*')
+            .eq('username', currentUser)
             .single();
-        if (!createErr) profile = newProfile;
-    }
-    
-    if (profile) {
-        streak = profile.streak || 0;
-        xp = profile.xp || 0;
-        level = profile.level || 1;
-        mood = profile.mood || "";
-        isPinkMode = !!profile.pink_mode;
-
-        // Update UI
-        document.getElementById("display-name").textContent = profile.username;
-        const profileImg = document.getElementById("profile-img");
-        if (profileImg) {
-            profileImg.src = profile.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${profile.username}`;
+        
+        // Handle missing profile (re-create it)
+        if (!profile && profileErr && (profileErr.code === 'PGRST116' || profileErr.message.includes('not found'))) {
+            const { data: newProfile, error: createErr } = await _supabase
+                .from('profiles')
+                .insert([{ 
+                    username: currentUser, 
+                    streak: 0, 
+                    xp: 0, 
+                    level: 1 
+                }])
+                .select()
+                .single();
+            if (!createErr) profile = newProfile;
+        } else if (profileErr) {
+            // Throw for other errors (like missing columns)
+            throw profileErr;
         }
+        
+        if (profile) {
+            streak = profile.streak || 0;
+            xp = profile.xp || 0;
+            level = profile.level || 1;
+            mood = profile.mood || "";
+            isPinkMode = !!profile.pink_mode;
+
+            // Update UI
+            document.getElementById("display-name").textContent = profile.username;
+            const profileImg = document.getElementById("profile-img");
+            if (profileImg) {
+                profileImg.src = profile.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${profile.username}`;
+            }
+        }
+
+        // Load tasks from Supabase
+        const { data: dbTasks, error: tasksErr } = await _supabase
+            .from('tasks')
+            .select('*')
+            .eq('username', currentUser);
+        
+        if (tasksErr) throw tasksErr;
+        
+        tasks = dbTasks || [];
+
+        renderTasks();
+        renderHistory();
+        updateStreakUI();
+        updateXPUI();
+        applyMood();
+        handleDailyQuote();
+        dailyReset();
+
+    } catch (err) {
+        console.error("Initialization Error:", err);
+        showToast("⚠️ Database sync failed. Check your Supabase columns!");
+        // Set some defaults so the UI isn't completely broken
+        document.getElementById("display-name").textContent = currentUser;
     }
-
-    // Load tasks from Supabase
-    const { data: dbTasks } = await _supabase
-        .from('tasks')
-        .select('*')
-        .eq('username', currentUser);
-    
-    tasks = dbTasks || [];
-
-    renderTasks();
-    renderHistory();
-    updateStreakUI();
-    updateXPUI();
-    applyMood();
-    handleDailyQuote();
-    dailyReset();
 }
 init();
 

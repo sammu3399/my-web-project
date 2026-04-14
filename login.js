@@ -3,36 +3,56 @@ document.addEventListener("DOMContentLoaded", () => {
 
     loginForm.addEventListener("submit", async (e) => {
         e.preventDefault();
-        const username = document.getElementById("username").value.trim();
+        const usernameInput = document.getElementById("username");
+        const username = usernameInput.value.trim();
+        const loginBtn = loginForm.querySelector(".login-btn");
 
-        if (username) {
-            // Save to localStorage (Traditional simple way)
+        if (!username) return;
+
+        // Visual feedback
+        loginBtn.disabled = true;
+        loginBtn.textContent = "Authenticating...";
+
+        try {
+            // Save to localStorage
             localStorage.setItem("username", username);
             
-            // Ensure profile exists in Supabase for this username
-            try {
-                const { data, error } = await _supabase
-                    .from('profiles')
-                    .select('username')
-                    .eq('username', username)
-                    .single();
+            // Check if profile exists
+            let { data: profile, error } = await _supabase
+                .from('profiles')
+                .select('*')
+                .eq('username', username)
+                .single();
 
-                if (!data || error) {
-                    // Create basic profile if it doesn't exist
-                    await _supabase.from('profiles').insert([{ 
+            if (error && error.code !== 'PGRST116') {
+                throw error;
+            }
+
+            if (!profile) {
+                // Create profile if missing
+                const { error: insertError } = await _supabase
+                    .from('profiles')
+                    .insert([{ 
                         username: username, 
                         streak: 0, 
                         xp: 0, 
-                        level: 1 
+                        level: 1,
+                        pink_mode: false
                     }]);
-                }
                 
-                window.location.href = "index.html";
-            } catch (err) {
-                console.error("Login Profile Check Error:", err);
-                // Still allow login since we have the username local
-                window.location.href = "index.html";
+                if (insertError) throw insertError;
             }
+            
+            showToast("🔥 Welcome back, " + username + "!");
+            setTimeout(() => {
+                window.location.href = "index.html";
+            }, 1000);
+
+        } catch (err) {
+            console.error("Login Error:", err);
+            showToast("❌ Connection error. Check your database columns!");
+            loginBtn.disabled = false;
+            loginBtn.textContent = "Start Winning";
         }
     });
 
