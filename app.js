@@ -112,17 +112,43 @@ function handleDailyQuote() {
             "Your limitation—it's only your imagination.",
             "Push yourself, because no one else is going to do it for you.",
             "Dream it. Wish it. Do it.",
-            "Stay focused, go after your dreams and keep moving toward your goals."
+            "Stay focused, go after your dreams and keep moving toward your goals.",
+            "Discipline is the bridge between goals and accomplishment.",
+            "Excellence is not an act, but a habit.",
+            "Success is not greatness, it is consistency.",
+            "Discipline is choosing between what you want now and what you want most.",
+            "Mastering yourself is true power.",
+            "The way to get started is to quit talking and begin doing.",
+            "Continuous progress is the key to outrageous success.",
+            "Action is the foundational key to all success.",
+            "It does not matter how slowly you go so long as you do not stop.",
+            "Successful people work hard, then succeed on purpose."
         ];
+
         const todayStr = new Date().toDateString();
-        let quoteIndex = parseInt(localStorage.getItem(`quoteIndex_${currentUser}`));
         const lastQuoteDate = localStorage.getItem(`lastQuoteDate_${currentUser}`);
+        let quoteIndex = parseInt(localStorage.getItem(`quoteIndex_${currentUser}`));
 
         if (isNaN(quoteIndex) || lastQuoteDate !== todayStr) {
-            quoteIndex = Math.floor(Math.random() * quotes.length);
+            // Logic to pick a unique quote until all are seen
+            let seenIndices = JSON.parse(localStorage.getItem(`seenQuotes_${currentUser}`) || "[]");
+            
+            // If all quotes seen, reset the list
+            if (seenIndices.length >= quotes.length) {
+                seenIndices = [];
+            }
+
+            // Find an index that hasn't been seen yet
+            let availableIndices = quotes.map((_, i) => i).filter(i => !seenIndices.includes(i));
+            quoteIndex = availableIndices[Math.floor(Math.random() * availableIndices.length)];
+
+            // Save new state
+            seenIndices.push(quoteIndex);
+            localStorage.setItem(`seenQuotes_${currentUser}`, JSON.stringify(seenIndices));
             localStorage.setItem(`quoteIndex_${currentUser}`, quoteIndex);
             localStorage.setItem(`lastQuoteDate_${currentUser}`, todayStr);
         }
+
         dailyQuote.textContent = `"${quotes[quoteIndex]}"`;
     }
 }
@@ -306,7 +332,7 @@ async function toggleTask(id) {
         addXP(xpReward);
         logCompletion(tasks[taskIndex].text); // RECORD HISTORY
         
-        // Show Guddu message ONLY for the user named 'guddu'
+        // Show Guddu message ONLY for the user named 'Guddu'
         if (currentUser && currentUser.toLowerCase() === "guddu") {
             showGudduMessage(); 
         }
@@ -552,7 +578,7 @@ const vipGudduMessages = [
 ];
 
 function showGudduMessage() {
-    // Double-check: Only show mascot for the 'guddu' account
+    // Double-check: Only show mascot for the 'Guddu' account
     if (!currentUser || currentUser.toLowerCase() !== "guddu") return;
 
     const existing = document.querySelector(".guddu-toast");
