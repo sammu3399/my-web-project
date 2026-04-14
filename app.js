@@ -552,6 +552,9 @@ const vipGudduMessages = [
 ];
 
 function showGudduMessage() {
+    // Double-check: Only show mascot for the 'guddu' account
+    if (!currentUser || currentUser.toLowerCase() !== "guddu") return;
+
     const existing = document.querySelector(".guddu-toast");
     if (existing) existing.remove();
 
