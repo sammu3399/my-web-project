@@ -305,7 +305,11 @@ async function toggleTask(id) {
     if (!wasCompleted && newCompletedStatus) {
         addXP(xpReward);
         logCompletion(tasks[taskIndex].text); // RECORD HISTORY
-        showGudduMessage(); // GUDDU BOOST!
+        
+        // Show Guddu message ONLY for the user named 'guddu'
+        if (currentUser && currentUser.toLowerCase() === "guddu") {
+            showGudduMessage(); 
+        }
     }
 
     checkAllCompleted();
