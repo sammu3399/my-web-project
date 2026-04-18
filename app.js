@@ -737,38 +737,39 @@ function awardBadgeUI(type) {
     container.appendChild(badge);
 }
 
-// 5. Chart
-let weeklyChartInstance = null;
+// 5. Chart (Custom CSS Bars)
 function initChart() {
-    const ctx = document.getElementById('weeklyChart');
-    if (!ctx) return;
+    const container = document.getElementById('weekly-bars-container');
+    if (!container) return;
     
-    if (weeklyChartInstance) {
-        weeklyChartInstance.destroy();
-    }
+    container.innerHTML = '';
     
-    weeklyChartInstance = new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-            datasets: [{
-                label: 'Tasks Completed',
-                data: [5, 8, 4, 10, 6, 9, 7],
-                borderColor: '#ccfbf1',
-                backgroundColor: 'rgba(204, 251, 241, 0.2)',
-                tension: 0.4,
-                fill: true
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: { legend: { display: false } },
-            scales: {
-                y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#fff' } },
-                x: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#fff' } }
-            }
-        }
+    // Data replicating the provided UI image exactly
+    const data = [
+        { label: 'Sun', percent: 40 },
+        { label: 'Mon', percent: 80 },
+        { label: 'Tue', percent: 50 },
+        { label: 'Wed', percent: 30 },
+        { label: 'Thu', percent: 100 },
+        { label: 'Fri', percent: 50 },
+        { label: 'Sa', percent: 70 }
+    ];
+
+    data.forEach(item => {
+        const wrapper = document.createElement('div');
+        wrapper.className = `weekly-bar-wrapper ${item.percent === 100 ? 'completed' : ''}`;
+        
+        wrapper.innerHTML = `
+            <div class="weekly-bar-check">✔</div>
+            <div class="weekly-bar-bg" title="${item.percent}% completed">
+                <div class="weekly-bar-fill" style="height: ${item.percent}%;">
+                    <span class="weekly-bar-percent">${item.percent}%</span>
+                </div>
+            </div>
+            <span class="weekly-bar-label">${item.label}</span>
+        `;
+        
+        container.appendChild(wrapper);
     });
 }
 
