@@ -57,8 +57,21 @@ function setupUI() {
                 window.location.href = "login.html";
             });
         }
+        // Dynamic Greeting
+        const greetingEl = document.getElementById("dynamic-greeting");
+        if (greetingEl) {
+            const hour = new Date().getHours();
+            let greeting = "Welcome";
+            let icon = "👋";
+            if (hour < 12) { greeting = "Good Morning"; icon = "☀️"; }
+            else if (hour < 18) { greeting = "Good Afternoon"; icon = "🌤️"; }
+            else { greeting = "Good Evening"; icon = "🌙"; }
+            
+            const displayUser = currentUser ? currentUser.charAt(0).toUpperCase() + currentUser.slice(1) : "Guest";
+            greetingEl.innerText = `${greeting}, ${displayUser}! ${icon}`;
+        }
 
-        // Pink Mode Logic
+        // Pink Mode Logic (Legacy Button)
         const pinkToggleBtn = document.getElementById("pink-toggle-btn");
         if (pinkToggleBtn) {
             pinkToggleBtn.addEventListener("click", async () => {
@@ -67,6 +80,32 @@ function setupUI() {
                 applyMood();
             });
         }
+
+        // Settings Menu Interactions
+        const settingLogoutBtn = document.getElementById("setting-logout-btn");
+        if (settingLogoutBtn) {
+            settingLogoutBtn.addEventListener("click", () => {
+                localStorage.removeItem("username");
+                window.location.href = "login.html";
+            });
+        }
+
+        const themeSetting = document.getElementById("theme-setting");
+        if (themeSetting) {
+            themeSetting.addEventListener("click", async () => {
+                isPinkMode = !isPinkMode;
+                await saveAll();
+                applyMood();
+                
+                // Visual Toggle
+                const dot = document.getElementById("pink-toggle-dot");
+                if (dot) {
+                    dot.style.transform = isPinkMode ? "translateX(16px)" : "translateX(0)";
+                    dot.parentElement.style.background = isPinkMode ? "#ff9a9e" : "rgba(255,255,255,0.2)";
+                }
+            });
+        }
+
 
         // Avatar Upload Listener
         const avatarInput = document.getElementById("avatar-upload");
@@ -87,6 +126,18 @@ function setupUI() {
                 }
             });
         });
+
+        // Auto-open Daily Insights once per day
+        const todayStr = new Date().toLocaleDateString();
+        const lastOpenDate = localStorage.getItem(`${currentUser}_lastInsightsOpen`);
+        if (lastOpenDate !== todayStr) {
+            setTimeout(() => {
+                if (window.toggleInsights) {
+                    window.toggleInsights();
+                    localStorage.setItem(`${currentUser}_lastInsightsOpen`, todayStr);
+                }
+            }, 1800); // 1.8 second delay to let entrance animations finish playing
+        }
     };
 
     if (document.readyState === "loading") {
@@ -262,6 +313,8 @@ async function init() {
         loadGoal();
         loadBadges();
         initChart();
+        if (typeof renderCalendar === 'function') renderCalendar();
+
 
     } catch (err) {
         console.error("Initialization Error:", err);
@@ -315,14 +368,35 @@ function renderTasks() {
     if (!taskList) return;
     taskList.innerHTML = "";
 
-    tasks.forEach(task => {
+    tasks.forEach((task, index) => {
         const div = document.createElement("div");
         div.className = "task-item";
+        div.style.display = "flex";
+        div.style.alignItems = "center";
+        div.style.justifyContent = "space-between";
+        div.style.padding = "15px";
+        div.style.background = task.completed ? "rgba(0, 242, 254, 0.05)" : "rgba(255, 255, 255, 0.03)";
+        div.style.borderRadius = "15px";
+        div.style.marginBottom = "10px";
+        div.style.border = task.completed ? "1px solid rgba(0, 242, 254, 0.3)" : "1px solid transparent";
+        div.style.transition = "0.3s";
+        
+        const mockStreak = (index * 2) + 1; // Visual artifact logic
+        
         div.innerHTML = `
-            <span class="${task.completed ? 'done' : ''}">${task.text}</span>
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <div onclick="toggleTask('${task.id}')" style="width: 24px; height: 24px; border-radius: 50%; border: 2px solid ${task.completed ? '#00f2fe' : 'rgba(255,255,255,0.3)'}; background: ${task.completed ? '#00f2fe' : 'transparent'}; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.3s; flex-shrink: 0;">
+                    ${task.completed ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#121212" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>' : ''}
+                </div>
+                <div>
+                    <span class="${task.completed ? 'done' : ''}" style="display: block; font-size: 15px; margin-bottom: 2px; color: ${task.completed ? '#00f2fe' : 'var(--text-main)'}; transition: 0.3s;">${task.text}</span>
+                    <span style="font-size: 11px; color: var(--text-muted); display: flex; align-items: center; gap: 4px;">
+                        <span style="color: #ff9a9e;">🔥</span> ${mockStreak} days streak
+                    </span>
+                </div>
+            </div>
             <div>
-                <button onclick="toggleTask('${task.id}')">✔</button>
-                <button onclick="deleteTask('${task.id}')">❌</button>
+                <button onclick="deleteTask('${task.id}')" style="background: transparent; border: none; font-size: 16px; cursor: pointer; color: rgba(255,255,255,0.2); transition: 0.3s;" onmouseover="this.style.color='#ff5e62'" onmouseout="this.style.color='rgba(255,255,255,0.2)'">🗑️</button>
             </div>
         `;
         taskList.appendChild(div);
@@ -737,44 +811,205 @@ function awardBadgeUI(type) {
     container.appendChild(badge);
 }
 
-// 5. Chart (Custom CSS Bars)
+// 5. Chart (Custom CSS Bars Slider)
 function initChart() {
     const container = document.getElementById('weekly-bars-container');
+    const dotsContainer = document.getElementById('slider-dots');
+    const titleStatus = document.getElementById('weekly-title');
     if (!container) return;
     
     container.innerHTML = '';
+    if (dotsContainer) dotsContainer.innerHTML = '';
     
-    // Data replicating the provided UI image exactly
-    const data = [
-        { label: 'Sun', percent: 40 },
-        { label: 'Mon', percent: 80 },
-        { label: 'Tue', percent: 50 },
-        { label: 'Wed', percent: 30 },
-        { label: 'Thu', percent: 100 },
-        { label: 'Fri', percent: 50 },
-        { label: 'Sa', percent: 70 }
+    // Multiple weeks of data to simulate the slider
+    const weeksData = [
+        {
+            title: "This Week's",
+            data: [
+                { label: 'Sun', percent: 40 }, { label: 'Mon', percent: 80 }, { label: 'Tue', percent: 50 },
+                { label: 'Wed', percent: 30 }, { label: 'Thu', percent: 100 }, { label: 'Fri', percent: 50 }, { label: 'Sa', percent: 70 }
+            ]
+        },
+        {
+            title: "Last Week's",
+            data: [
+                { label: 'Sun', percent: 60 }, { label: 'Mon', percent: 90 }, { label: 'Tue', percent: 20 },
+                { label: 'Wed', percent: 80 }, { label: 'Thu', percent: 60 }, { label: 'Fri', percent: 100 }, { label: 'Sa', percent: 40 }
+            ]
+        },
+        {
+            title: "2 Weeks Ago",
+            data: [
+                { label: 'Sun', percent: 100 }, { label: 'Mon', percent: 70 }, { label: 'Tue', percent: 90 },
+                { label: 'Wed', percent: 40 }, { label: 'Thu', percent: 50 }, { label: 'Fri', percent: 80 }, { label: 'Sa', percent: 60 }
+            ]
+        }
     ];
 
-    data.forEach(item => {
-        const wrapper = document.createElement('div');
-        wrapper.className = `weekly-bar-wrapper ${item.percent === 100 ? 'completed' : ''}`;
+    container.style.width = (weeksData.length * 100) + '%';
+
+    weeksData.forEach((week, slideIndex) => {
+        const slideDiv = document.createElement('div');
+        slideDiv.className = 'weekly-slide';
+        slideDiv.style.width = (100 / weeksData.length) + '%';
         
-        wrapper.innerHTML = `
-            <div class="weekly-bar-check">✔</div>
-            <div class="weekly-bar-bg" title="${item.percent}% completed">
-                <div class="weekly-bar-fill" style="height: ${item.percent}%;">
-                    <span class="weekly-bar-percent">${item.percent}%</span>
+        week.data.forEach((item) => {
+            const wrapper = document.createElement('div');
+            wrapper.className = `weekly-bar-wrapper ${item.percent === 100 ? 'completed' : ''}`;
+            
+            wrapper.innerHTML = `
+                <div class="weekly-bar-check">✔</div>
+                <div class="weekly-bar-bg" title="${item.percent}% completed">
+                    <div class="weekly-bar-fill" style="height: ${item.percent}%;">
+                        <span class="weekly-bar-percent">${item.percent}%</span>
+                    </div>
                 </div>
-            </div>
-            <span class="weekly-bar-label">${item.label}</span>
-        `;
+                <span class="weekly-bar-label">${item.label}</span>
+            `;
+            slideDiv.appendChild(wrapper);
+        });
         
-        container.appendChild(wrapper);
+        container.appendChild(slideDiv);
+
+        // Add dot marker
+        if (dotsContainer) {
+            const dot = document.createElement('div');
+            dot.className = `slider-dot ${slideIndex === 0 ? 'active' : ''}`;
+            dot.onclick = () => window.goToSlide(slideIndex);
+            dotsContainer.appendChild(dot);
+        }
     });
+
+    let currentSlide = 0;
+    const totalSlides = weeksData.length;
+
+    window.goToSlide = function(index) {
+        if(index < 0) index = 0;
+        if(index >= totalSlides) index = totalSlides - 1;
+        currentSlide = index;
+        
+        const translateX = -(currentSlide * (100 / totalSlides));
+        container.style.transform = `translateX(${translateX}%)`;
+        
+        if(titleStatus) titleStatus.innerText = weeksData[currentSlide].title + " Progress";
+
+        if (dotsContainer) {
+            Array.from(dotsContainer.children).forEach((dot, i) => {
+                dot.classList.toggle('active', i === currentSlide);
+            });
+        }
+    }
+
+    const prevBtn = document.getElementById('slide-prev');
+    const nextBtn = document.getElementById('slide-next');
+    
+    if(prevBtn) {
+        const newPrev = prevBtn.cloneNode(true);
+        prevBtn.parentNode.replaceChild(newPrev, prevBtn);
+        newPrev.onclick = () => { window.goToSlide(currentSlide - 1); playSound("hover"); };
+    }
+    if(nextBtn) {
+        const newNext = nextBtn.cloneNode(true);
+        nextBtn.parentNode.replaceChild(newNext, nextBtn);
+        newNext.onclick = () => { window.goToSlide(currentSlide + 1); playSound("hover"); };
+    }
 }
 
 // ======================
-// MICRO-INTERACTIONS
+// BOTTOM SHEET LOGIC
+// ======================
+window.closeAllSheets = function() {
+    const analytics = document.getElementById('analytics-sheet');
+    const profile = document.getElementById('profile-sheet');
+    const insights = document.getElementById('insights-sheet');
+    const overlay = document.getElementById('sheet-overlay');
+    if(analytics) analytics.classList.remove('sheet-active');
+    if(profile) profile.classList.remove('sheet-active');
+    if(insights) insights.classList.remove('sheet-active');
+    if(overlay) overlay.classList.remove('active');
+
+    document.querySelectorAll('.bottom-nav .nav-item').forEach(item => item.classList.remove('active'));
+    const homeBtn = document.getElementById('nav-home');
+    if(homeBtn) homeBtn.classList.add('active');
+};
+
+window.toggleAnalytics = function() {
+    const sheet = document.getElementById('analytics-sheet');
+    const overlay = document.getElementById('sheet-overlay');
+    const navBtn = document.getElementById('nav-analytics');
+    if (sheet && overlay) {
+        if (sheet.classList.contains('sheet-active')) {
+            window.closeAllSheets();
+        } else {
+            window.closeAllSheets();
+            const homeBtn = document.getElementById('nav-home');
+            if(homeBtn) homeBtn.classList.remove('active');
+            sheet.classList.add('sheet-active');
+            overlay.classList.add('active');
+            if(navBtn) navBtn.classList.add('active');
+            playSound("hover");
+        }
+    }
+};
+
+window.toggleProfile = function() {
+    const sheet = document.getElementById('profile-sheet');
+    const overlay = document.getElementById('sheet-overlay');
+    const navBtn = document.getElementById('nav-profile');
+    if (sheet && overlay) {
+        if (sheet.classList.contains('sheet-active')) {
+            window.closeAllSheets();
+        } else {
+            window.closeAllSheets();
+            const homeBtn = document.getElementById('nav-home');
+            if(homeBtn) homeBtn.classList.remove('active');
+            sheet.classList.add('sheet-active');
+            overlay.classList.add('active');
+            if(navBtn) navBtn.classList.add('active');
+            playSound("hover");
+        }
+    }
+};
+
+window.toggleInsights = function() {
+    const sheet = document.getElementById('insights-sheet');
+    const overlay = document.getElementById('sheet-overlay');
+    const navBtn = document.getElementById('nav-insights');
+    if (sheet && overlay) {
+        if (sheet.classList.contains('sheet-active')) {
+            window.closeAllSheets();
+        } else {
+            window.closeAllSheets();
+            const homeBtn = document.getElementById('nav-home');
+            if(homeBtn) homeBtn.classList.remove('active');
+            sheet.classList.add('sheet-active');
+            overlay.classList.add('active');
+            if(navBtn) navBtn.classList.add('active');
+            playSound("hover");
+        }
+    }
+};
+
+window.goHome = function() {
+    window.closeAllSheets();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    playSound("hover");
+};
+
+window.focusTaskInput = function() {
+    const input = document.getElementById('task-input');
+    if (input) {
+        window.closeAllSheets();
+        input.focus();
+        input.classList.remove('input-pulse');
+        void input.offsetWidth; // reflow
+        input.classList.add('input-pulse');
+        playSound("hover");
+    }
+};
+
+// ======================
+// MICRO-INTERACTIONS & SWIPE
 // ======================
 document.addEventListener("DOMContentLoaded", () => {
     // Add hover sounds to all interactive buttons
@@ -786,4 +1021,106 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         }
     }, true);
+
+    // Add Swipe to Dismiss for all bottom sheets
+    const sheets = document.querySelectorAll('.bottom-sheet');
+    sheets.forEach(sheet => {
+        let startY = 0;
+        let currentY = 0;
+        let isDragging = false;
+        const handle = sheet.querySelector('.sheet-drag-handle');
+
+        const onTouchStart = (e) => {
+            if (!sheet.classList.contains('sheet-active')) return;
+            startY = e.touches ? e.touches[0].clientY : e.clientY;
+            isDragging = true;
+            sheet.style.transition = 'none';
+        };
+
+        const onTouchMove = (e) => {
+            if (!isDragging) return;
+            currentY = e.touches ? e.touches[0].clientY : e.clientY;
+            let diff = currentY - startY;
+            if (diff > 0) {
+                sheet.style.transform = `translateY(${diff}px)`;
+            }
+        };
+
+        const onTouchEnd = () => {
+            if (!isDragging) return;
+            isDragging = false;
+            sheet.style.transition = 'bottom 0.5s cubic-bezier(0.19, 1, 0.22, 1), transform 0.5s cubic-bezier(0.19, 1, 0.22, 1)';
+            sheet.style.transform = '';
+            const diff = currentY - startY;
+            if (diff > 100) {
+                window.closeAllSheets();
+            }
+        };
+
+        if (handle) {
+            handle.addEventListener('touchstart', onTouchStart, {passive: true});
+            handle.addEventListener('mousedown', onTouchStart);
+        }
+        
+        // Listen globally for move and end so drag isn't lost
+        window.addEventListener('touchmove', onTouchMove, {passive: true});
+        window.addEventListener('mousemove', onTouchMove);
+        window.addEventListener('touchend', onTouchEnd);
+        window.addEventListener('mouseup', onTouchEnd);
+    });
 });
+
+// ======================
+// CALENDAR & AI CHAT MOCK
+// ======================
+window.renderCalendar = function() {
+    const grid = document.getElementById("calendar-grid");
+    if (!grid) return;
+    grid.innerHTML = "";
+    
+    // Feb 2026 starts on a Sunday based on the mockup layout
+    const daysInMonth = 28;
+    const firstDayOffset = 0; 
+    
+    for (let i = 0; i < firstDayOffset; i++) {
+        grid.innerHTML += `<div></div>`;
+    }
+    
+    for (let i = 1; i <= daysInMonth; i++) {
+        const isCompleted = Math.random() > 0.3; // Visual completion dots
+        
+        let bgStyle = "";
+        if (isCompleted) {
+            bgStyle = "background: #00f2fe; color: #121212; border: none;";
+        } else {
+            bgStyle = "background: transparent; border: 1px solid rgba(255,255,255,0.2); color: var(--text-muted);";
+        }
+        
+        grid.innerHTML += `<div style="width: 25px; height: 25px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; margin: 0 auto; transition: 0.3s; ${bgStyle}">${i}</div>`;
+    }
+};
+
+window.sendChatMessage = function() {
+    const input = document.getElementById("ai-chat-input");
+    const windowEl = document.getElementById("chat-window");
+    if (!input || !windowEl || !input.value.trim()) return;
+    
+    const userMsg = document.createElement("div");
+    userMsg.className = "chat-bubble user-bubble";
+    userMsg.style = "align-self: flex-end; max-width: 80%; background: rgba(124, 92, 255, 0.2); border: 1px solid rgba(124, 92, 255, 0.4); padding: 10px 15px; border-radius: 15px 15px 0 15px; font-size: 12px; margin-bottom: 5px; color: white;";
+    userMsg.innerText = input.value;
+    windowEl.appendChild(userMsg);
+    
+    input.value = "";
+    windowEl.scrollTop = windowEl.scrollHeight;
+    
+    setTimeout(() => {
+        const aiMsg = document.createElement("div");
+        aiMsg.className = "chat-bubble ai-bubble";
+        aiMsg.style = "align-self: flex-start; max-width: 80%; background: rgba(0, 242, 254, 0.15); border: 1px solid rgba(0, 242, 254, 0.3); padding: 10px 15px; border-radius: 15px 15px 15px 0; font-size: 12px; margin-bottom: 5px; color: white;";
+        aiMsg.innerText = "You're consistently hitting your habits! Start small: Wake up at the same time and drink water to supercharge your routine. Stay driven! 🔥";
+        windowEl.appendChild(aiMsg);
+        windowEl.scrollTop = windowEl.scrollHeight;
+        if(typeof playSound === 'function') playSound("success");
+    }, 1000);
+};

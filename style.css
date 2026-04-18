@@ -868,14 +868,42 @@ body.mood-yoga, body.mood-yoga .hero-card { background: linear-gradient(135deg, 
 }
 
 /* ======================
-   WEEKLY PROGRESS BARS
+   WEEKLY PROGRESS BARS SLIDER
 ===================== */
 .weekly-bars-container {
     display: flex;
-    justify-content: space-between;
     align-items: flex-end;
     height: 180px;
-    width: 100%;
+    width: 300%; /* Default for 3 slides, dynamically set in JS */
+    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.weekly-slide {
+    width: 33.3333%; /* Default for 3 slides, dynamically set in JS */
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    height: 100%;
+    padding: 0 5px;
+}
+
+.slider-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.2);
+    cursor: pointer;
+    transition: 0.3s ease;
+}
+
+.slider-dot:hover {
+    background: rgba(255,255,255,0.5);
+}
+
+.slider-dot.active {
+    background: var(--accent);
+    width: 24px;
+    border-radius: 4px;
 }
 
 .weekly-bar-wrapper {
@@ -967,6 +995,7 @@ body.mood-yoga, body.mood-yoga .hero-card { background: linear-gradient(135deg, 
 ======================== */
 .main-content {
     animation: fadeEntrance 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    padding-bottom: 110px; /* Space for the bottom navigation bar */
 }
 
 @keyframes fadeEntrance {
@@ -1015,3 +1044,179 @@ body.mood-yoga, body.mood-yoga .hero-card { background: linear-gradient(135deg, 
     font-size: 14px;
     letter-spacing: 0.5px;
 }
+
+/* ======================
+   BOTTOM NAVIGATION
+===================== */
+.bottom-nav {
+    position: fixed;
+    bottom: 25px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: calc(100% - 40px);
+    max-width: 400px;
+    height: 70px;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 35px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 15px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+    z-index: 1002;
+}
+
+.nav-item {
+    color: var(--text-muted);
+    transition: 0.3s;
+    height: 50px;
+    width: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+    position: relative;
+    text-decoration: none;
+}
+
+.nav-item svg {
+    width: 24px;
+    height: 24px;
+}
+
+.nav-item:hover, .nav-item.active {
+    color: var(--accent-glow);
+}
+
+.nav-item.active::after {
+    content: '';
+    position: absolute;
+    bottom: 5px;
+    width: 5px;
+    height: 5px;
+    background: var(--accent-glow);
+    border-radius: 50%;
+    box-shadow: 0 0 5px var(--accent-glow);
+}
+
+.center-btn-wrapper {
+    width: 65px;
+    height: 65px;
+    transform: translateY(-25px);
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.center-add-btn {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: var(--accent);
+    border: none;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 8px 20px rgba(167, 139, 250, 0.5);
+    cursor: pointer;
+    transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.center-add-btn svg {
+    width: 30px;
+    height: 30px;
+    transition: 0.3s;
+}
+
+.center-add-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 12px 25px rgba(167, 139, 250, 0.7);
+}
+.center-add-btn:hover svg {
+    transform: rotate(90deg);
+}
+
+/* ======================
+   BOTTOM SHEET (ANALYTICS)
+===================== */
+.bottom-sheet {
+    position: fixed;
+    bottom: -100%; /* Hidden off-screen by default */
+    left: 0;
+    width: 100%;
+    background: rgba(20, 20, 30, 0.85); /* High Blur Glass */
+    backdrop-filter: blur(25px);
+    border-top: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 35px 35px 0 0;
+    box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.4);
+    transition: bottom 0.5s cubic-bezier(0.19, 1, 0.22, 1); /* Premium slick sliding */
+    z-index: 999; /* Just below bottom nav if needed, or above it. We'll set 999 so bottom nav (1000) is still clickable, but typically sheets cover nav. Let's make it cover: z-index: 1001 */
+}
+
+/* Actually, bottom sheets usually slide UP and cover everything or just sit behind nav */
+.bottom-sheet {
+    z-index: 1001; 
+    padding-bottom: 90px; /* Leave space for bottom nav */
+    max-height: 85vh;
+    overflow-y: auto;
+}
+
+.bottom-sheet.sheet-active {
+    bottom: 0; /* Slide fully in */
+}
+
+.sheet-drag-handle {
+    width: 40px;
+    height: 5px;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 5px;
+    margin: 15px auto 0;
+    cursor: grab;
+}
+
+/* Dimmer Background for Bottom Sheet */
+.sheet-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    backdrop-filter: blur(5px);
+    z-index: 1000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s ease;
+}
+
+.sheet-overlay.active {
+    opacity: 1;
+    pointer-events: all;
+}
+
+/* ======================
+   TASK INPUT GLOW PULSE
+===================== */
+@keyframes pulseGlow {
+    0% {
+        box-shadow: 0 0 0 0 rgba(167, 139, 250, 0.7);
+        border-color: var(--accent);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(167, 139, 250, 0);
+        border-color: rgba(255,255,255,0.4);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(167, 139, 250, 0);
+        border-color: rgba(255,255,255,0.2);
+    }
+}
+
+.input-pulse {
+    animation: pulseGlow 0.8s ease-out;
+}
+
