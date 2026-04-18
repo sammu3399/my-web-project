@@ -286,8 +286,8 @@
                     <div class="timer-display" id="main-timer-display" style="font-size: 42px; font-weight: 700; margin-bottom: 5px; color: #00f2fe; text-shadow: 0 0 10px rgba(0,242,254,0.3);">25:00</div>
                     
                     <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 15px; cursor: pointer; user-select: none;" onclick="toggleLofiAudio()" id="lofi-status">🔈 Ambient Flow: <span style="color:white;">OFF</span></div>
-                    <!-- Using Google Actions Rain URL as it's guaranteed stable and never returns 403 -->
-                    <audio id="lofi-audio" loop src="https://actions.google.com/sounds/v1/weather/rain_on_roof.ogg" preload="auto"></audio>
+                    <!-- Using Mixkit SFX MP3 to guarantee iOS/Safari cross-compatibility -->
+                    <audio id="lofi-audio" loop src="https://assets.mixkit.co/active_storage/sfx/2505/2505-preview.mp3" preload="auto"></audio>
                     
                     <div class="timer-controls" style="display: flex; gap: 10px; justify-content: center;">
                         <button id="timer-start-btn" onclick="startFocusTimer()" style="padding: 8px 25px; font-size: 14px; border-radius: 20px; border: none; background: linear-gradient(to right, #00f2fe, #4facfe); color: black; font-weight: bold; cursor: pointer;">Start</button>
