@@ -315,6 +315,7 @@ async function init() {
         initChart();
         if (typeof renderCalendar === 'function') renderCalendar();
 
+        evaluateZenMode(); // Determine Task Visibility
 
     } catch (err) {
         console.error("Initialization Error:", err);
@@ -340,6 +341,20 @@ if (taskInput) {
 async function addTask() {
     const text = taskInput.value.trim();
     if (!text) return;
+    
+    const daySelect = document.getElementById("task-day-select");
+    const isTomorrow = daySelect && daySelect.value === "tomorrow";
+
+    if (isTomorrow) {
+        let tTasks = JSON.parse(localStorage.getItem(`tomorrowTasks_${currentUser}`) || "[]");
+        tTasks.push(text);
+        localStorage.setItem(`tomorrowTasks_${currentUser}`, JSON.stringify(tTasks));
+        
+        taskInput.value = "";
+        showToast("📅 Added to Tomorrow's Plan!");
+        daySelect.value = "today"; 
+        return;
+    }
 
     const { error } = await _supabase
         .from('tasks')
@@ -367,6 +382,17 @@ async function addTask() {
 function renderTasks() {
     if (!taskList) return;
     taskList.innerHTML = "";
+    
+    if (tasks.length === 0) {
+        taskList.innerHTML = `
+            <div style="background: rgba(255, 65, 108, 0.1); border: 1px dashed rgba(255, 65, 108, 0.5); padding: 20px; text-align: center; border-radius: 15px; color: #ff9a9e; margin-bottom: 20px; animation: fadeEntrance 0.5s;">
+                <div style="font-size: 24px; margin-bottom: 10px;">⚠️</div>
+                <strong>No Tasks Listed!</strong><br><br>
+                <span style="font-size: 13px; color: var(--text-muted);">You haven't added any daily tasks yet. Scheduling tasks is the first step to winning the day. Add your first task below!</span>
+            </div>
+        `;
+        return;
+    }
 
     tasks.forEach((task, index) => {
         const div = document.createElement("div");
@@ -385,18 +411,17 @@ function renderTasks() {
         
         div.innerHTML = `
             <div style="display: flex; align-items: center; gap: 15px;">
-                <div onclick="toggleTask('${task.id}')" style="width: 24px; height: 24px; border-radius: 50%; border: 2px solid ${task.completed ? '#00f2fe' : 'rgba(255,255,255,0.3)'}; background: ${task.completed ? '#00f2fe' : 'transparent'}; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.3s; flex-shrink: 0;">
-                    ${task.completed ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#121212" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>' : ''}
-                </div>
                 <div>
-                    <span class="${task.completed ? 'done' : ''}" style="display: block; font-size: 15px; margin-bottom: 2px; color: ${task.completed ? '#00f2fe' : 'var(--text-main)'}; transition: 0.3s;">${task.text}</span>
+                    <span class="${task.completed ? 'done' : ''}" style="display: block; font-size: 15px; margin-bottom: 2px; color: ${task.completed ? '#00f2fe' : 'var(--text-main)'}; transition: 0.3s; text-decoration: ${task.completed ? 'line-through' : 'none'};">${task.text}</span>
                     <span style="font-size: 11px; color: var(--text-muted); display: flex; align-items: center; gap: 4px;">
                         <span style="color: #ff9a9e;">🔥</span> ${mockStreak} days streak
                     </span>
                 </div>
             </div>
-            <div>
-                <button onclick="deleteTask('${task.id}')" style="background: transparent; border: none; font-size: 16px; cursor: pointer; color: rgba(255,255,255,0.2); transition: 0.3s;" onmouseover="this.style.color='#ff5e62'" onmouseout="this.style.color='rgba(255,255,255,0.2)'">🗑️</button>
+            <div style="display: flex; gap: 8px;">
+                <button onclick="toggleTask('${task.id}')" style="background: ${task.completed ? 'rgba(0,242,254,0.2)' : 'transparent'}; border: 1px solid ${task.completed ? '#00f2fe' : 'rgba(255,255,255,0.2)'}; border-radius: 50%; width: 32px; height: 32px; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.3s;" title="Mark Done">✅</button>
+
+                <button onclick="deleteTask('${task.id}')" style="background: transparent; border: 1px solid rgba(255,94,98,0.2); border-radius: 50%; width: 32px; height: 32px; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.3s;" onmouseover="this.style.background='rgba(255,94,98,0.2)'" onmouseout="this.style.background='transparent'" title="Mark Not Done">❌</button>
             </div>
         `;
         taskList.appendChild(div);
@@ -440,12 +465,13 @@ async function toggleTask(id) {
     renderTasks();
 }
 
-async function logCompletion(taskName) {
+async function logCompletion(taskName, status = "completed") {
+    const textToLog = status === "completed" ? `✅ ${taskName}` : `❌ ${taskName}`;
     await _supabase
         .from('task_history')
         .insert([{
             username: currentUser,
-            task_text: taskName,
+            task_text: textToLog,
             completed_at: new Date().toISOString()
         }]);
     renderHistory();
@@ -471,19 +497,38 @@ async function renderHistory() {
         const date = new Date(item.completed_at);
         const timeStr = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
         const dateStr = date.toLocaleDateString();
+        
+        let rawText = item.task_text;
+        let isMissed = rawText.startsWith("❌ ");
+        let isDone = rawText.startsWith("✅ ");
+        
+        if (isMissed || isDone) {
+            rawText = rawText.substring(2);
+        } else {
+            isDone = true; // Support legacy history
+        }
+        
+        const statusIcon = isMissed ? "❌" : "✔️";
+        const statusText = isMissed ? "Missed" : "Completed";
+
         return `
-            <div class="history-item">
+            <div class="history-item" style="border-left: 3px solid ${isMissed ? '#ff5e62' : '#00f2fe'};">
                 <div class="history-item-top">
-                    <span class="history-item-name">${item.task_text}</span>
+                    <span class="history-item-name">${rawText}</span>
                     <span class="history-item-time">${dateStr} @ ${timeStr}</span>
                 </div>
-                <span class="history-item-status">✔️ Completed</span>
+                <span class="history-item-status">${statusIcon} ${statusText}</span>
             </div>
         `;
     }).join("");
 }
 
 async function deleteTask(id) {
+    const taskObj = tasks.find(t => String(t.id) === String(id));
+    if (taskObj && !taskObj.completed) {
+        await logCompletion(taskObj.text, "missed");
+    }
+
     const { error } = await _supabase
         .from('tasks')
         .delete()
@@ -598,18 +643,19 @@ function applyMood() {
     if (mood) document.body.setAttribute("data-mood", mood);
 
     const pcosPanel = document.getElementById("pcos-panel");
-    const pinkToggleBtn = document.getElementById("pink-toggle-btn");
-    const pinkTogglePanel = document.getElementById("pink-toggle-panel");
+    const pinkNav = document.getElementById("nav-pink");
+
+    if (pinkNav) {
+        pinkNav.style.display = isPinkMode ? "flex" : "none";
+    }
 
     if (pcosPanel) {
-        if (isPinkMode) {
-            pcosPanel.classList.remove("hidden");
-            if (pinkTogglePanel) pinkTogglePanel.classList.add("pcos-active");
-            if (pinkToggleBtn) pinkToggleBtn.textContent = "🌸 Turn Pink Mode OFF";
-        } else {
-            pcosPanel.classList.add("hidden");
-            if (pinkTogglePanel) pinkTogglePanel.classList.remove("pcos-active");
-            if (pinkToggleBtn) pinkToggleBtn.textContent = "🌸 Turn Pink Mode ON";
+        if (!isPinkMode) {
+            // Auto close Pink sheet if it was open while toggling Pink Mode off
+            const pinkSheet = document.getElementById('pink-mode-sheet');
+            if (pinkSheet && pinkSheet.classList.contains('sheet-active')) {
+                window.closeAllSheets();
+            }
         }
     }
 }
@@ -667,6 +713,45 @@ function showGudduMessage() {
 }
 
 // ======================
+// ZEN MODE LOGIC
+// ======================
+function evaluateZenMode() {
+    const hr = new Date().getHours();
+    const isMorning = hr >= 5 && hr < 10;
+    const isNight = hr >= 19 && hr <= 23;
+    
+    // Focus hours: 10AM to 7PM -> Hide tasks from main dash
+    const questSection = document.getElementById("quest-section");
+    if (questSection) {
+        if (isMorning || isNight) {
+            questSection.style.display = "block";
+        } else {
+            questSection.style.display = "none";
+        }
+    }
+}
+
+window.openManageTasks = function() {
+    const sheet = document.getElementById('tasks-sheet');
+    const overlay = document.getElementById('sheet-overlay');
+    const questSection = document.getElementById('quest-section');
+    const sheetContent = document.getElementById('tasks-sheet-content');
+    
+    if (sheet && overlay && questSection && sheetContent) {
+        window.closeAllSheets();
+        questSection.style.display = "block"; // override Zen Mode explicitly
+        sheetContent.appendChild(questSection);
+        
+        const homeBtn = document.getElementById('nav-home');
+        if(homeBtn) homeBtn.classList.remove('active');
+        
+        sheet.classList.add('sheet-active');
+        overlay.classList.add('active');
+        if(typeof playSound === 'function') playSound("hover");
+    }
+}
+
+// ======================
 // UTILS
 // ======================
 function showToast(msg) {
@@ -702,10 +787,26 @@ async function dailyReset() {
     if (!currentUser) return;
     const lastDate = localStorage.getItem(`lastDate_${currentUser}`);
     const today = new Date().toDateString();
+    
     if (lastDate !== today) {
+        // Reset current tasks
         const { error } = await _supabase.from('tasks').update({ completed: false }).eq('username', currentUser);
+        
         if (!error) {
             tasks.forEach(t => t.completed = false);
+            
+            // Migrate tomorrow's scheduled tasks
+            let tTasks = JSON.parse(localStorage.getItem(`tomorrowTasks_${currentUser}`) || "[]");
+            if (tTasks.length > 0) {
+                const inserts = tTasks.map(t => ({ username: currentUser, text: t, completed: false }));
+                await _supabase.from('tasks').insert(inserts);
+                localStorage.removeItem(`tomorrowTasks_${currentUser}`);
+                
+                // Fetch updated list from Supabase
+                const { data } = await _supabase.from('tasks').select('*').eq('username', currentUser);
+                if (data) tasks = data;
+            }
+
             renderTasks();
             localStorage.setItem(`lastDate_${currentUser}`, today);
         }
@@ -812,40 +913,68 @@ function awardBadgeUI(type) {
 }
 
 // 5. Chart (Custom CSS Bars Slider)
-function initChart() {
+window.initChart = async function() {
     const container = document.getElementById('weekly-bars-container');
     const dotsContainer = document.getElementById('slider-dots');
     const titleStatus = document.getElementById('weekly-title');
     if (!container) return;
     
-    container.innerHTML = '';
+    container.innerHTML = "<div style='width:100%; text-align:center; padding-top:20px; font-size:12px; color:var(--text-muted);'>Syncing True Progress...</div>";
     if (dotsContainer) dotsContainer.innerHTML = '';
     
-    // Multiple weeks of data to simulate the slider
-    const weeksData = [
-        {
-            title: "This Week's",
-            data: [
-                { label: 'Sun', percent: 40 }, { label: 'Mon', percent: 80 }, { label: 'Tue', percent: 50 },
-                { label: 'Wed', percent: 30 }, { label: 'Thu', percent: 100 }, { label: 'Fri', percent: 50 }, { label: 'Sa', percent: 70 }
-            ]
-        },
-        {
-            title: "Last Week's",
-            data: [
-                { label: 'Sun', percent: 60 }, { label: 'Mon', percent: 90 }, { label: 'Tue', percent: 20 },
-                { label: 'Wed', percent: 80 }, { label: 'Thu', percent: 60 }, { label: 'Fri', percent: 100 }, { label: 'Sa', percent: 40 }
-            ]
-        },
-        {
-            title: "2 Weeks Ago",
-            data: [
-                { label: 'Sun', percent: 100 }, { label: 'Mon', percent: 70 }, { label: 'Tue', percent: 90 },
-                { label: 'Wed', percent: 40 }, { label: 'Thu', percent: 50 }, { label: 'Fri', percent: 80 }, { label: 'Sa', percent: 60 }
-            ]
-        }
-    ];
+    const now = new Date();
+    now.setHours(0,0,0,0);
+    
+    const dayOfWeek = now.getDay(); 
+    const startOfThisWeek = new Date(now);
+    startOfThisWeek.setDate(now.getDate() - dayOfWeek);
+    
+    const startOfPast = new Date(startOfThisWeek);
+    startOfPast.setDate(startOfPast.getDate() - 14);
 
+    const { data: history } = await _supabase
+        .from('task_history')
+        .select('completed_at, task_text')
+        .eq('username', currentUser)
+        .gte('completed_at', startOfPast.toISOString());
+
+    const dayStats = {};
+    if (history) {
+        history.forEach(item => {
+            const d = new Date(item.completed_at);
+            const key = `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;
+            if (!dayStats[key]) dayStats[key] = { done: 0, total: 0 };
+            dayStats[key].total++;
+            if (item.task_text.startsWith("✅")) dayStats[key].done++;
+        });
+    }
+
+    const weeksData = [];
+    const weekTitles = ["This Week's", "Last Week's", "2 Weeks Ago"];
+    const labels = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sa'];
+
+    for (let w = 0; w < 3; w++) {
+        const weekObj = { title: weekTitles[w], data: [] };
+        for (let d = 0; d < 7; d++) {
+            const currentDay = new Date(startOfThisWeek);
+            currentDay.setDate(startOfThisWeek.getDate() - (w * 7) + d);
+            
+            const key = `${currentDay.getFullYear()}-${currentDay.getMonth()+1}-${currentDay.getDate()}`;
+            const stat = dayStats[key] || { done: 0, total: 0 };
+            
+            const percent = stat.total === 0 ? 0 : Math.round((stat.done / stat.total) * 100);
+            
+            weekObj.data.push({
+                label: labels[d],
+                percent: percent,
+                dateObj: currentDay,
+                dateNum: currentDay.getDate()
+            });
+        }
+        weeksData.push(weekObj);
+    }
+
+    container.innerHTML = '';
     container.style.width = (weeksData.length * 100) + '%';
 
     weeksData.forEach((week, slideIndex) => {
@@ -856,12 +985,17 @@ function initChart() {
         week.data.forEach((item) => {
             const wrapper = document.createElement('div');
             wrapper.className = `weekly-bar-wrapper ${item.percent === 100 ? 'completed' : ''}`;
+            wrapper.style.cursor = "pointer";
+            wrapper.style.position = "relative";
+            
+            wrapper.onclick = () => window.viewDayHistory(item.dateObj);
             
             wrapper.innerHTML = `
+                <span style="position: absolute; top: -20px; font-size: 11px; color: var(--text-muted); font-weight: 500;">${item.dateNum}</span>
                 <div class="weekly-bar-check">✔</div>
                 <div class="weekly-bar-bg" title="${item.percent}% completed">
                     <div class="weekly-bar-fill" style="height: ${item.percent}%;">
-                        <span class="weekly-bar-percent">${item.percent}%</span>
+                        <span class="weekly-bar-percent" style="font-size: 9px;">${item.percent === 0 ? '' : item.percent + '%'}</span>
                     </div>
                 </div>
                 <span class="weekly-bar-label">${item.label}</span>
@@ -871,7 +1005,6 @@ function initChart() {
         
         container.appendChild(slideDiv);
 
-        // Add dot marker
         if (dotsContainer) {
             const dot = document.createElement('div');
             dot.className = `slider-dot ${slideIndex === 0 ? 'active' : ''}`;
@@ -914,6 +1047,86 @@ function initChart() {
         newNext.onclick = () => { window.goToSlide(currentSlide + 1); playSound("hover"); };
     }
 }
+// Init mock chart on load
+document.addEventListener("DOMContentLoaded", initChart);
+
+window.viewDayHistory = async function(dayLabelOrDate) {
+    const detailView = document.getElementById("daily-detail-view");
+    const detailContent = document.getElementById("daily-detail-content");
+    const title = document.getElementById("daily-detail-title");
+    
+    // UI Transitions
+    if (detailView) detailView.style.display = "block";
+    const habitSection = document.querySelector(".habit-consistency");
+    if (habitSection) habitSection.style.display = "none";
+    if (detailContent) detailContent.innerHTML = "<p style='color: var(--text-muted); font-size: 12px; text-align: center'>Loading history...</p>";
+    
+    let isStrictDate = dayLabelOrDate instanceof Date;
+    let titleStr = isStrictDate ? dayLabelOrDate.toLocaleDateString(undefined, {month:'short', day:'numeric'}) : `${dayLabelOrDate}'s`;
+    if (title) title.innerText = `${titleStr} Journal`;
+    
+    // Fetch History
+    const { data: history, error } = await _supabase
+        .from('task_history')
+        .select('*')
+        .eq('username', currentUser)
+        .order('completed_at', { ascending: false });
+
+    if (error || !history || history.length === 0) {
+        if (detailContent) detailContent.innerHTML = "<p style='color: var(--text-muted); font-size: 12px; text-align: center'>No data recorded for this day.</p>";
+        return;
+    }
+    
+    const filteredHistory = history.filter(item => {
+        const d = new Date(item.completed_at);
+        if (isStrictDate) {
+            return d.toDateString() === dayLabelOrDate.toDateString();
+        } else {
+            const dayMap = { 'Sun': 0, 'Mon': 1, 'Tue': 2, 'Wed': 3, 'Thu': 4, 'Fri': 5, 'Sa': 6 };
+            return d.getDay() === dayMap[dayLabelOrDate];
+        }
+    });
+
+    if (filteredHistory.length === 0) {
+        if (detailContent) detailContent.innerHTML = "<p style='color: var(--text-muted); font-size: 12px; text-align: center'>No tasks recorded for this day. 🧘‍♂️</p>";
+        return;
+    }
+    
+    let html = "";
+    filteredHistory.forEach(item => {
+        const date = new Date(item.completed_at);
+        const timeStr = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        
+        let rawText = item.task_text;
+        let isMissed = rawText.startsWith("❌ ");
+        let isDone = rawText.startsWith("✅ ");
+        
+        if (isMissed || isDone) rawText = rawText.substring(2);
+        else isDone = true;
+        
+        const statusIcon = isMissed ? "❌" : "✅";
+        const color = isMissed ? "#ff5e62" : "#00f2fe";
+        const decoration = isMissed ? "none" : "line-through";
+        
+        html += `
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px; background: rgba(255,255,255,0.02); border-left: 3px solid ${color}; border-radius: 4px; margin-bottom: 8px; transition: 0.3s; animation: fadeEntrance 0.3s ease-out;">
+                <div style="display: flex; flex-direction: column;">
+                    <span style="font-size: 13px; color: ${isMissed ? '#ff9a9e' : '#fff'}; text-decoration: ${decoration};">${statusIcon} ${rawText}</span>
+                    <span style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">Recorded on ${date.toLocaleDateString()} at ${timeStr}</span>
+                </div>
+            </div>
+        `;
+    });
+    
+    if (detailContent) detailContent.innerHTML = html;
+};
+
+window.closeDailyDetail = function() {
+    const detailView = document.getElementById("daily-detail-view");
+    const habitSection = document.querySelector(".habit-consistency");
+    if(detailView) detailView.style.display = "none";
+    if(habitSection) habitSection.style.display = "block";
+};
 
 // ======================
 // BOTTOM SHEET LOGIC
@@ -922,11 +1135,29 @@ window.closeAllSheets = function() {
     const analytics = document.getElementById('analytics-sheet');
     const profile = document.getElementById('profile-sheet');
     const insights = document.getElementById('insights-sheet');
+    const tasksSheet = document.getElementById('tasks-sheet');
+    const pinkSheet = document.getElementById('pink-mode-sheet');
+    const brainSheet = document.getElementById('brain-gym-sheet');
     const overlay = document.getElementById('sheet-overlay');
+    
+    const questSection = document.getElementById('quest-section');
+    const homeWrapper = document.getElementById('home-tasks-wrapper');
+
     if(analytics) analytics.classList.remove('sheet-active');
     if(profile) profile.classList.remove('sheet-active');
     if(insights) insights.classList.remove('sheet-active');
+    if(tasksSheet) tasksSheet.classList.remove('sheet-active');
+    if(pinkSheet) pinkSheet.classList.remove('sheet-active');
+    if(brainSheet) brainSheet.classList.remove('sheet-active');
     if(overlay) overlay.classList.remove('active');
+    
+    if (typeof window.quitBrainGym === 'function') window.quitBrainGym();
+
+    // Return quest-section to home if it was manually opened
+    if (questSection && homeWrapper && tasksSheet && tasksSheet.contains(questSection)) {
+        homeWrapper.appendChild(questSection);
+        if(typeof evaluateZenMode === 'function') evaluateZenMode();
+    }
 
     document.querySelectorAll('.bottom-nav .nav-item').forEach(item => item.classList.remove('active'));
     const homeBtn = document.getElementById('nav-home');
@@ -988,6 +1219,167 @@ window.toggleInsights = function() {
             playSound("hover");
         }
     }
+};
+
+window.togglePinkMode = function() {
+    const sheet = document.getElementById('pink-mode-sheet');
+    const overlay = document.getElementById('sheet-overlay');
+    const navBtn = document.getElementById('nav-pink');
+    if (sheet && overlay) {
+        if (sheet.classList.contains('sheet-active')) {
+            window.closeAllSheets();
+        } else {
+            window.closeAllSheets();
+            const homeBtn = document.getElementById('nav-home');
+            if(homeBtn) homeBtn.classList.remove('active');
+            sheet.classList.add('sheet-active');
+            overlay.classList.add('active');
+            if(navBtn) navBtn.classList.add('active');
+            playSound("hover");
+        }
+    }
+};
+
+// ======================
+// BRAIN GYM MINI-GAME
+// ======================
+let brainTimer = null;
+let brainTimeLeft = 60;
+let brainScore = 0;
+let brainAnswer = 0;
+
+window.toggleBrainGym = function() {
+    const sheet = document.getElementById('brain-gym-sheet');
+    const overlay = document.getElementById('sheet-overlay');
+    const navBtn = document.getElementById('nav-brain-gym');
+    
+    if (sheet && overlay) {
+        if (sheet.classList.contains('sheet-active')) {
+            window.closeAllSheets();
+        } else {
+            window.closeAllSheets();
+            const homeBtn = document.getElementById('nav-home');
+            if(homeBtn) homeBtn.classList.remove('active');
+            sheet.classList.add('sheet-active');
+            overlay.classList.add('active');
+            if(navBtn) navBtn.classList.add('active');
+            playSound("hover");
+            
+            // Reset state logically on open
+            document.getElementById("brain-menu").style.display = "block";
+            document.getElementById("brain-play").style.display = "none";
+            document.getElementById("brain-score").innerText = "0";
+            document.getElementById("brain-timer").innerText = "60";
+            document.getElementById("brain-menu").innerHTML = `
+                <h1 style="font-size: 48px; margin-bottom: 10px;">⚡</h1>
+                <p style="color: var(--text-muted); margin-bottom: 30px; font-size: 14px;">Wake up your mind with 60 seconds of quick maths.</p>
+                <button onclick="startBrainGym()" style="width: 100%; padding: 16px; border-radius: 15px; border: none; background: linear-gradient(to right, #00f2fe, #4facfe); color: #121212; font-size: 16px; font-weight: bold; cursor: pointer;">Start Workout</button>
+            `;
+        }
+    }
+};
+
+window.quitBrainGym = function() {
+    clearInterval(brainTimer);
+};
+
+window.startBrainGym = function() {
+    document.getElementById("brain-menu").style.display = "none";
+    document.getElementById("brain-play").style.display = "block";
+    brainScore = 0;
+    brainTimeLeft = 60;
+    document.getElementById("brain-score").innerText = brainScore;
+    document.getElementById("brain-timer").innerText = brainTimeLeft;
+    
+    generateMathProblem();
+    
+    clearInterval(brainTimer);
+    brainTimer = setInterval(() => {
+        brainTimeLeft--;
+        const timerEl = document.getElementById("brain-timer");
+        if(timerEl) timerEl.innerText = brainTimeLeft;
+        if (brainTimeLeft <= 0) {
+            endBrainGym();
+        }
+    }, 1000);
+};
+
+window.generateMathProblem = function() {
+    const ops = ['+', '-', '*'];
+    const op = ops[Math.floor(Math.random() * ops.length)];
+    let num1, num2;
+    
+    if (op === '+') {
+        num1 = Math.floor(Math.random() * 50) + 10;
+        num2 = Math.floor(Math.random() * 50) + 10;
+        brainAnswer = num1 + num2;
+    } else if (op === '-') {
+        num1 = Math.floor(Math.random() * 50) + 20;
+        num2 = Math.floor(Math.random() * num1);
+        brainAnswer = num1 - num2;
+    } else {
+        // Keep multiplication small
+        num1 = Math.floor(Math.random() * 10) + 2;
+        num2 = Math.floor(Math.random() * 10) + 2;
+        brainAnswer = num1 * num2;
+    }
+    
+    const eqEl = document.getElementById("brain-equation");
+    if(eqEl) eqEl.innerText = `${num1} ${op === '*' ? '×' : op} ${num2} = ?`;
+    
+    let options = [brainAnswer];
+    while(options.length < 4) {
+        let fake = brainAnswer + (Math.floor(Math.random() * 20) - 10);
+        if (fake !== brainAnswer && !options.includes(fake) && fake >= 0) {
+            options.push(fake);
+        }
+    }
+    options.sort(() => Math.random() - 0.5);
+    
+    const optsContainer = document.getElementById("brain-options");
+    if(optsContainer) {
+        optsContainer.innerHTML = '';
+        options.forEach(opt => {
+            const btn = document.createElement("button");
+            btn.innerText = opt;
+            btn.style = "padding: 20px; font-size: 24px; border-radius: 12px; border: none; background: rgba(255,255,255,0.1); color: white; cursor: pointer; transition: 0.2s;";
+            btn.onclick = () => checkMathAnswer(opt, btn);
+            optsContainer.appendChild(btn);
+        });
+    }
+};
+
+window.checkMathAnswer = function(selected, btnEl) {
+    if (selected === brainAnswer) {
+        brainScore += 10;
+        btnEl.style.background = "#00f2fe";
+        btnEl.style.color = "#121212";
+        playSound("hover");
+        setTimeout(() => window.generateMathProblem(), 200);
+    } else {
+        brainScore -= 5;
+        if(brainScore < 0) brainScore = 0;
+        btnEl.style.background = "#ff5e62";
+        btnEl.style.color = "white";
+        // Simple shake emulation
+        btnEl.style.transform = "translateX(5px)";
+        setTimeout(() => { btnEl.style.transform = "translateX(-5px)"; }, 50);
+        setTimeout(() => { btnEl.style.transform = "translateX(0)"; btnEl.style.background = "rgba(255,255,255,0.1)"; }, 150);
+    }
+    document.getElementById("brain-score").innerText = brainScore;
+};
+
+window.endBrainGym = function() {
+    clearInterval(brainTimer);
+    document.getElementById("brain-play").style.display = "none";
+    document.getElementById("brain-menu").style.display = "block";
+    document.getElementById("brain-menu").innerHTML = `
+        <h1 style="font-size: 48px; margin-bottom: 10px;">🏆</h1>
+        <h2 style="font-size: 24px; margin-bottom: 5px;">Time's Up!</h2>
+        <p style="color: var(--text-muted); margin-bottom: 30px; font-size: 14px;">You scored <b style="color: #00f2fe">${brainScore}</b> points.</p>
+        <button onclick="startBrainGym()" style="width: 100%; padding: 16px; border-radius: 15px; border: none; background: linear-gradient(to right, #00f2fe, #4facfe); color: #121212; font-size: 16px; font-weight: bold; cursor: pointer;">Play Again</button>
+    `;
+    playSound("success");
 };
 
 window.goHome = function() {
@@ -1071,32 +1463,204 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 // ======================
+// PRODUCTIVITY SUITE LOGIC
+// ======================
+
+// 1. DISTRACTION LOGGER
+let distractionCount = 0;
+
+window.updateDistractionUI = function() {
+    const el = document.getElementById("distraction-count");
+    if(el) el.innerText = distractionCount;
+};
+
+window.logDistraction = function() {
+    distractionCount++;
+    if(currentUser) {
+        localStorage.setItem(`${currentUser}_distractions`, distractionCount);
+    }
+    window.updateDistractionUI();
+    playSound("hover");
+    
+    const btn = document.querySelector(".distraction-log-btn");
+    if(btn) {
+        btn.style.transform = "scale(0.95)";
+        setTimeout(() => btn.style.transform = "scale(1)", 100);
+    }
+};
+
+// 2. THE ONE THING (Priority Node)
+window.saveOneThing = function() {
+    const input = document.getElementById("one-thing-input");
+    if (input && currentUser) {
+        localStorage.setItem(`${currentUser}_onething`, input.value);
+    }
+};
+
+// 3. FOCUS TIMER & LOFI BEATS
+let focusTimerInterval = null;
+let focusTimeLeft = 25 * 60; // 25 mins
+let focusTimerRunning = false;
+let lofiEnabled = false;
+
+window.toggleLofiAudio = function() {
+    lofiEnabled = !lofiEnabled;
+    const statEl = document.getElementById("lofi-status");
+    const audioEl = document.getElementById("lofi-audio");
+    
+    if (statEl) {
+        statEl.innerHTML = lofiEnabled ? `🔊 Ambient Flow: <span style="color:#00f2fe;">ON</span>` : `🔈 Ambient Flow: <span style="color:white;">OFF</span>`;
+    }
+    
+    if (focusTimerRunning && audioEl) {
+        if (lofiEnabled) audioEl.play().catch(e => console.log("Audio block", e));
+        else audioEl.pause();
+    }
+};
+
+window.updateFocusTimerDisplay = function() {
+    const m = Math.floor(focusTimeLeft / 60).toString().padStart(2, '0');
+    const s = (focusTimeLeft % 60).toString().padStart(2, '0');
+    const el = document.getElementById("main-timer-display");
+    if (el) el.innerText = `${m}:${s}`;
+};
+
+window.startFocusTimer = function() {
+    const btn = document.getElementById("timer-start-btn");
+    const audioEl = document.getElementById("lofi-audio");
+    
+    if (focusTimerRunning) {
+        // PAUSE Action
+        clearInterval(focusTimerInterval);
+        focusTimerRunning = false;
+        if(btn) btn.innerText = "Resume";
+        if(audioEl) audioEl.pause();
+    } else {
+        // START Action
+        focusTimerRunning = true;
+        if(btn) btn.innerText = "Pause";
+        
+        if (lofiEnabled && audioEl) {
+            audioEl.play().catch(e => console.log("Audio block", e));
+        }
+        
+        focusTimerInterval = setInterval(() => {
+            if (focusTimeLeft > 0) {
+                focusTimeLeft--;
+                window.updateFocusTimerDisplay();
+            } else {
+                window.resetFocusTimer();
+                playSound("success");
+                window.alert("Pomodoro Complete! Great focus.");
+            }
+        }, 1000);
+    }
+    playSound("hover");
+};
+
+window.resetFocusTimer = function() {
+    clearInterval(focusTimerInterval);
+    focusTimerRunning = false;
+    focusTimeLeft = 25 * 60;
+    
+    const btn = document.getElementById("timer-start-btn");
+    if(btn) btn.innerText = "Start";
+    
+    const audioEl = document.getElementById("lofi-audio");
+    if(audioEl) {
+        audioEl.pause();
+        audioEl.currentTime = 0;
+    }
+    
+    window.updateFocusTimerDisplay();
+    playSound("hover");
+};
+
+document.addEventListener("DOMContentLoaded", () => {
+    setTimeout(() => {
+        if (currentUser) {
+            // Load Distractions
+            const distStr = localStorage.getItem(`${currentUser}_distractions`);
+            if (distStr) distractionCount = parseInt(distStr);
+            window.updateDistractionUI();
+            
+            // Load Priority
+            const oneThingStr = localStorage.getItem(`${currentUser}_onething`);
+            const oneThingInput = document.getElementById("one-thing-input");
+            if (oneThingInput && oneThingStr) {
+                oneThingInput.value = oneThingStr;
+            }
+        }
+    }, 1500); // 1.5s delay to ensure currentUser is loaded
+});
+
+// ======================
 // CALENDAR & AI CHAT MOCK
 // ======================
-window.renderCalendar = function() {
+let currentCalDate = new Date();
+
+window.changeCalendarMonth = function(offset) {
+    currentCalDate.setMonth(currentCalDate.getMonth() + offset);
+    window.renderCalendar();
+};
+
+window.renderCalendar = async function() {
     const grid = document.getElementById("calendar-grid");
-    if (!grid) return;
+    const monthTitle = document.getElementById("calendar-month");
+    if (!grid || !monthTitle) return;
+
+    grid.innerHTML = "<div style='grid-column: 1 / -1; font-size:11px; padding:10px; text-align:center;'>Loading...</div>";
+
+    const year = currentCalDate.getFullYear();
+    const month = currentCalDate.getMonth();
+
+    monthTitle.innerText = currentCalDate.toLocaleString('default', { month: 'long', year: 'numeric' });
+
+    const firstDay = new Date(year, month, 1).getDay();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+    const startIso = new Date(year, month, 1).toISOString();
+    const endIso = new Date(year, month + 1, 0, 23, 59, 59).toISOString();
+
+    const { data: history } = await _supabase
+        .from('task_history')
+        .select('completed_at, task_text')
+        .eq('username', currentUser)
+        .gte('completed_at', startIso)
+        .lte('completed_at', endIso);
+
+    const completedDays = new Set();
+    const missedDays = new Set();
+
+    if (history) {
+        history.forEach(item => {
+            const d = new Date(item.completed_at).getDate();
+            if (item.task_text.startsWith("✅ ")) completedDays.add(d);
+            if (item.task_text.startsWith("❌ ")) missedDays.add(d);
+        });
+    }
+
     grid.innerHTML = "";
     
-    // Feb 2026 starts on a Sunday based on the mockup layout
-    const daysInMonth = 28;
-    const firstDayOffset = 0; 
-    
-    for (let i = 0; i < firstDayOffset; i++) {
+    for (let i = 0; i < firstDay; i++) {
         grid.innerHTML += `<div></div>`;
     }
     
     for (let i = 1; i <= daysInMonth; i++) {
-        const isCompleted = Math.random() > 0.3; // Visual completion dots
+        let bgStyle = "background: transparent; border: 1px solid rgba(255,255,255,0.2); color: var(--text-muted);";
         
-        let bgStyle = "";
-        if (isCompleted) {
+        if (completedDays.has(i)) {
             bgStyle = "background: #00f2fe; color: #121212; border: none;";
-        } else {
-            bgStyle = "background: transparent; border: 1px solid rgba(255,255,255,0.2); color: var(--text-muted);";
+        } else if (missedDays.has(i)) {
+            bgStyle = "background: transparent; border: 1px solid rgba(255, 94, 98, 0.4); color: #ff5e62;";
         }
         
-        grid.innerHTML += `<div style="width: 25px; height: 25px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; margin: 0 auto; transition: 0.3s; ${bgStyle}">${i}</div>`;
+        const isToday = new Date().toDateString() === new Date(year, month, i).toDateString();
+        if (isToday && !completedDays.has(i) && !missedDays.has(i)) {
+            bgStyle = "background: rgba(255,255,255,0.1); border: 1px dashed rgba(255,255,255,0.5); color: #fff;";
+        }
+
+        grid.innerHTML += `<div onclick="window.viewDayHistory(new Date(${year}, ${month}, ${i}))" style="width: 25px; height: 25px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; margin: 0 auto; transition: 0.2s; cursor: pointer; ${bgStyle}" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">${i}</div>`;
     }
 };
 
@@ -1124,3 +1688,20 @@ window.sendChatMessage = function() {
         if(typeof playSound === 'function') playSound("success");
     }, 1000);
 };
+
+document.addEventListener("DOMContentLoaded", () => {
+    const dateEl = document.getElementById("home-date-display");
+    const timeEl = document.getElementById("corner-time-display");
+    
+    if (dateEl) {
+        dateEl.innerText = new Date().toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' });
+    }
+
+    if (timeEl) {
+        const updateTime = () => {
+            timeEl.innerText = new Date().toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
+        };
+        updateTime();
+        setInterval(updateTime, 1000);
+    }
+});

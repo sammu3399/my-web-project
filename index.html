@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Win - Dashboard</title>
+    <title>My Win - Home Page</title>
 
     <!-- PWA Manifest -->
     <link rel="manifest" href="manifest.json">
@@ -27,33 +27,252 @@
 
     <main class="main-content">
 
-        <!-- Logout Button -->
-        <button id="logout-btn" class="logout-btn">Logout</button>
+        <!-- Corner Clock (Linked to Analytics) -->
+        <div id="corner-time-display" onclick="toggleAnalytics()" style="position: absolute; top: 25px; right: 25px; font-size: 14px; font-weight: 600; color: var(--text-muted); opacity: 0.8; letter-spacing: 1px; cursor: pointer; transition: 0.3s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.8'" title="View Weekly Progress">--:--</div>
 
         <!-- ================= DYNAMIC GREETING ================= -->
-        <h2 id="dynamic-greeting" style="font-size: 24px; font-weight: 600; margin-bottom: 20px; color: var(--text-main);">Welcome! ☀️</h2>
+        <div style="margin-bottom: 25px;">
+            <h2 id="dynamic-greeting" style="font-size: 24px; font-weight: 600; margin-bottom: 4px; color: var(--text-main);">Welcome! ☀️</h2>
+            <p id="home-date-display" onclick="toggleAnalytics()" style="font-size: 13px; color: var(--text-muted); font-weight: 500; letter-spacing: 0.5px; cursor: pointer; display: inline-block; transition: 0.3s;" onmouseover="this.style.color='var(--text-main)'" onmouseout="this.style.color='var(--text-muted)'" title="View Weekly Progress"></p>
+        </div>
 
-        <!-- ================= GRID ================= -->
+        <div id="zen-home-feed" style="display:flex; flex-direction:column; gap:20px;">
+<div style="display: flex; gap: 15px; flex-wrap: wrap; margin-bottom: 20px;">
+                <!-- Mood -->
+                <div class="mood-container" style="flex: 1; min-width: 150px;">
+                    <p style="font-size: 13px; margin-bottom: 8px;">How is your mood?</p>
+                    <div class="mood-options">
+                        <button onclick="setMood('😊')">😊</button>
+                        <button onclick="setMood('🔥')">🔥</button>
+                        <button onclick="setMood('😴')">😴</button>
+                        <button onclick="setMood('🧘')">🧘</button>
+                    </div>
+                </div>
+
+                <!-- STREAK SQUARE -->
+                <div class="streak-square" style="flex: 1; min-width: 100px;">
+                    <h3 style="font-size: 14px;">🔥 Streak</h3>
+                    <h1 class="streak-val" style="font-size: 24px;">0</h1>
+                    <p style="font-size: 12px;">Days</p>
+                </div>
+            </div>
+
+            <!-- DAILY QUOTE -->
+            <div class="panel quote-card" style="margin-bottom: 20px; text-align: center; border: 1px dashed rgba(255,255,255,0.2);">
+                <h3 style="font-size: 14px;">💡 Daily Quote</h3>
+                <p id="daily-quote-text" style="font-style: italic; margin-top: 10px; color: var(--text-main); font-size: 14px;">"Loading quote..."</p>
+            </div>
+
+            <!-- ACHIEVEMENTS -->
+            <div class="panel achievements-section" style="margin-bottom: 20px; border: 1px dashed rgba(255,255,255,0.2);">
+                <h3 style="font-size: 14px; margin-bottom: 10px;">🏆 Achievements</h3>
+                <div id="badge-container" style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: center;">
+                    <p id="no-badges" style="font-size: 11px; color: var(--text-muted); font-style: italic;">Unlock your first badge!</p>
+                </div>
+            </div>
+
+            <!-- AI / GUDDU SUGGESTION -->
+            <div class="panel guddu-insight" style="background: rgba(124, 92, 255, 0.15); border: 1px solid rgba(124, 92, 255, 0.3); text-align: center;">
+                <p style="font-size: 13px; color: #d6ccff;"><strong>🤖 Guddu says:</strong> Keep your streak alive! Make sure to complete your primary focus timer today.</p>
+            </div>
+
+            <!-- AI COACH CHAT UI -->
+            <div class="ai-coach-chat" style="margin-top: 20px;">
+                <h3 style="font-size: 16px; margin-bottom: 10px; display: flex; align-items: center; gap: 8px;">🤖 AI Coach</h3>
+                <div id="chat-window" style="height: 200px; background: rgba(0,0,0,0.2); border-radius: 12px; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; border: 1px solid rgba(255,255,255,0.1);">
+                    <div class="chat-bubble ai-bubble" style="align-self: flex-start; max-width: 80%; background: rgba(0, 242, 254, 0.15); border: 1px solid rgba(0, 242, 254, 0.3); padding: 10px 15px; border-radius: 15px 15px 15px 0; font-size: 12px;">
+                        Hi! I am your AI Habit Coach. I'm here to help you build better habits, stay consistent, and reach your goals.
+                    </div>
+                </div>
+                <div class="chat-input-area" style="display: flex; gap: 10px; margin-top: 10px;">
+                    <input type="text" id="ai-chat-input" placeholder="Ask Guddu..." style="flex: 1; min-width: 0; border-radius: 20px; font-size: 13px; padding: 10px 15px; border: 1px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.05); color: white;">
+                    <button onclick="sendChatMessage()" style="width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: var(--accent); color: white; border: none; flex-shrink: 0; cursor: pointer;">✈️</button>
+                </div>
+            </div>
+</div>
+
+    </main>
+
+    <!-- ================= SHEETS OVERLAY ================= -->
+    <div id="sheet-overlay" class="sheet-overlay" onclick="closeAllSheets()"></div>
+    
+    <!-- ================= ANALYTICS BOTTOM SHEET ================= -->
+    <div id="analytics-sheet" class="bottom-sheet">
+        <div class="sheet-drag-handle" onclick="closeAllSheets()"></div>
+        <div class="insights-section" style="padding: 25px;">
+            <div class="weekly-progress-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h3 style="margin: 0; font-size: 18px; font-weight: 600;" id="weekly-title">This Week's Progress</h3>
+                <div class="slider-controls" style="display: flex; gap: 10px;">
+                    <button id="slide-prev" class="arrow-btn" style="width: 35px; height: 35px; border-radius: 50%; background: rgba(124, 92, 255, 0.4); border: 1px solid #7c5cff; color: white; display: flex; justify-content: center; align-items: center; cursor: pointer; transition: 0.3s;">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 18px; height: 18px;" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 19l-7-7 7-7"></path></svg>
+                    </button>
+                    <button id="slide-next" class="arrow-btn" style="width: 35px; height: 35px; border-radius: 50%; background: #7c5cff; border: none; color: white; display: flex; justify-content: center; align-items: center; cursor: pointer; box-shadow: 0 0 10px rgba(124, 92, 255, 0.4); transition: 0.3s;">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 18px; height: 18px;" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"></path></svg>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="weekly-slider-viewport" style="overflow: hidden; width: 100%; position: relative;">
+                <div id="weekly-bars-container" class="weekly-bars-container">
+                    <!-- Multiple sliding bar sections generated by JS -->
+                </div>
+            </div>
+
+            <div id="slider-dots" class="slider-dots" style="display: flex; justify-content: center; gap: 8px; margin-top: 15px;">
+                <!-- Slider dots generated by JS -->
+            </div>
+
+            <!-- DAILY DETAIL VIEW (Interactive History) -->
+            <div id="daily-detail-view" class="daily-detail-view" style="display: none; margin-top: 30px; animation: fadeEntrance 0.3s ease-out;">
+                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; margin-bottom: 15px;">
+                    <h3 id="daily-detail-title" style="font-size: 16px; font-weight: 600;">Details</h3>
+                    <button onclick="closeDailyDetail()" style="background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 12px; padding: 5px;">Close ✖</button>
+                </div>
+                <div id="daily-detail-content" style="max-height: 250px; overflow-y: auto;">
+                    <!-- Auto-populated by JS -->
+                </div>
+            </div>
+
+            <!-- HABIT CONSISTENCY -->
+            <div class="habit-consistency" style="margin-top: 30px;">
+                <h3 style="margin-bottom: 15px; font-size: 16px; font-weight: 600;">Habit Consistency</h3>
+                <div class="consistency-item">
+                    <div style="display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 5px;">
+                        <span style="color: var(--text-main);">Meditation</span><span style="color: var(--text-muted); font-weight: 600;">92%</span>
+                    </div>
+                    <div class="consistency-bar" style="height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; overflow: hidden;">
+                        <div class="consistency-fill" style="width: 92%; height: 100%; background: #7c5cff; border-radius: 3px;"></div>
+                    </div>
+                </div>
+                <div class="consistency-item" style="margin-top: 15px;">
+                    <div style="display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 5px;">
+                        <span style="color: var(--text-main);">Exercise</span><span style="color: var(--text-muted); font-weight: 600;">75%</span>
+                    </div>
+                    <div class="consistency-bar" style="height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; overflow: hidden;">
+                        <div class="consistency-fill" style="width: 75%; height: 100%; background: #00f2fe; border-radius: 3px;"></div>
+                    </div>
+                </div>
+                <div class="consistency-item" style="margin-top: 15px;">
+                    <div style="display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 5px;">
+                        <span style="color: var(--text-main);">Reading</span><span style="color: var(--text-muted); font-weight: 600;">53%</span>
+                    </div>
+                    <div class="consistency-bar" style="height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; overflow: hidden;">
+                        <div class="consistency-fill" style="width: 53%; height: 100%; background: #ff9a9e; border-radius: 3px;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SUMMARY CALENDAR -->
+            <div class="summary-calendar" style="margin-top: 30px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <h3 style="font-size: 16px; font-weight: 600;" id="calendar-month">February 2026</h3>
+                    <div style="display: flex; gap: 10px;">
+                        <button onclick="changeCalendarMonth(-1)" style="background: none; border: none; color: var(--text-main); font-size: 16px; cursor: pointer;">&lt;</button>
+                        <button onclick="changeCalendarMonth(1)" style="background: none; border: none; color: var(--text-main); font-size: 16px; cursor: pointer;">&gt;</button>
+                    </div>
+                </div>
+                
+                <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; text-align: center; font-size: 11px; margin-bottom: 10px; color: var(--text-muted);">
+                    <div>S</div><div>M</div><div>T</div><div>W</div><div>T</div><div>F</div><div>S</div>
+                </div>
+                <div class="calendar-grid" id="calendar-grid" style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; text-align: center;">
+                    <!-- Calendar days generated by JS -->
+                </div>
+                <div class="calendar-legend" style="display: flex; gap: 15px; font-size: 11px; margin-top: 15px; color: var(--text-muted); justify-content: center;">
+                    <div style="display: flex; align-items: center; gap: 5px;"><div style="width: 8px; height: 8px; border-radius: 50%; background: #00f2fe;"></div> Completed</div>
+                    <div style="display: flex; align-items: center; gap: 5px;"><div style="width: 8px; height: 8px; border-radius: 50%; background: transparent; border: 1px solid rgba(255,255,255,0.2);"></div> Missed</div>
+                </div>
+            </div>
+
+
+
+        </div>
+    </div>
+
+    <!-- ================= PROFILE BOTTOM SHEET ================= -->
+    <div id="profile-sheet" class="bottom-sheet">
+        <div class="sheet-drag-handle" onclick="closeAllSheets()"></div>
+        <div class="hero-card" style="padding: 25px; border-radius: 30px 30px 0 0; background: transparent; box-shadow: none;">
+            <div class="hero-content" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px;">
+
+                <div class="profile-info" style="display: flex; align-items: center; gap: 15px; flex: 1; min-width: 200px;">
+                    <label for="avatar-upload" class="avatar-box" style="cursor: pointer; position: relative;" title="Upload your photo">
+                        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" class="profile-avatar" id="profile-img">
+                        <div class="avatar-overlay" style="position: absolute; inset: 0; background: rgba(0,0,0,0.3); border-radius: 50%; opacity: 0; display: flex; align-items: center; justify-content: center; transition: 0.3s;">📸</div>
+                    </label>
+                    <input type="file" id="avatar-upload" accept="image/*" style="display: none;">
+                    <div style="flex-grow: 1;">
+                        <h2 id="display-name">Guest User</h2>
+                        <p style="margin-bottom: 5px;">Level: <span id="user-level">Disciplined 🔥</span></p>
+                        <!-- XP BAR -->
+                        <div class="xp-bar" style="height: 6px; margin-top: 2px; max-width: 150px;">
+                            <div class="xp-fill"></div>
+                        </div>
+                        <p class="xp-text" style="font-size: 11px; margin-top: 4px; color: var(--text-muted);">0 / 100 XP</p>
+                    </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PROFILE SETTINGS -->
+            <div class="settings-list" style="margin-top: 30px;">
+                <h3 style="font-size: 16px; margin-bottom: 10px; padding-left: 5px;">Settings</h3>
+                <div class="setting-item" style="display: flex; justify-content: space-between; align-items: center; padding: 15px 5px; border-bottom: 1px solid rgba(255,255,255,0.05); cursor: pointer;">
+                    <div style="display: flex; align-items: center; gap: 15px;"><span style="font-size: 18px;">🔔</span> <span style="font-size: 14px;">Notifications</span></div>
+                    <span style="color: var(--text-muted); font-size: 12px;">Enabled &gt;</span>
+                </div>
+                <div class="setting-item" id="theme-setting" style="display: flex; justify-content: space-between; align-items: center; padding: 15px 5px; border-bottom: 1px solid rgba(255,255,255,0.05); cursor: pointer;">
+                    <div style="display: flex; align-items: center; gap: 15px;"><span style="font-size: 18px;">🌸</span> <span style="font-size: 14px;">Pink Mode</span></div>
+                    <div class="toggle-switch" style="width: 36px; height: 20px; background: rgba(255,255,255,0.2); border-radius: 10px; position: relative;">
+                        <div id="pink-toggle-dot" style="width: 16px; height: 16px; background: white; border-radius: 50%; position: absolute; top: 2px; left: 2px; transition: 0.3s;"></div>
+                    </div>
+                </div>
+                <div class="setting-item" style="display: flex; justify-content: space-between; align-items: center; padding: 15px 5px; border-bottom: 1px solid rgba(255,255,255,0.05); cursor: pointer;" onclick="window.openManageTasks()">
+                    <div style="display: flex; align-items: center; gap: 15px;"><span style="font-size: 18px;">📝</span> <span style="font-size: 14px;">Manage Daily Tasks</span></div>
+                    <span style="color: var(--text-muted); font-size: 12px;">Edit &gt;</span>
+                </div>
+                <div class="setting-item" style="display: flex; justify-content: space-between; align-items: center; padding: 15px 5px; border-bottom: 1px solid rgba(255,255,255,0.05); cursor: pointer;">
+                    <div style="display: flex; align-items: center; gap: 15px;"><span style="font-size: 18px;">🌐</span> <span style="font-size: 14px;">Language</span></div>
+                    <span style="color: var(--text-muted); font-size: 12px;">English &gt;</span>
+                </div>
+                <div class="setting-item" style="display: flex; justify-content: space-between; align-items: center; padding: 15px 5px; border-bottom: 1px solid rgba(255,255,255,0.05); cursor: pointer;">
+                    <div style="display: flex; align-items: center; gap: 15px;"><span style="font-size: 18px;">🎧</span> <span style="font-size: 14px;">Help & Support</span></div>
+                    <span style="color: var(--text-muted); font-size: 12px;">&gt;</span>
+                </div>
+                <div class="setting-item" id="setting-logout-btn" style="display: flex; justify-content: space-between; align-items: center; padding: 15px 5px; cursor: pointer;">
+                    <div style="display: flex; align-items: center; gap: 15px;"><span style="font-size: 18px; color: #ff5e62;">🚪</span> <span style="font-size: 14px; color: #ff5e62;">Sign Out</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= DAILY INSIGHTS BOTTOM SHEET ================= -->
+    <div id="insights-sheet" class="bottom-sheet">
+        <div class="sheet-drag-handle" onclick="closeAllSheets()"></div>
+        <div class="insights-section" style="padding: 25px;">
+            <h3 style="margin-bottom: 20px; font-size: 18px;">🛠️ Productivity Suite</h3><!-- ================= GRID ================= -->
         <div class="grid-layout">
 
             <!-- TASK SECTION -->
-            <div class="panel quest-section">
-                <h3>Daily Tasks</h3>
+            <div id="home-tasks-wrapper">
+                <div class="panel quest-section" id="quest-section">
+                    <div style="margin-bottom: 25px; background: rgba(0,242,254,0.05); padding: 15px; border-radius: 12px; border: 1px solid rgba(0,242,254,0.3); position: relative; box-shadow: 0 0 15px rgba(0, 242, 254, 0.1);">
+                        <h3 style="font-size: 14px; margin-bottom: 8px; color: #00f2fe;">🎯 The One Thing</h3>
+                        <p style="font-size: 11px; color: var(--text-muted); margin-bottom: 10px;">If I achieve nothing else today, I must...</p>
+                        <input type="text" id="one-thing-input" placeholder="Enter your singular priority..." oninput="saveOneThing()" style="width: 100%; border: none; background: transparent; border-bottom: 1px solid rgba(255,255,255,0.2); color: white; padding: 5px 0; font-size: 16px; outline: none;">
+                    </div>
 
-                <div id="task-list"></div>
+                    <h3>Daily Tasks</h3>
 
-                <div class="input-group">
-                    <input type="text" id="task-input" placeholder="e.g. Drink Water">
-                    <button id="add-task-btn">+</button>
-                </div>
-                
-                <!-- NEW: Task History Log -->
-                <div class="task-history-container" style="margin-top: 30px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px;">
-                    <h4 style="font-size: 14px; color: var(--text-muted); margin-bottom: 15px; display: flex; align-items: center; gap: 8px;">
-                        🕒 Recent Completions
-                    </h4>
-                    <div id="history-list" class="history-list">
-                        <p style="font-size: 12px; color: var(--text-muted); font-style: italic;">No recent activity</p>
+                    <div id="task-list"></div>
+
+                    <div class="input-group" style="display: flex; gap: 10px;">
+                        <select id="task-day-select" style="border-radius: 20px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); color: white; padding: 0 15px; cursor: pointer; outline: none;">
+                            <option value="today" style="color: black;">Today</option>
+                            <option value="tomorrow" style="color: black;">Tomorrow</option>
+                        </select>
+                        <input type="text" id="task-input" placeholder="e.g. Drink Water" style="flex:1; border-radius: 20px; padding: 10px 15px; border: 1px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.05); color: white;">
+                        <button id="add-task-btn" style="width: 45px; height: 45px; border-radius: 50%; background: #00f2fe; color: black; border: none; font-size: 20px; cursor: pointer;">+</button>
                     </div>
                 </div>
             </div>
@@ -64,10 +283,14 @@
                 <!-- NEW: LOFI TIMER -->
                 <div class="panel timer-section" style="margin-bottom: 20px; text-align: center;">
                     <h3 style="font-size: 16px; margin-bottom: 10px;">⏳ Focus Timer</h3>
-                    <div class="timer-display" style="font-size: 32px; font-weight: 600; margin-bottom: 10px; color: var(--accent);">25:00</div>
+                    <div class="timer-display" id="main-timer-display" style="font-size: 42px; font-weight: 700; margin-bottom: 5px; color: #00f2fe; text-shadow: 0 0 10px rgba(0,242,254,0.3);">25:00</div>
+                    
+                    <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 15px; cursor: pointer; user-select: none;" onclick="toggleLofiAudio()" id="lofi-status">🔈 Ambient Flow: <span style="color:white;">OFF</span></div>
+                    <audio id="lofi-audio" loop src="https://assets.mixkit.co/music/download/mixkit-sleepy-cat-135.mp3"></audio>
+                    
                     <div class="timer-controls" style="display: flex; gap: 10px; justify-content: center;">
-                        <button id="timer-start-btn" style="padding: 5px 15px; font-size: 12px;">Start</button>
-                        <button id="timer-reset-btn" style="padding: 5px 15px; font-size: 12px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);">Reset</button>
+                        <button id="timer-start-btn" onclick="startFocusTimer()" style="padding: 8px 25px; font-size: 14px; border-radius: 20px; border: none; background: linear-gradient(to right, #00f2fe, #4facfe); color: black; font-weight: bold; cursor: pointer;">Start</button>
+                        <button id="timer-reset-btn" onclick="resetFocusTimer()" style="padding: 8px 20px; font-size: 14px; border-radius: 20px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white; cursor: pointer;">Reset</button>
                     </div>
                 </div>
 
@@ -94,17 +317,30 @@
                         <div class="ripple"></div>
                     </button>
                 </div>
-
-
-
-                <!-- PINK MODE TOGGLE -->
-                <div class="panel" id="pink-toggle-panel" style="text-align: center; margin-bottom: 20px; transition: 0.3s ease;">
-                    <button id="pink-toggle-btn" class="pink-toggle-btn" style="margin-bottom: 5px;">🌸 Turn Pink Mode ON</button>
-                    <p style="font-size: 12px; color: var(--text-muted);">Unlocks PCOD & PCOS Routine</p>
-                </div>
                 
-                <!-- PCOD & PCOS EXERCISES (PINK MODE ONLY) -->
-                <div class="panel pcos-active hidden" id="pcos-panel" style="margin-bottom: 20px;">
+                <!-- NEW: DISTRACTION LOGGER -->
+                <div class="panel distraction-section" style="margin-bottom: 20px; text-align: center;">
+                    <h3 style="font-size: 16px; margin-bottom: 5px;">🛑 Distraction Tally</h3>
+                    <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 15px;">Acknowledge wandering thoughts gently.</p>
+                    <div style="font-size: 38px; font-weight: bold; color: #ff5e62; margin-bottom: 15px;" id="distraction-count">0</div>
+                    <button class="distraction-log-btn" onclick="logDistraction()" style="width: 100%; padding: 12px; border-radius: 12px; border: 1px solid rgba(255, 94, 98, 0.5); background: rgba(255,94,98,0.1); color: #ff5e62; font-size: 14px; font-weight: bold; cursor: pointer; transition: 0.2s;">Diverted! +1</button>
+                </div>
+            </div>
+        </div>
+        </div>
+    </div>
+
+    
+
+    <!-- ================= PINK MODE BOTTOM SHEET ================= -->
+    <div id="pink-mode-sheet" class="bottom-sheet">
+        <div class="sheet-drag-handle" onclick="closeAllSheets()"></div>
+        <div class="insights-section" style="padding: 25px;">
+            <h3 style="margin-bottom: 20px; font-size: 18px;">🌺 Pink Chamber</h3>
+
+
+                <!-- PCOD & PCOS EXERCISES -->
+                <div class="panel" id="pcos-panel" style="margin-bottom: 20px; border: 1px solid rgba(255, 154, 158, 0.3);">
                     <h3 style="font-size: 18px; color: #ff9a9e;">🌸 PCOD & PCOS Exercises</h3>
                     <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 10px;">A daily flow designed to balance hormones.</p>
                     <ul class="pcos-exercises">
@@ -253,207 +489,44 @@
 
                 
 
-            </div>
+            
         </div>
-
-    </main>
-
-    <!-- ================= SHEETS OVERLAY ================= -->
-    <div id="sheet-overlay" class="sheet-overlay" onclick="closeAllSheets()"></div>
-    
-    <!-- ================= ANALYTICS BOTTOM SHEET ================= -->
-    <div id="analytics-sheet" class="bottom-sheet">
+    </div>
+<!-- ================= TASKS OVERRIDE BOTTOM SHEET ================= -->
+    <div id="tasks-sheet" class="bottom-sheet">
         <div class="sheet-drag-handle" onclick="closeAllSheets()"></div>
         <div class="insights-section" style="padding: 25px;">
-            <div class="weekly-progress-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                <h3 style="margin: 0; font-size: 18px; font-weight: 600;" id="weekly-title">This Week's Progress</h3>
-                <div class="slider-controls" style="display: flex; gap: 10px;">
-                    <button id="slide-prev" class="arrow-btn" style="width: 35px; height: 35px; border-radius: 50%; background: rgba(124, 92, 255, 0.4); border: 1px solid #7c5cff; color: white; display: flex; justify-content: center; align-items: center; cursor: pointer; transition: 0.3s;">
-                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 18px; height: 18px;" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 19l-7-7 7-7"></path></svg>
-                    </button>
-                    <button id="slide-next" class="arrow-btn" style="width: 35px; height: 35px; border-radius: 50%; background: #7c5cff; border: none; color: white; display: flex; justify-content: center; align-items: center; cursor: pointer; box-shadow: 0 0 10px rgba(124, 92, 255, 0.4); transition: 0.3s;">
-                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 18px; height: 18px;" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"></path></svg>
-                    </button>
-                </div>
+            <h3 style="margin-bottom: 20px;">📝 Manage Daily Tasks</h3>
+            <div id="tasks-sheet-content"></div>
+        </div>
+    </div>
+
+    <!-- ================= BRAIN GYM BOTTOM SHEET ================= -->
+    <div id="brain-gym-sheet" class="bottom-sheet" style="background: linear-gradient(145deg, #181920, #0f1015);">
+        <div class="sheet-drag-handle" onclick="closeAllSheets()"></div>
+        <div class="insights-section" style="padding: 30px 25px; text-align: center;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h3 style="margin: 0; font-size: 20px;">🧠 Brain Gym</h3>
+                <div style="font-size: 18px; font-weight: 700; color: #ff9a9e; background: rgba(255, 154, 158, 0.1); padding: 5px 12px; border-radius: 20px; border: 1px solid rgba(255, 154, 158, 0.3);">⏱ <span id="brain-timer">60</span>s</div>
             </div>
             
-            <div class="weekly-slider-viewport" style="overflow: hidden; width: 100%; position: relative;">
-                <div id="weekly-bars-container" class="weekly-bars-container">
-                    <!-- Multiple sliding bar sections generated by JS -->
-                </div>
+            <div style="font-size: 14px; color: var(--text-muted); margin-bottom: 20px;">Score: <span id="brain-score" style="color: #00f2fe; font-weight: bold; font-size: 18px;">0</span></div>
+
+            <div id="brain-menu" style="padding: 40px 0;">
+                <h1 style="font-size: 48px; margin-bottom: 10px;">⚡</h1>
+                <p style="color: var(--text-muted); margin-bottom: 30px; font-size: 14px;">Wake up your mind with 60 seconds of quick maths.</p>
+                <button onclick="startBrainGym()" style="width: 100%; padding: 16px; border-radius: 15px; border: none; background: linear-gradient(to right, #00f2fe, #4facfe); color: #121212; font-size: 16px; font-weight: bold; cursor: pointer;">Start Workout</button>
             </div>
 
-            <div id="slider-dots" class="slider-dots" style="display: flex; justify-content: center; gap: 8px; margin-top: 15px;">
-                <!-- Slider dots generated by JS -->
-            </div>
-
-            <!-- HABIT CONSISTENCY -->
-            <div class="habit-consistency" style="margin-top: 30px;">
-                <h3 style="margin-bottom: 15px; font-size: 16px; font-weight: 600;">Habit Consistency</h3>
-                <div class="consistency-item">
-                    <div style="display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 5px;">
-                        <span style="color: var(--text-main);">Meditation</span><span style="color: var(--text-muted); font-weight: 600;">92%</span>
-                    </div>
-                    <div class="consistency-bar" style="height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; overflow: hidden;">
-                        <div class="consistency-fill" style="width: 92%; height: 100%; background: #7c5cff; border-radius: 3px;"></div>
-                    </div>
-                </div>
-                <div class="consistency-item" style="margin-top: 15px;">
-                    <div style="display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 5px;">
-                        <span style="color: var(--text-main);">Exercise</span><span style="color: var(--text-muted); font-weight: 600;">75%</span>
-                    </div>
-                    <div class="consistency-bar" style="height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; overflow: hidden;">
-                        <div class="consistency-fill" style="width: 75%; height: 100%; background: #00f2fe; border-radius: 3px;"></div>
-                    </div>
-                </div>
-                <div class="consistency-item" style="margin-top: 15px;">
-                    <div style="display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 5px;">
-                        <span style="color: var(--text-main);">Reading</span><span style="color: var(--text-muted); font-weight: 600;">53%</span>
-                    </div>
-                    <div class="consistency-bar" style="height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; overflow: hidden;">
-                        <div class="consistency-fill" style="width: 53%; height: 100%; background: #ff9a9e; border-radius: 3px;"></div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- SUMMARY CALENDAR -->
-            <div class="summary-calendar" style="margin-top: 30px;">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                    <h3 style="font-size: 16px; font-weight: 600;" id="calendar-month">February 2026</h3>
-                    <div style="display: flex; gap: 10px;">
-                        <button style="background: none; border: none; color: var(--text-main); font-size: 16px; cursor: pointer;">&lt;</button>
-                        <button style="background: none; border: none; color: var(--text-main); font-size: 16px; cursor: pointer;">&gt;</button>
-                    </div>
-                </div>
+            <div id="brain-play" style="display: none;">
+                <div id="brain-equation" style="font-size: 52px; font-weight: 300; margin: 30px 0 40px; letter-spacing: 2px;">--</div>
                 
-                <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; text-align: center; font-size: 11px; margin-bottom: 10px; color: var(--text-muted);">
-                    <div>S</div><div>M</div><div>T</div><div>W</div><div>T</div><div>F</div><div>S</div>
-                </div>
-                <div class="calendar-grid" id="calendar-grid" style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; text-align: center;">
-                    <!-- Calendar days generated by JS -->
-                </div>
-                <div class="calendar-legend" style="display: flex; gap: 15px; font-size: 11px; margin-top: 15px; color: var(--text-muted); justify-content: center;">
-                    <div style="display: flex; align-items: center; gap: 5px;"><div style="width: 8px; height: 8px; border-radius: 50%; background: #00f2fe;"></div> Completed</div>
-                    <div style="display: flex; align-items: center; gap: 5px;"><div style="width: 8px; height: 8px; border-radius: 50%; background: transparent; border: 1px solid rgba(255,255,255,0.2);"></div> Missed</div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;" id="brain-options">
+                    <!-- Buttons injected via JS -->
                 </div>
             </div>
         </div>
     </div>
-
-    <!-- ================= PROFILE BOTTOM SHEET ================= -->
-    <div id="profile-sheet" class="bottom-sheet">
-        <div class="sheet-drag-handle" onclick="closeAllSheets()"></div>
-        <div class="hero-card" style="padding: 25px; border-radius: 30px 30px 0 0; background: transparent; box-shadow: none;">
-            <div class="hero-content" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px;">
-
-                <div class="profile-info" style="display: flex; align-items: center; gap: 15px; flex: 1; min-width: 200px;">
-                    <label for="avatar-upload" class="avatar-box" style="cursor: pointer; position: relative;" title="Upload your photo">
-                        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" class="profile-avatar" id="profile-img">
-                        <div class="avatar-overlay" style="position: absolute; inset: 0; background: rgba(0,0,0,0.3); border-radius: 50%; opacity: 0; display: flex; align-items: center; justify-content: center; transition: 0.3s;">📸</div>
-                    </label>
-                    <input type="file" id="avatar-upload" accept="image/*" style="display: none;">
-                    <div style="flex-grow: 1;">
-                        <h2 id="display-name">Guest User</h2>
-                        <p style="margin-bottom: 5px;">Level: <span id="user-level">Disciplined 🔥</span></p>
-                        <!-- XP BAR -->
-                        <div class="xp-bar" style="height: 6px; margin-top: 2px; max-width: 150px;">
-                            <div class="xp-fill"></div>
-                        </div>
-                        <p class="xp-text" style="font-size: 11px; margin-top: 4px; color: var(--text-muted);">0 / 100 XP</p>
-                    </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- PROFILE SETTINGS -->
-            <div class="settings-list" style="margin-top: 30px;">
-                <h3 style="font-size: 16px; margin-bottom: 10px; padding-left: 5px;">Settings</h3>
-                <div class="setting-item" style="display: flex; justify-content: space-between; align-items: center; padding: 15px 5px; border-bottom: 1px solid rgba(255,255,255,0.05); cursor: pointer;">
-                    <div style="display: flex; align-items: center; gap: 15px;"><span style="font-size: 18px;">🔔</span> <span style="font-size: 14px;">Notifications</span></div>
-                    <span style="color: var(--text-muted); font-size: 12px;">Enabled &gt;</span>
-                </div>
-                <div class="setting-item" id="theme-setting" style="display: flex; justify-content: space-between; align-items: center; padding: 15px 5px; border-bottom: 1px solid rgba(255,255,255,0.05); cursor: pointer;">
-                    <div style="display: flex; align-items: center; gap: 15px;"><span style="font-size: 18px;">🌸</span> <span style="font-size: 14px;">Pink Mode</span></div>
-                    <div class="toggle-switch" style="width: 36px; height: 20px; background: rgba(255,255,255,0.2); border-radius: 10px; position: relative;">
-                        <div id="pink-toggle-dot" style="width: 16px; height: 16px; background: white; border-radius: 50%; position: absolute; top: 2px; left: 2px; transition: 0.3s;"></div>
-                    </div>
-                </div>
-                <div class="setting-item" style="display: flex; justify-content: space-between; align-items: center; padding: 15px 5px; border-bottom: 1px solid rgba(255,255,255,0.05); cursor: pointer;">
-                    <div style="display: flex; align-items: center; gap: 15px;"><span style="font-size: 18px;">🌐</span> <span style="font-size: 14px;">Language</span></div>
-                    <span style="color: var(--text-muted); font-size: 12px;">English &gt;</span>
-                </div>
-                <div class="setting-item" style="display: flex; justify-content: space-between; align-items: center; padding: 15px 5px; border-bottom: 1px solid rgba(255,255,255,0.05); cursor: pointer;">
-                    <div style="display: flex; align-items: center; gap: 15px;"><span style="font-size: 18px;">🎧</span> <span style="font-size: 14px;">Help & Support</span></div>
-                    <span style="color: var(--text-muted); font-size: 12px;">&gt;</span>
-                </div>
-                <div class="setting-item" id="setting-logout-btn" style="display: flex; justify-content: space-between; align-items: center; padding: 15px 5px; cursor: pointer;">
-                    <div style="display: flex; align-items: center; gap: 15px;"><span style="font-size: 18px; color: #ff5e62;">🚪</span> <span style="font-size: 14px; color: #ff5e62;">Sign Out</span></div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- ================= DAILY INSIGHTS BOTTOM SHEET ================= -->
-    <div id="insights-sheet" class="bottom-sheet">
-        <div class="sheet-drag-handle" onclick="closeAllSheets()"></div>
-        <div class="insights-section" style="padding: 25px;">
-            <h3 style="margin-bottom: 20px; font-size: 18px;">🧠 Daily Insights</h3>
-            
-            <div style="display: flex; gap: 15px; flex-wrap: wrap; margin-bottom: 20px;">
-                <!-- Mood -->
-                <div class="mood-container" style="flex: 1; min-width: 150px;">
-                    <p style="font-size: 13px; margin-bottom: 8px;">How is your mood?</p>
-                    <div class="mood-options">
-                        <button onclick="setMood('😊')">😊</button>
-                        <button onclick="setMood('🔥')">🔥</button>
-                        <button onclick="setMood('😴')">😴</button>
-                        <button onclick="setMood('🧘')">🧘</button>
-                    </div>
-                </div>
-
-                <!-- STREAK SQUARE -->
-                <div class="streak-square" style="flex: 1; min-width: 100px;">
-                    <h3 style="font-size: 14px;">🔥 Streak</h3>
-                    <h1 class="streak-val" style="font-size: 24px;">0</h1>
-                    <p style="font-size: 12px;">Days</p>
-                </div>
-            </div>
-
-            <!-- DAILY QUOTE -->
-            <div class="panel quote-card" style="margin-bottom: 20px; text-align: center; border: 1px dashed rgba(255,255,255,0.2);">
-                <h3 style="font-size: 14px;">💡 Daily Quote</h3>
-                <p id="daily-quote-text" style="font-style: italic; margin-top: 10px; color: var(--text-main); font-size: 14px;">"Loading quote..."</p>
-            </div>
-
-            <!-- ACHIEVEMENTS -->
-            <div class="panel achievements-section" style="margin-bottom: 20px; border: 1px dashed rgba(255,255,255,0.2);">
-                <h3 style="font-size: 14px; margin-bottom: 10px;">🏆 Achievements</h3>
-                <div id="badge-container" style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: center;">
-                    <p id="no-badges" style="font-size: 11px; color: var(--text-muted); font-style: italic;">Unlock your first badge!</p>
-                </div>
-            </div>
-
-            <!-- AI / GUDDU SUGGESTION -->
-            <div class="panel guddu-insight" style="background: rgba(124, 92, 255, 0.15); border: 1px solid rgba(124, 92, 255, 0.3); text-align: center;">
-                <p style="font-size: 13px; color: #d6ccff;"><strong>🤖 Guddu says:</strong> Keep your streak alive! Make sure to complete your primary focus timer today.</p>
-            </div>
-
-            <!-- AI COACH CHAT UI -->
-            <div class="ai-coach-chat" style="margin-top: 20px;">
-                <h3 style="font-size: 16px; margin-bottom: 10px; display: flex; align-items: center; gap: 8px;">🤖 AI Coach</h3>
-                <div id="chat-window" style="height: 200px; background: rgba(0,0,0,0.2); border-radius: 12px; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; border: 1px solid rgba(255,255,255,0.1);">
-                    <div class="chat-bubble ai-bubble" style="align-self: flex-start; max-width: 80%; background: rgba(0, 242, 254, 0.15); border: 1px solid rgba(0, 242, 254, 0.3); padding: 10px 15px; border-radius: 15px 15px 15px 0; font-size: 12px;">
-                        Hi! I am your AI Habit Coach. I'm here to help you build better habits, stay consistent, and reach your goals.
-                    </div>
-                </div>
-                <div class="chat-input-area" style="display: flex; gap: 10px; margin-top: 10px;">
-                    <input type="text" id="ai-chat-input" placeholder="Ask Guddu..." style="flex: 1; min-width: 0; border-radius: 20px; font-size: 13px; padding: 10px 15px; border: 1px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.05); color: white;">
-                    <button onclick="sendChatMessage()" style="width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: var(--accent); color: white; border: none; flex-shrink: 0; cursor: pointer;">✈️</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <!-- ================= BOTTOM NAVIGATION ================= -->
     <!-- ================= BOTTOM NAVIGATION ================= -->
     <nav class="bottom-nav">
@@ -469,9 +542,15 @@
             </button>
         </div>
         <a href="javascript:void(0)" onclick="toggleInsights()" class="nav-item" id="nav-insights">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
         </a>
-        <a href="javascript:void(0)" onclick="toggleProfile()" class="nav-item" id="nav-profile">
+        <a href="javascript:void(0)" onclick="toggleBrainGym()" class="nav-item" id="nav-brain-gym">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+        </a>
+        
+        <a href="javascript:void(0)" onclick="togglePinkMode()" class="nav-item" id="nav-pink" style="display: none;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s-8-4.5-8-11.8A8 8 0 0 1 12 2a8 8 0 0 1 8 8.2c0 7.3-8 11.8-8 11.8z"/><circle cx="12" cy="10" r="3"/></svg>
+        </a><a href="javascript:void(0)" onclick="toggleProfile()" class="nav-item" id="nav-profile">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
         </a>
     </nav>
